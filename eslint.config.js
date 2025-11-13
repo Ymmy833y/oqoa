@@ -5,7 +5,7 @@ const { parser } = require('typescript-eslint');
 
 module.exports = tseslint.config(
   {
-    ignores: ['**/build/**', '**/dist/**'],
+    ignores: ['**/build/**', '**/dist/**', '**/public/**'],
   },
   tseslint.configs.strict,
   ...tseslint.configs.stylistic,

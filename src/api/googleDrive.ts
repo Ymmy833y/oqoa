@@ -1,8 +1,8 @@
-import { qListDB } from "../db/QListDB";
-import { questionDB } from "../db/QuestionDB";
-import { QList, Question } from "../models";
-import { GDriveStorageKeys } from "../utils/googleDriveKey";
-import { fetchAllJsonFromFolderStrict, requestAccessTokenWithClientId } from "./googleAuth";
+import { qListDB } from '../db/QListDB';
+import { questionDB } from '../db/QuestionDB';
+import { QList, Question } from '../models';
+import { GDriveStorageKeys } from '../utils/googleDriveKey';
+import { fetchAllJsonFromFolderStrict, requestAccessTokenWithClientId } from './googleAuth';
 
 export async function importProbelmForGoogleDrive(clientId: string, folderId: string) {
   // Google Identity Services のトークン取得
@@ -42,9 +42,11 @@ function convertPayloadsToDomain(payloads: unknown[]): {
 
   for (const p of payloads) {
     if (!p || typeof p !== 'object') continue;
+
     const payload = p as {
-      qLists?: Array<{ name: string; isDefault: boolean; questions: number[] }>;
-      questions?: Array<any>;
+      qLists?: { name: string; isDefault: boolean; questions: number[] }[];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      questions?: any[];
     };
 
     // Questions: id 重複は「後勝ち」で上書き

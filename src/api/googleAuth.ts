@@ -1,5 +1,5 @@
 // ---- Drive ユーティリティ ----
-type FileMeta = {
+interface FileMeta {
   id: string;
   name: string;
   mimeType: string;
@@ -7,13 +7,13 @@ type FileMeta = {
   size?: string;
   fileExtension?: string;
   shortcutDetails?: { targetId: string; targetMimeType: string };
-};
+}
 
 // 単一ファイルのメタデータ取得
 async function getMeta(accessToken: string, fileId: string): Promise<FileMeta> {
   const url =
     `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}` +
-    `?fields=id,name,mimeType,modifiedTime,size,fileExtension,shortcutDetails`;
+    '?fields=id,name,mimeType,modifiedTime,size,fileExtension,shortcutDetails';
   const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
@@ -34,10 +34,10 @@ async function listFilesInFolder(
 
   do {
     const url =
-      `https://www.googleapis.com/drive/v3/files` +
+      'https://www.googleapis.com/drive/v3/files' +
       `?q=${q}` +
-      `&fields=nextPageToken,files(id,name,mimeType,modifiedTime,size,fileExtension,shortcutDetails)` +
-      `&orderBy=name` +
+      '&fields=nextPageToken,files(id,name,mimeType,modifiedTime,size,fileExtension,shortcutDetails)' +
+      '&orderBy=name' +
       (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
 
     const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
@@ -89,7 +89,7 @@ async function fetchFileJson(accessToken: string, fileId: string) {
 export async function fetchAllJsonFromFolderStrict(
   accessToken: string,
   folderId: string
-): Promise<Array<{ id: string; name: string; mimeType: string; modifiedTime?: string; content: unknown }>> {
+): Promise<{ id: string; name: string; mimeType: string; modifiedTime?: string; content: unknown }[]> {
   const metas = await listFilesInFolder(accessToken, folderId);
 
   // ダウンロード可能な実体に限定（ショートカット解決＋Docs 系除外）
