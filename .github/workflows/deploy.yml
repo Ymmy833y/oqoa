@@ -1,9 +1,12 @@
-name: Deploy to GitHub Pages
+name: deploy
 
 on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - release/0.1.0
   workflow_dispatch:
     inputs:
       publish_branch:
