@@ -2,8 +2,8 @@
   "name": "oqoa",
   "version": "0.1.0",
   "scripts": {
-    "start": "parcel src/index.html",
-    "build": "parcel build src/index.html --dist-dir public --public-url ./",
+    "start": "parcel src/resources/index.html",
+    "build": "parcel build src/resources/index.html --dist-dir public --public-url ./",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix"
   },

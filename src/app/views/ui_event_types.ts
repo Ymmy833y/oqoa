@@ -1,0 +1,21 @@
+import { Theme } from '../types';
+
+export enum UIEvent {
+  CLICK_SETTING_BTN = 'CLICK_SETTING_BTN',
+  DEFAULT_MODAL_SHOWN = 'DEFAULT_MODAL_SHOWN',
+  TOAST_DISMISS_REQUESTED = 'TOAST_DISMISS_REQUESTED',
+  CHANGE_THEME = 'CHANGE_THEME',
+  CHANGE_GOOGLE_CLIENT_ID = 'CHANGE_GOOGLE_CLIENT_ID',
+  CHANGE_GOOGLE_FOLDER_ID = 'CHANGE_GOOGLE_FOLDER_ID',
+  CLICK_GOOGLE_DRIVE_IMPORT_BTN = 'CLICK_GOOGLE_DRIVE_IMPORT_BTN',
+}
+
+export interface UIEventPayloadMap {
+  [UIEvent.CLICK_SETTING_BTN]: undefined;
+  [UIEvent.DEFAULT_MODAL_SHOWN]: undefined;
+  [UIEvent.TOAST_DISMISS_REQUESTED]: { uuid: string };
+  [UIEvent.CHANGE_THEME]: { theme: Theme };
+  [UIEvent.CHANGE_GOOGLE_CLIENT_ID]: { googleClientId: string };
+  [UIEvent.CHANGE_GOOGLE_FOLDER_ID]: { googleFolderId: string };
+  [UIEvent.CLICK_GOOGLE_DRIVE_IMPORT_BTN]: undefined;
+}
