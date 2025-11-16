@@ -78,8 +78,8 @@ export class Controller {
 
         const qLists = await qListRepository.selectByStandard();
         this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
-        const { questions, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, totalSize, pages });
+        const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
         break;
       }
 
@@ -109,14 +109,14 @@ export class Controller {
 
         const qLists = await qListRepository.selectByStandard();
         this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
-        const { questions, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, totalSize, pages });
+        const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
         break;
       }
 
       case Effect.SEARCH_QUESTION: {
-        const { questions, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, totalSize, pages });
+        const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
         break;
       }
       }

@@ -30,7 +30,10 @@ export type ActionType =
   | { type: Action.CHANGE_GOOGLE_FOLDER_ID; googleFolderId: string }
   | { type: Action.IMPORT_GOOGLE_DRIVE_DATA; }
   | { type: Action.UPDATE_QLIST_CONTAINER; qLists: QList[] }
-  | { type: Action.UPDATE_QUESTION_LIST_CONTAINER; questions: Question[], totalSize: number, pages: number[] }
+  | { 
+      type: Action.UPDATE_QUESTION_LIST_CONTAINER; currentPage: number,
+      questions: Question[], totalSize: number, pages: number[] 
+  }
   | { type: Action.CHANGE_QUESTION_SEARCH_KEYWORD; keyword: string }
   | { type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE; }
   | { type: Action.SEARCH_QUESTION; }

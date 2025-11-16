@@ -94,6 +94,7 @@ export function update(model: Model, action: ActionType): { model: Model; effect
         questions: action.questions,
         questionSearchForm: {
           ...model.questionSearchForm,
+          currentPage: action.currentPage,
           totalSize: action.totalSize,
           pages: action.pages,
         }
