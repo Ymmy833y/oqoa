@@ -81,6 +81,48 @@ export function update(model: Model, action: ActionType): { model: Model; effect
     return { model, effects: [] }
   }
 
+  case Action.UPDATE_QLIST_CONTAINER:
+    return {
+      model: { ...model, qLists: action.qLists },
+      effects: []
+    }
+
+  case Action.UPDATE_QUESTION_LIST_CONTAINER:
+    return {
+      model: { ...model, questions: action.questions },
+      effects: []
+    }
+
+  case Action.CHANGE_QUESTION_SEARCH_KEYWORD:
+    return {
+      model: {
+        ...model,
+        questionSearchForm: {
+          ...model.questionSearchForm,
+          keyword: action.keyword,
+        }
+      },
+      effects: []
+    }
+
+  case Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE:
+    return {
+      model: {
+        ...model,
+        questionSearchForm: {
+          ...model.questionSearchForm,
+          isCaseSensitive: !model.questionSearchForm.isCaseSensitive,
+        }
+      },
+      effects: []
+    }
+
+  case Action.SEARCH_QUESTION:
+    return {
+      model,
+      effects: [{ kind: Effect.SEARCH_QUESTION }]
+    }
+
   default:
     return { model, effects: []};
   }

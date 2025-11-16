@@ -1,4 +1,6 @@
 import { ModalKindType, Theme, ToastMessage } from '../types'
+import { QList, Question } from './entities'
+import { QuestionSearchForm } from './forms'
 
 export interface Model {
   theme: Theme,
@@ -8,6 +10,10 @@ export interface Model {
   googleFolderId: string | null,
 
   defailtModalKind: ModalKindType | null,
+
+  qLists: QList[],
+  questions: Question[],
+  questionSearchForm: QuestionSearchForm,
 }
 
 export const initialModel: Model = {
@@ -18,4 +24,12 @@ export const initialModel: Model = {
   googleFolderId: null,
 
   defailtModalKind: null,
+
+  qLists: [],
+  questions: [],
+  questionSearchForm: {
+    keyword: '',
+    isCaseSensitive: false,
+    currentPage: 1,
+  }
 }

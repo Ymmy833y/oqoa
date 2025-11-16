@@ -1,5 +1,5 @@
 import { ModalSize } from '../types';
-import { el } from './utils';
+import { el } from './view_utils';
 
 export class Modal {
   private isShown = false;

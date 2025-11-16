@@ -42,8 +42,7 @@ async function listFilesInFolder(
 
     const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
     if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      throw new Error("フォルダーが見つかりませんでした。");
+      throw new Error('フォルダーが見つかりませんでした。');
     }
 
     const data: { files?: FileMeta[]; nextPageToken?: string } = await res.json();

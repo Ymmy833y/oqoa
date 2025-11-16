@@ -1,17 +1,27 @@
 import { Model } from '../models';
+import { QList, Question } from '../models/entities';
+import { QuestionSearchForm } from '../models/forms';
 import { ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
-import { Modal } from './modal';
+import { el, Modal,  } from '../utils';
+import { generateQListRow } from './qlist_view';
+import { generateQuestionListRow } from './question_view';
 import { generateSettingModalConetnt } from './setting_view';
 import { UIEventPayloadMap, UIEvent } from './ui_event_types';
-import { el } from './utils';
 
 export class View {
   private listeners: Partial<Record<UIEvent, unknown[]>> = {};
 
   private els: {
     settingBtn: HTMLButtonElement;
+
     defaultModal: HTMLButtonElement;
     toastParent: HTMLDivElement;
+
+    qListsContainer: HTMLDivElement;
+    questionsContainer: HTMLDivElement;
+    questionSearchKeyword: HTMLInputElement;
+    questionSearchIsCaseSensitive: HTMLButtonElement;
+    questionSearchSubmit: HTMLButtonElement;
   }
 
   private defaultModal: Modal;
@@ -23,13 +33,28 @@ export class View {
       settingBtn: this.$('#settingBtn'),
       defaultModal: this.$('#defaultModal'),
       toastParent: this.$('#toastParent'),
+      qListsContainer: this.$('#qListsContainer'),
+      questionsContainer: this.$('#questionsContainer'),
+      questionSearchKeyword: this.$('#questionSearchKeyword'),
+      questionSearchIsCaseSensitive: this.$('#questionSearchIsCaseSensitive'),
+      questionSearchSubmit: this.$('#questionSearchSubmit'),
     };
 
     this.defaultModal = new Modal(this.els.defaultModal);
 
     this.els.settingBtn.addEventListener('click', () => {
       this.emit(UIEvent.CLICK_SETTING_BTN, undefined);
-    })
+    });
+    this.els.questionSearchKeyword.addEventListener('input', () => {
+      const keyword = this.els.questionSearchKeyword.value;
+      this.emit(UIEvent.CHANGE_QUESTION_SEARCH_KEYWORD, { keyword });
+    });
+    this.els.questionSearchIsCaseSensitive.addEventListener('click', () => {
+      this.emit(UIEvent.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE, undefined);
+    });
+    this.els.questionSearchSubmit.addEventListener('click', () => {
+      this.emit(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, undefined);
+    });
   }
 
   on<K extends UIEvent>(type: K, handler: (e: UIEventPayloadMap[K]) => void): void {
@@ -45,6 +70,11 @@ export class View {
   render(model: Model): void {
     this.applyToastMessages(model.toastMessages);
     this.applyDefaultModal(model);
+
+    this.applyQListsContent(model.qLists);
+    this.applyQuestionsContent(model.questions);
+
+    this.applyQuestionSearchForm(model.questionSearchForm);
   }
 
   private applyToastMessages(toastMessages: ToastMessage[]): void {
@@ -89,11 +119,11 @@ export class View {
     });
     return toastElem;
   }
-  
+
   private applyDefaultModal(model: Model) {
     if (model.defailtModalKind === ModalKind.SETTING) {
       const content = generateSettingModalConetnt(
-        model.theme, model.googleClientId ?? "", model.googleFolderId ?? "",
+        model.theme, model.googleClientId ?? '', model.googleFolderId ?? '',
         {
           onThemeChange: (theme) => {
             this.emit(UIEvent.CHANGE_THEME, { theme });
@@ -112,6 +142,27 @@ export class View {
       this.defaultModal.setModal(content, '設定', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
     }
+  }
+
+  private applyQListsContent(qLists: QList[]) {
+    this.els.qListsContainer.innerHTML = '';
+    qLists.forEach(qList => {
+      const card = generateQListRow(qList);
+      this.els.qListsContainer.appendChild(card);
+    });
+  }
+
+  private applyQuestionsContent(questions: Question[]) {
+    this.els.questionsContainer.innerHTML = '';
+    questions.forEach(questions => {
+      const card = generateQuestionListRow(questions);
+      this.els.questionsContainer.appendChild(card);
+    });
+  }
+
+  private applyQuestionSearchForm(form: QuestionSearchForm) {
+    this.els.questionSearchKeyword.value = form.keyword;
+    this.els.questionSearchIsCaseSensitive.setAttribute('aria-pressed', String(form.isCaseSensitive));
   }
 
   private $<T extends Element>(selector: string): T {

@@ -6,8 +6,10 @@ import { initialModel, Model } from '../models';
 import { ModalKind, Theme } from '../types';
 import { Effect, EffectType } from './effect_types';
 import { setGoogleClientId, setGoogleFolderId, setTheme } from '../storages';
-import { initDatabase } from '../services/indexeddb_service';
-import { importProbelmForGoogleDrive } from '../services/import_google_drive_service';
+import * as indexeddbService from '../services/indexeddb_service';
+import * as importGoogleDriveService from '../services/import_google_drive_service';
+import * as questionService from '../services/question_service';
+import { qListRepository } from '../repositories/qlist_repositoriy';
 
 export class Controller {
   private model: Model = structuredClone(initialModel);
@@ -41,6 +43,15 @@ export class Controller {
     this.view.on(UIEvent.CLICK_GOOGLE_DRIVE_IMPORT_BTN, () =>
       this.dispatch({ type: Action.IMPORT_GOOGLE_DRIVE_DATA }),
     );
+    this.view.on(UIEvent.CHANGE_QUESTION_SEARCH_KEYWORD, ({ keyword }) =>
+      this.dispatch({ type: Action.CHANGE_QUESTION_SEARCH_KEYWORD, keyword }),
+    );
+    this.view.on(UIEvent.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE, () =>
+      this.dispatch({ type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE }),
+    );
+    this.view.on(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, () =>
+      this.dispatch({ type: Action.SEARCH_QUESTION }),
+    );
   }
 
   private dispatch(action: ActionType): void {
@@ -54,13 +65,18 @@ export class Controller {
     for (const fx of effects) {
       switch(fx.kind) {
       case Effect.INIT_REPOSITORY: {
-        await initDatabase()
+        await indexeddbService.initDatabase()
           .then(() => {
             console.info('App is starting...');
           })
           .catch((error) => {
             console.error('indexeddb connection error:', error);
           })
+
+        const qLists = await qListRepository.selectByStandard();
+        this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
+        const questions = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions });
         break;
       }
 
@@ -85,8 +101,19 @@ export class Controller {
       }
 
       case Effect.IMPORT_GOOGLE_DRIVE: {
-        const toastMessage = await importProbelmForGoogleDrive(fx.googleClientId, fx.googleFolderId);
+        const toastMessage = await importGoogleDriveService.importProbelmForGoogleDrive(fx.googleClientId, fx.googleFolderId);
         this.dispatch({ type: Action.TOAST_ADD, toastMessage })
+
+        const qLists = await qListRepository.selectByStandard();
+        this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
+        const questions = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions });
+        break;
+      }
+
+      case Effect.SEARCH_QUESTION: {
+        const questions = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions });
         break;
       }
       }

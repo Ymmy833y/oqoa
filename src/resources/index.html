@@ -29,7 +29,41 @@
     </div>
   </header>
 
-  <main class="app-main"></main>
+  <main class="app-main">
+    <section class="q-list-section">
+      <div class="q-list-header">
+        <div>
+          <h2 class="q-list-title">問題集一覧</h2>
+          <p class="q-list-desc">登録済みの問題集から、解きたいセットを選択できます。</p>
+        </div>
+      </div>
+      <div id="qListsContainer" class="q-list-grid"></div>
+    </section>
+
+    <section class="question-list-section">
+      <div class="question-list-header">
+        <h2 class="question-list-title">設問一覧</h2>
+      </div>
+      <!-- 検索バー -->
+      <div class="question-list-toolbar">
+        <div class="question-list-search-group">
+          <input type="text" id="questionSearchKeyword" class="question-list-search-input" placeholder="キーワードで検索" />
+          <button type="button" id="questionSearchIsCaseSensitive" class="question-list-search-case-btn" aria-pressed="false">
+            <i class="bi bi-type question-list-search-case-icon"></i>
+          </button>
+        </div>
+
+        <div class="question-list-search-submit">
+          <button type="button" id="questionSearchSubmit" class="question-list-search-btn">
+            検索
+          </button>
+        </div>
+      </div>
+
+      <!-- 設問一覧 -->
+      <div id="questionsContainer" class="question-list"></div>
+    </section>
+  </main>
 
   <footer class="app-footer">
     <div class="app-footer-inner">

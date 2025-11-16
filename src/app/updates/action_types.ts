@@ -1,3 +1,4 @@
+import { QList, Question } from '../models/entities';
 import { ModalKindType, Theme, ToastMessage } from '../types';
 
 export enum Action {
@@ -10,6 +11,11 @@ export enum Action {
   CHANGE_GOOGLE_CLIENT_ID = 'CHANGE_GOOGLE_CLIENT_ID',
   CHANGE_GOOGLE_FOLDER_ID = 'CHANGE_GOOGLE_FOLDER_ID',
   IMPORT_GOOGLE_DRIVE_DATA = 'IMPORT_GOOGLE_DRIVE_DATA',
+  UPDATE_QLIST_CONTAINER = 'UPDATE_QLIST_CONTAINER',
+  UPDATE_QUESTION_LIST_CONTAINER = 'UPDATE_QUESTION_LIST_CONTAINER',
+  CHANGE_QUESTION_SEARCH_KEYWORD = 'CHANGE_QUESTION_SEARCH_KEYWORD',
+  TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
+  SEARCH_QUESTION = 'SEARCH_QUESTION',
 }
 
 export type ActionType =
@@ -22,4 +28,9 @@ export type ActionType =
   | { type: Action.CHANGE_GOOGLE_CLIENT_ID; googleClientId: string }
   | { type: Action.CHANGE_GOOGLE_FOLDER_ID; googleFolderId: string }
   | { type: Action.IMPORT_GOOGLE_DRIVE_DATA; }
+  | { type: Action.UPDATE_QLIST_CONTAINER; qLists: QList[] }
+  | { type: Action.UPDATE_QUESTION_LIST_CONTAINER; questions: Question[] }
+  | { type: Action.CHANGE_QUESTION_SEARCH_KEYWORD; keyword: string }
+  | { type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE; }
+  | { type: Action.SEARCH_QUESTION; }
 ;

@@ -6,6 +6,7 @@ export enum Effect {
   UPDATE_GOOGLE_CLIENT_ID = 'UPDATE_GOOGLE_CLIENT_ID',
   UPDATE_GOOGLE_FOLDER_ID = 'UPDATE_GOOGLE_FOLDER_ID',
   IMPORT_GOOGLE_DRIVE = 'IMPORT_GOOGLE_DRIVE',
+  SEARCH_QUESTION = 'SEARCH_QUESTION',
 }
 
 export type EffectType =
@@ -14,4 +15,5 @@ export type EffectType =
   | { kind: Effect.UPDATE_GOOGLE_CLIENT_ID; googleClientId: string }
   | { kind: Effect.UPDATE_GOOGLE_FOLDER_ID; googleFolderId: string }
   | { kind: Effect.IMPORT_GOOGLE_DRIVE; googleClientId: string; googleFolderId: string }
+  | { kind: Effect.SEARCH_QUESTION }
 ;

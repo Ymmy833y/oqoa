@@ -1,5 +1,5 @@
 import { Theme } from '../types';
-import { el } from './utils';
+import { el } from '../utils';
 
 interface SettingModalHandlers {
   onThemeChange: (theme: Theme) => void;
