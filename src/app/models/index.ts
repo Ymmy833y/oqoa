@@ -30,6 +30,8 @@ export const initialModel: Model = {
   questionSearchForm: {
     keyword: '',
     isCaseSensitive: false,
-    currentPage: 1,
+    currentPage: 0,
+    totalSize: 0,
+    pages: [],
   }
 }

@@ -1,18 +1,23 @@
+import { Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { questionRepository } from '../repositories/question_repositoriy';
+import { getPaginationPages } from '../utils';
 
-const pageSize = 25;
+const pageItemSize = 25;
 
-export function selectQuestionsForSearchForm(form: QuestionSearchForm) {
+export function selectQuestionsForSearchForm(form: QuestionSearchForm): {
+  questions: Question[], totalSize: number, pages: number[]
+} {
   const questions = (form.keyword === '')
     ? questionRepository.selectAll()
     : questionRepository.selectByWord(form.keyword, form.isCaseSensitive);
 
-  // const totalPages = Math.floor(questions.length / pageSize) + (questions.length % pageSize === 0 ? 0 : 1);
-
-  const startIndex = (form.currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
+  const startIndex = form.currentPage * pageItemSize;
+  const endIndex = startIndex + pageItemSize;
   const currentQuestions = questions.slice(startIndex, endIndex);
 
-  return currentQuestions;
+  const totalPages = Math.floor(questions.length / pageItemSize) + ((questions.length % pageItemSize === 0) ? 0 : 1);
+  const pages = getPaginationPages(form.currentPage, totalPages);
+
+  return { questions: currentQuestions, totalSize: questions.length, pages };
 }

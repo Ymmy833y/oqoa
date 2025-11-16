@@ -52,6 +52,9 @@ export class Controller {
     this.view.on(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, () =>
       this.dispatch({ type: Action.SEARCH_QUESTION }),
     );
+    this.view.on(UIEvent.CHANGE_QUESTIONS_PAGE, ({ page }) =>
+      this.dispatch({ type: Action.CHANGE_QUESTIONS_PAGE, page }),
+    );
   }
 
   private dispatch(action: ActionType): void {
@@ -75,8 +78,8 @@ export class Controller {
 
         const qLists = await qListRepository.selectByStandard();
         this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
-        const questions = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions });
+        const { questions, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, totalSize, pages });
         break;
       }
 
@@ -106,14 +109,14 @@ export class Controller {
 
         const qLists = await qListRepository.selectByStandard();
         this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
-        const questions = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions });
+        const { questions, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, totalSize, pages });
         break;
       }
 
       case Effect.SEARCH_QUESTION: {
-        const questions = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions });
+        const { questions, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, totalSize, pages });
         break;
       }
       }

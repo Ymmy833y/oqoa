@@ -89,7 +89,15 @@ export function update(model: Model, action: ActionType): { model: Model; effect
 
   case Action.UPDATE_QUESTION_LIST_CONTAINER:
     return {
-      model: { ...model, questions: action.questions },
+      model: {
+        ...model,
+        questions: action.questions,
+        questionSearchForm: {
+          ...model.questionSearchForm,
+          totalSize: action.totalSize,
+          pages: action.pages,
+        }
+      },
       effects: []
     }
 
@@ -120,6 +128,18 @@ export function update(model: Model, action: ActionType): { model: Model; effect
   case Action.SEARCH_QUESTION:
     return {
       model,
+      effects: [{ kind: Effect.SEARCH_QUESTION }]
+    }
+
+  case Action.CHANGE_QUESTIONS_PAGE:
+    return {
+      model: {
+        ...model,
+        questionSearchForm: {
+          ...model.questionSearchForm,
+          currentPage: action.page,
+        }
+      },
       effects: [{ kind: Effect.SEARCH_QUESTION }]
     }
 

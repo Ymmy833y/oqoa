@@ -2,7 +2,7 @@ import { Model } from '../models';
 import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
-import { el, Modal,  } from '../utils';
+import { el, Modal, renderPagination,  } from '../utils';
 import { generateQListRow } from './qlist_view';
 import { generateQuestionListRow } from './question_view';
 import { generateSettingModalConetnt } from './setting_view';
@@ -19,6 +19,7 @@ export class View {
 
     qListsContainer: HTMLDivElement;
     questionsContainer: HTMLDivElement;
+    questionsPagination: HTMLDivElement;
     questionSearchKeyword: HTMLInputElement;
     questionSearchIsCaseSensitive: HTMLButtonElement;
     questionSearchSubmit: HTMLButtonElement;
@@ -35,6 +36,7 @@ export class View {
       toastParent: this.$('#toastParent'),
       qListsContainer: this.$('#qListsContainer'),
       questionsContainer: this.$('#questionsContainer'),
+      questionsPagination: this.$('#questionsPagination'),
       questionSearchKeyword: this.$('#questionSearchKeyword'),
       questionSearchIsCaseSensitive: this.$('#questionSearchIsCaseSensitive'),
       questionSearchSubmit: this.$('#questionSearchSubmit'),
@@ -74,7 +76,7 @@ export class View {
     this.applyQListsContent(model.qLists);
     this.applyQuestionsContent(model.questions);
 
-    this.applyQuestionSearchForm(model.questionSearchForm);
+    this.applyQuestionSearchForm(model.questionSearchForm, model.questions.length);
   }
 
   private applyToastMessages(toastMessages: ToastMessage[]): void {
@@ -160,9 +162,16 @@ export class View {
     });
   }
 
-  private applyQuestionSearchForm(form: QuestionSearchForm) {
+  private applyQuestionSearchForm(form: QuestionSearchForm, itemSize: number) {
     this.els.questionSearchKeyword.value = form.keyword;
     this.els.questionSearchIsCaseSensitive.setAttribute('aria-pressed', String(form.isCaseSensitive));
+    renderPagination(
+      this.els.questionsPagination,
+      form.currentPage, form.pages, itemSize, form.totalSize,
+      (page) => {
+        this.emit(UIEvent.CHANGE_QUESTIONS_PAGE, { page });
+      }
+    )
   }
 
   private $<T extends Element>(selector: string): T {

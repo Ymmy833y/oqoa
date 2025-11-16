@@ -16,6 +16,7 @@ export enum Action {
   CHANGE_QUESTION_SEARCH_KEYWORD = 'CHANGE_QUESTION_SEARCH_KEYWORD',
   TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
   SEARCH_QUESTION = 'SEARCH_QUESTION',
+  CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
 }
 
 export type ActionType =
@@ -29,8 +30,9 @@ export type ActionType =
   | { type: Action.CHANGE_GOOGLE_FOLDER_ID; googleFolderId: string }
   | { type: Action.IMPORT_GOOGLE_DRIVE_DATA; }
   | { type: Action.UPDATE_QLIST_CONTAINER; qLists: QList[] }
-  | { type: Action.UPDATE_QUESTION_LIST_CONTAINER; questions: Question[] }
+  | { type: Action.UPDATE_QUESTION_LIST_CONTAINER; questions: Question[], totalSize: number, pages: number[] }
   | { type: Action.CHANGE_QUESTION_SEARCH_KEYWORD; keyword: string }
   | { type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE; }
   | { type: Action.SEARCH_QUESTION; }
+  | { type: Action.CHANGE_QUESTIONS_PAGE; page: number }
 ;
