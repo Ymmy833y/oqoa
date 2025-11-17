@@ -2,7 +2,7 @@ import { Model } from '../models';
 import { ActionType, Action } from './action_types';
 import { EffectType, Effect } from '../controllers/effect_types';
 import { getGoogleClientId, getGoogleFolderId, getTheme } from '../storages';
-import { Theme } from '../types';
+import { ModalKind, Theme } from '../types';
 
 export function update(model: Model, action: ActionType): { model: Model; effects: EffectType[] } {
   switch (action.type) {
@@ -31,7 +31,7 @@ export function update(model: Model, action: ActionType): { model: Model; effect
 
   case Action.DEFAULT_MODAL_SHOWN:
     return {
-      model: { ...model, defailtModalKind: null },
+      model: { ...model, defailtModalKind: null, preparePracticeStart: null },
       effects: []
     }
 
@@ -142,6 +142,39 @@ export function update(model: Model, action: ActionType): { model: Model; effect
         }
       },
       effects: [{ kind: Effect.SEARCH_QUESTION }]
+    }
+
+  case Action.PREPARE_PRACTICE_START:
+    return {
+      model,
+      effects: [{ kind: Effect.PREPARE_PRACTICE_START, qListId: action.qListId }]
+    }
+
+  case Action.SHOW_PRACTICE_START:
+    return {
+      model: {
+        ...model,
+        defailtModalKind: ModalKind.PRACTICE_START,
+        preparePracticeStart: action.qList,
+      },
+      effects: []
+    }
+
+  case Action.PREPARE_PRACTICE:
+    return {
+      model,
+      effects: [{ 
+        kind: Effect.PREPARE_PRACTICE, 
+        qList: action.qList,
+        isShuffleQuestions: action.isShuffleQuestions,
+        isShuffleChoices: action.isShuffleChoices
+      }]
+    }
+  
+  case Action.SHOW_PRACTICE:    
+    return {
+      model: { ...model, practiceDetailDto: action.practiceDetailDto },
+      effects: []
     }
 
   default:

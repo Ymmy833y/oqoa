@@ -1,10 +1,12 @@
 import { Model } from '../models';
+import { PracticeDetailDto } from '../models/dtos/practice_detail_dto';
 import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
 import { el, Modal, renderPagination,  } from '../utils';
+import { generatePracticeStartContent } from './pracitce_view';
 import { generateQListRow } from './qlist_view';
-import { generateQuestionListRow } from './question_view';
+import { generateQuestionContent, generateQuestionListRow } from './question_view';
 import { generateSettingModalConetnt } from './setting_view';
 import { UIEventPayloadMap, UIEvent } from './ui_event_types';
 
@@ -17,6 +19,7 @@ export class View {
     defaultModal: HTMLButtonElement;
     toastParent: HTMLDivElement;
 
+    questionContainer: HTMLDivElement;
     qListsContainer: HTMLDivElement;
     questionsContainer: HTMLDivElement;
     questionsPagination: HTMLDivElement;
@@ -27,13 +30,14 @@ export class View {
 
   private defaultModal: Modal;
 
-  TOAST_AUTO_DISMISS = 30000;
+  private TOAST_AUTO_DISMISS = 10000;
 
   constructor(private doc: Document) {
     this.els = {
       settingBtn: this.$('#settingBtn'),
       defaultModal: this.$('#defaultModal'),
       toastParent: this.$('#toastParent'),
+      questionContainer: this.$('#questionContainer'),
       qListsContainer: this.$('#qListsContainer'),
       questionsContainer: this.$('#questionsContainer'),
       questionsPagination: this.$('#questionsPagination'),
@@ -73,6 +77,9 @@ export class View {
     this.applyToastMessages(model.toastMessages);
     this.applyDefaultModal(model);
 
+    if (model.practiceDetailDto !== null) {
+      this.applyQuestionContent(model.practiceDetailDto);
+    }
     this.applyQListsContent(model.qLists);
     this.applyQuestionsContent(model.questions);
 
@@ -143,13 +150,43 @@ export class View {
       );
       this.defaultModal.setModal(content, '設定', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
+    } else if (model.defailtModalKind === ModalKind.PRACTICE_START) {
+      const content = generatePracticeStartContent(
+        model.preparePracticeStart!,
+        (qList, isShuffleQuestions, isShuffleChoices) => {
+          this.emit(UIEvent.CLICK_PRACTICE_START, { qList, isShuffleQuestions, isShuffleChoices });
+          this.defaultModal.hide();
+        }
+      );
+      this.defaultModal.setModal(content, '演習開始', ModalSize.XL);
+      this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
     }
+  }
+
+  private applyQuestionContent(dto: PracticeDetailDto) {
+    this.els.questionContainer.innerHTML = "";
+    const question = dto.questions[dto.currentQuestionIndex];
+    const ansHistory = dto.ansHistories
+      .find(ansHistory => ansHistory.getQuestionId() === question.getId());
+
+    const content = generateQuestionContent(question, ansHistory);
+    this.els.questionContainer.appendChild(content);
   }
 
   private applyQListsContent(qLists: QList[]) {
     this.els.qListsContainer.innerHTML = '';
     qLists.forEach(qList => {
-      const card = generateQListRow(qList);
+      const card = generateQListRow(
+        qList,
+        {
+          onClickSolve: (qListId) => {
+            this.emit(UIEvent.CLICK_QLIST_SOLVE, { qListId });
+          },
+          onClickEdit: (qListId) => {
+            this.emit(UIEvent.CLICK_QLIST_EDIT, { qListId });
+          },
+        }
+      );
       this.els.qListsContainer.appendChild(card);
     });
   }

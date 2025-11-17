@@ -1,7 +1,12 @@
 import { QList } from '../models/entities';
 import { el } from '../utils/view_utils';
 
-export function generateQListRow(qList: QList): HTMLElement {
+interface QListRowHandlers {
+  onClickSolve: (qListId: number) => void;
+  onClickEdit: (qListId: number) => void;
+}
+
+export function generateQListRow(qList: QList, handlers: QListRowHandlers): HTMLElement {
   const id = qList.getId();
   const uuid = qList.getUuid();
   const name = qList.getName();
@@ -44,20 +49,26 @@ export function generateQListRow(qList: QList): HTMLElement {
   // actions
   const actions = el('div', 'q-list-card-actions');
 
-  const primaryButton = el('button', {
+  const solveButton = el('button', {
     class: 'q-list-card-btn-primary',
     text: 'この問題集を解く',
     attr: [{ type: 'button' }],
   });
+  solveButton.addEventListener('click', () => {
+    handlers.onClickSolve(qList.getId());
+  });
 
-  const secondaryButton = el('button', {
+  const editButton = el('button', {
     class: 'q-list-card-btn-secondary',
     text: '編集',
     attr: [{ type: 'button' }],
   });
+  editButton.addEventListener('click', () => {
+    handlers.onClickEdit(qList.getId());
+  });
 
-  actions.appendChild(primaryButton);
-  actions.appendChild(secondaryButton);
+  actions.appendChild(solveButton);
+  actions.appendChild(editButton);
 
   // card に全部つめる
   card.appendChild(header);

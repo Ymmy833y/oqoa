@@ -1,3 +1,4 @@
+import { QList } from '../models/entities';
 import { Theme } from '../types';
 
 export enum UIEvent {
@@ -12,6 +13,9 @@ export enum UIEvent {
   TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
   CLICK_QUESTION_SEARCH_SUBMIT = 'CLICK_QUESTION_SEARCH_SUBMIT',
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
+  CLICK_QLIST_SOLVE = "CLICK_QLIST_SOLVE",
+  CLICK_QLIST_EDIT = "CLICK_QLIST_EDIT",
+  CLICK_PRACTICE_START = "CLICK_PRACTICE_START",
 }
 
 export interface UIEventPayloadMap {
@@ -26,4 +30,7 @@ export interface UIEventPayloadMap {
   [UIEvent.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE]: undefined;
   [UIEvent.CLICK_QUESTION_SEARCH_SUBMIT]: undefined;
   [UIEvent.CHANGE_QUESTIONS_PAGE]: { page: number };
+  [UIEvent.CLICK_QLIST_SOLVE]: { qListId: number };
+  [UIEvent.CLICK_QLIST_EDIT]: { qListId: number };
+  [UIEvent.CLICK_PRACTICE_START]: { qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean };
 }

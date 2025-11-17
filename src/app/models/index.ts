@@ -1,4 +1,5 @@
 import { ModalKindType, Theme, ToastMessage } from '../types'
+import { PracticeDetailDto } from './dtos/practice_detail_dto';
 import { QList, Question } from './entities'
 import { QuestionSearchForm } from './forms'
 
@@ -10,10 +11,13 @@ export interface Model {
   googleFolderId: string | null,
 
   defailtModalKind: ModalKindType | null,
+  preparePracticeStart: QList | null;
 
   qLists: QList[],
   questions: Question[],
   questionSearchForm: QuestionSearchForm,
+
+  practiceDetailDto: PracticeDetailDto | null,
 }
 
 export const initialModel: Model = {
@@ -24,6 +28,7 @@ export const initialModel: Model = {
   googleFolderId: null,
 
   defailtModalKind: null,
+  preparePracticeStart: null,
 
   qLists: [],
   questions: [],
@@ -33,5 +38,7 @@ export const initialModel: Model = {
     currentPage: 0,
     totalSize: 0,
     pages: [],
-  }
+  },
+
+  practiceDetailDto: null,
 }

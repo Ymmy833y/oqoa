@@ -10,213 +10,7 @@
 }
 
 @layer components {
-  /* header
-   ----------------------------------------------------- */
-  .app-header {
-    @apply fixed top-0 inset-x-0 z-40
-      border-b border-gray-300 dark:border-gray-700
-      bg-gray-100 dark:bg-gray-900;
-  }
-  .app-header-inner {
-    @apply max-w-5xl mx-auto px-4 py-4 flex justify-center;
-  }
-  .app-title {
-    @apply flex items-center my-2 mr-auto no-underline text-xl font-bold;
-  }
-  .app-title-full {
-    @apply hidden md:inline;
-  }
-  .app-title-short {
-    @apply md:hidden;
-  }
-  .app-header-actions {
-    @apply flex space-x-2;
-  }
-
-  /* main
-   ----------------------------------------------------- */
-  .app-main {
-    @apply flex-1;
-  }
-
-  /* q-list (問題集一覧) */
-  .q-list-section {
-    @apply max-w-5xl mx-auto px-4 py-6;
-  }
-  .q-list-header {
-    @apply flex items-center justify-between mb-4;
-  }
-  .q-list-title {
-    @apply text-lg font-semibold;
-  }
-  .q-list-desc {
-    @apply mt-1 text-sm text-gray-600 dark:text-gray-400;
-  }
-  .q-list-grid {
-    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
-  }
-  .q-list-card {
-    @apply flex flex-col gap-3
-      rounded-lg border border-gray-200 bg-white p-4
-      shadow-sm hover:shadow-md transition-shadow
-      dark:border-gray-700 dark:bg-gray-800;
-  }
-  .q-list-card-header {
-    @apply flex items-start justify-between gap-2;
-  }
-  .q-list-card-header-main {
-    @apply min-w-0;
-  }
-  .q-list-card-title {
-    @apply text-sm font-semibold truncate;
-  }
-  .q-list-card-subtitle {
-    @apply mt-1 text-xs text-gray-500 dark:text-gray-400;
-  }
-  .q-list-card-count {
-    @apply font-semibold;
-  }
-  .q-list-card-badge-default {
-    @apply inline-flex items-center
-      rounded-full border border-blue-200 bg-blue-50
-      px-2 py-0.5 text-[11px] font-medium text-blue-700
-      dark:border-blue-700 dark:bg-blue-900/40 dark:text-blue-100;
-  }
-  .q-list-card-meta {
-    @apply text-[11px] text-gray-500 dark:text-gray-400
-      font-mono break-all;
-  }
-  .q-list-card-actions {
-    @apply mt-1 flex flex-wrap gap-2;
-  }
-  .q-list-card-btn-primary {
-    @apply inline-flex flex-1 items-center justify-center
-      rounded-md border border-blue-600 bg-blue-600
-      px-3 py-1.5 text-xs font-medium text-white
-      hover:bg-blue-700 hover:border-blue-700
-      dark:bg-blue-500 dark:border-blue-500 dark:hover:bg-blue-600;
-  }
-  .q-list-card-btn-secondary {
-    @apply inline-flex items-center justify-center
-      rounded-md border border-gray-300 bg-white
-      px-3 py-1.5 text-xs font-medium text-gray-700
-      hover:bg-gray-50
-      dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
-      dark:hover:bg-gray-600;
-  }
-
-  /* question list (設問一覧) */
-  .question-list-section {
-    @apply max-w-5xl mx-auto px-4 py-6;
-  }
-  .question-list-header {
-    @apply mb-4;
-  }
-  .question-list-title {
-    @apply text-lg font-semibold;
-  }
-
-  /* 検索バー */
-  .question-list-toolbar {
-    /* 縦に並べる・間隔を空ける */
-    @apply mb-4 flex flex-col gap-3;
-  }
-  .question-list-search-group {
-    /* 横並びでフル幅 */
-    @apply flex items-stretch w-full
-      rounded-md border border-gray-300 bg-white
-      dark:border-gray-600 dark:bg-gray-800;
-  }
-  .question-list-search-input {
-    @apply flex-1 rounded-l-md border-0 bg-transparent
-      px-3 py-2 text-sm text-gray-900
-      placeholder:text-gray-400
-      focus:outline-none focus:ring-2 focus:ring-blue-500
-      dark:text-gray-100 dark:placeholder:text-gray-500
-      dark:focus:ring-blue-400;
-  }
-  .question-list-search-case-btn {
-    @apply inline-flex items-center justify-center
-      px-3 border-l border-gray-300
-      bg-white text-gray-500
-      hover:bg-gray-50
-      dark:border-gray-600 dark:bg-gray-800
-      dark:text-gray-400 dark:hover:bg-gray-700;
-  }
-  .question-list-search-case-btn[aria-pressed="true"] {
-    @apply bg-blue-600 text-white border-blue-600
-      hover:bg-blue-700 hover:border-blue-700
-      dark:bg-blue-500 dark:border-blue-500
-      dark:hover:bg-blue-600;
-  }
-  .question-list-search-case-icon {
-    @apply text-base;
-  }
-  .question-list-search-submit {
-    @apply flex justify-center;
-  }
-  .question-list-search-btn {
-    @apply inline-flex items-center justify-center
-      w-1/2
-      rounded-md border border-blue-600 bg-blue-600
-      px-4 py-2 text-sm font-medium text-white
-      hover:bg-blue-700 hover:border-blue-700
-      dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600;
-  }
-
-  /* 設問一覧本体 */
-  .question-list {
-    @apply flex flex-col gap-2;
-  }
-  .question-list-row {
-    @apply w-full text-left
-      flex items-start gap-3
-      rounded-md border border-gray-200 bg-white
-      px-3 py-2 text-sm
-      shadow-sm hover:shadow-md
-      hover:bg-gray-50
-      focus:outline-none focus:ring-2 focus:ring-blue-500
-      dark:border-gray-700 dark:bg-gray-800
-      dark:hover:bg-gray-700 dark:text-gray-100;
-  }
-  .question-list-row-id {
-    @apply shrink-0
-      inline-flex items-center justify-center
-      rounded-md bg-gray-100 px-2 py-0.5
-      text-[11px] font-mono text-gray-700
-      dark:bg-gray-700 dark:text-gray-200;
-  }
-  .question-list-row-text {
-    @apply line-clamp-2 text-sm;
-  }
-
-  /* footer
-   ----------------------------------------------------- */
-  .app-footer {
-    @apply border-t border-gray-300 dark:border-gray-700;
-  }
-  .app-footer-inner {
-    @apply flex items-center justify-center gap-3 py-3 text-sm;
-  }
-  .app-footer-text {
-    @apply text-gray-500 dark:text-gray-400;
-  }
-  .app-footer-divider {
-    @apply text-gray-400 dark:text-gray-600;
-  }
-  .app-footer-link {
-    @apply inline-flex items-center gap-1
-      text-gray-500 dark:text-gray-400
-      hover:text-gray-800 dark:hover:text-gray-100
-      underline-offset-4 hover:underline;
-  }
-  .app-footer-link-icon {
-    @apply text-base;
-  }
-  .app-footer-link-text {
-    @apply align-middle;
-  }
-
+  
   /* common
    ----------------------------------------------------- */
   /* icon */
@@ -233,7 +27,7 @@
 
   /* modal */
   .app-modal-overlay {
-    @apply fixed inset-0 flex items-center justify-center
+    @apply fixed inset-0 z-50 flex items-center justify-center
       bg-black bg-opacity-50 px-2;
   }
   .app-modal {
@@ -389,4 +183,313 @@
     @apply my-2 text-right
       text-gray-500 dark:text-gray-400;
   }
+
+  /* header
+   ----------------------------------------------------- */
+  .app-header {
+    @apply fixed top-0 inset-x-0 z-40
+      border-b border-gray-300 dark:border-gray-700
+      bg-gray-100 dark:bg-gray-900;
+  }
+  .app-header-inner {
+    @apply max-w-5xl mx-auto px-4 py-4 flex justify-center;
+  }
+  .app-title {
+    @apply flex items-center my-2 mr-auto no-underline text-xl font-bold;
+  }
+  .app-title-full {
+    @apply hidden md:inline;
+  }
+  .app-title-short {
+    @apply md:hidden;
+  }
+  .app-header-actions {
+    @apply flex space-x-2;
+  }
+
+  /* main
+   ----------------------------------------------------- */
+  .app-main {
+    @apply flex-1;
+  }
+
+  /* question view (設問表示画面) */
+  .question-section {
+    @apply max-w-5xl mx-auto px-4 py-6;
+  }
+  .question-card {
+    @apply rounded-lg border border-gray-200 bg-white p-4 shadow-sm
+      dark:border-gray-700 dark:bg-gray-800 space-y-4;
+  }
+  .question-header {
+    @apply flex items-center justify-between;
+  }
+  .question-title {
+    @apply font-semibold text-gray-600 dark:text-gray-300;
+  }
+  .question-id {
+    @apply flex items-center gap-1 text-gray-500 dark:text-gray-400;
+  }
+  .question-id-value {
+    @apply font-mono;
+  }
+  .question-text {
+    @apply text-base leading-relaxed;
+  }
+  .question-choices {
+    @apply space-y-3;
+  }
+  .question-choice {
+    @apply flex items-start gap-2 rounded-md border border-gray-200 bg-white
+      px-3 py-2 text-base cursor-pointer hover:bg-gray-50
+      dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600;
+  }
+  .question-choice-input {
+    @apply mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500
+      dark:focus:ring-blue-400;
+  }
+  .question-answer-button-wrapper {
+    @apply pt-2;
+  }
+  .question-answer-button {
+    @apply inline-flex items-center justify-center
+      rounded-md border border-blue-600 bg-blue-600
+      px-4 py-2 text-base font-medium text-white
+      hover:bg-blue-700 hover:border-blue-700
+      dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600;
+  }
+  .question-answer-block {
+    @apply border-t border-gray-200 dark:border-gray-700
+      pt-4 space-y-3;
+  }
+  .question-answer-label {
+    @apply text-sm font-semibold text-green-700 dark:text-green-300;
+  }
+  .question-answer-text {
+    @apply mt-1 text-base
+      border border-green-300 bg-green-50 text-green-800
+      rounded px-3 py-2
+      dark:border-green-600 dark:bg-green-900/40 dark:text-green-100;
+  }
+  .question-answer-choice {
+    @apply text-green-600 dark:text-green-400 font-semibold;
+  }
+  .question-explain-label {
+    @apply text-sm font-semibold text-gray-600 dark:text-gray-300;
+  }
+  .question-explain-text {
+    @apply mt-1 text-base text-gray-700 dark:text-gray-200 leading-relaxed;
+  }
+
+  /* q-list (問題集一覧) */
+  .q-list-section {
+    @apply max-w-5xl mx-auto px-4 py-6;
+  }
+  .q-list-header {
+    @apply flex items-center justify-between mb-4;
+  }
+  .q-list-title {
+    @apply text-lg font-semibold;
+  }
+  .q-list-desc {
+    @apply mt-1 text-sm text-gray-600 dark:text-gray-400;
+  }
+  .q-list-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+  }
+  .q-list-card {
+    @apply flex flex-col gap-3
+      rounded-lg border border-gray-200 bg-white p-4
+      shadow-sm hover:shadow-md transition-shadow
+      dark:border-gray-700 dark:bg-gray-800;
+  }
+  .q-list-card-header {
+    @apply flex items-start justify-between gap-2;
+  }
+  .q-list-card-header-main {
+    @apply min-w-0;
+  }
+  .q-list-card-title {
+    @apply text-sm font-semibold truncate;
+  }
+  .q-list-card-subtitle {
+    @apply mt-1 text-xs text-gray-500 dark:text-gray-400;
+  }
+  .q-list-card-count {
+    @apply font-semibold;
+  }
+  .q-list-card-badge-default {
+    @apply inline-flex items-center
+      rounded-full border border-blue-200 bg-blue-50
+      px-2 py-0.5 text-[11px] font-medium text-blue-700
+      dark:border-blue-700 dark:bg-blue-900/40 dark:text-blue-100;
+  }
+  .q-list-card-meta {
+    @apply text-[11px] text-gray-500 dark:text-gray-400
+      font-mono break-all;
+  }
+  .q-list-card-actions {
+    @apply mt-1 flex flex-wrap gap-2;
+  }
+  .q-list-card-btn-primary {
+    @apply inline-flex flex-1 items-center justify-center
+      rounded-md border border-blue-600 bg-blue-600
+      px-3 py-1.5 text-xs font-medium text-white
+      hover:bg-blue-700 hover:border-blue-700
+      dark:bg-blue-500 dark:border-blue-500 dark:hover:bg-blue-600;
+  }
+  .q-list-card-btn-secondary {
+    @apply inline-flex items-center justify-center
+      rounded-md border border-gray-300 bg-white
+      px-3 py-1.5 text-xs font-medium text-gray-700
+      hover:bg-gray-50
+      dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
+      dark:hover:bg-gray-600;
+  }
+
+  /* question list (設問一覧) */
+  .question-list-section {
+    @apply max-w-5xl mx-auto px-4 py-6;
+  }
+  .question-list-header {
+    @apply mb-4;
+  }
+  .question-list-title {
+    @apply text-lg font-semibold;
+  }
+
+  /* 検索バー */
+  .question-list-toolbar {
+    /* 縦に並べる・間隔を空ける */
+    @apply mb-4 flex flex-col gap-3;
+  }
+  .question-list-search-group {
+    /* 横並びでフル幅 */
+    @apply flex items-stretch w-full
+      rounded-md border border-gray-300 bg-white
+      dark:border-gray-600 dark:bg-gray-800;
+  }
+  .question-list-search-input {
+    @apply flex-1 rounded-l-md border-0 bg-transparent
+      px-3 py-2 text-sm text-gray-900
+      placeholder:text-gray-400
+      focus:outline-none focus:ring-2 focus:ring-blue-500
+      dark:text-gray-100 dark:placeholder:text-gray-500
+      dark:focus:ring-blue-400;
+  }
+  .question-list-search-case-btn {
+    @apply inline-flex items-center justify-center
+      px-3 border-l border-gray-300
+      bg-white text-gray-500
+      hover:bg-gray-50
+      dark:border-gray-600 dark:bg-gray-800
+      dark:text-gray-400 dark:hover:bg-gray-700;
+  }
+  .question-list-search-case-btn[aria-pressed="true"] {
+    @apply bg-blue-600 text-white border-blue-600
+      hover:bg-blue-700 hover:border-blue-700
+      dark:bg-blue-500 dark:border-blue-500
+      dark:hover:bg-blue-600;
+  }
+  .question-list-search-case-icon {
+    @apply text-base;
+  }
+  .question-list-search-submit {
+    @apply flex justify-center;
+  }
+  .question-list-search-btn {
+    @apply inline-flex items-center justify-center
+      w-1/2
+      rounded-md border border-blue-600 bg-blue-600
+      px-4 py-2 text-sm font-medium text-white
+      hover:bg-blue-700 hover:border-blue-700
+      dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600;
+  }
+
+  /* 設問一覧本体 */
+  .question-list {
+    @apply flex flex-col gap-2;
+  }
+  .question-list-row {
+    @apply w-full text-left
+      flex items-start gap-3
+      rounded-md border border-gray-200 bg-white
+      px-3 py-2 text-sm
+      shadow-sm hover:shadow-md
+      hover:bg-gray-50
+      focus:outline-none focus:ring-2 focus:ring-blue-500
+      dark:border-gray-700 dark:bg-gray-800
+      dark:hover:bg-gray-700 dark:text-gray-100;
+  }
+  .question-list-row-id {
+    @apply shrink-0
+      inline-flex items-center justify-center
+      rounded-md bg-gray-100 px-2 py-0.5
+      text-[11px] font-mono text-gray-700
+      dark:bg-gray-700 dark:text-gray-200;
+  }
+  .question-list-row-text {
+    @apply line-clamp-2 text-sm;
+  }
+
+  /* practice start modal
+   ----------------------------------------------------- */
+  .practice-info-name {
+    @apply text-sm;
+  }
+  .practice-info-grid {
+    @apply mt-3 grid grid-cols-2 gap-4 text-sm;
+  }
+  .practice-info-stat {
+    @apply flex items-baseline gap-1;
+  }
+  .practice-info-type {
+    @apply flex items-center gap-2 justify-end md:justify-start;
+  }
+  .practice-setting-group {
+    @apply mt-2 space-y-2;
+  }
+  .practice-setting-checkbox {
+    @apply flex items-center gap-2 text-sm;
+  }
+  .practice-setting-checkbox-input {
+    @apply h-4 w-4 rounded
+      border border-gray-300 text-blue-600
+      focus:ring-blue-500
+      dark:border-gray-600;
+  }
+  .practice-start-button {
+    @apply w-full
+      border-blue-600 bg-blue-600 text-white
+      hover:bg-blue-700 hover:border-blue-700
+      dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600;
+  }
+
+  /* footer
+   ----------------------------------------------------- */
+  .app-footer {
+    @apply border-t border-gray-300 dark:border-gray-700;
+  }
+  .app-footer-inner {
+    @apply flex items-center justify-center gap-3 py-3 text-sm;
+  }
+  .app-footer-text {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+  .app-footer-divider {
+    @apply text-gray-400 dark:text-gray-600;
+  }
+  .app-footer-link {
+    @apply inline-flex items-center gap-1
+      text-gray-500 dark:text-gray-400
+      hover:text-gray-800 dark:hover:text-gray-100
+      underline-offset-4 hover:underline;
+  }
+  .app-footer-link-icon {
+    @apply text-base;
+  }
+  .app-footer-link-text {
+    @apply align-middle;
+  }
+
 }

@@ -3,11 +3,12 @@ import { update } from '../updates/update';
 import { ActionType, Action } from '../updates/action_types';
 import { UIEvent } from '../views/ui_event_types';
 import { initialModel, Model } from '../models';
-import { ModalKind, Theme } from '../types';
+import { ModalKind, Theme, ToastMessageKind } from '../types';
 import { Effect, EffectType } from './effect_types';
 import { setGoogleClientId, setGoogleFolderId, setTheme } from '../storages';
 import * as indexeddbService from '../services/indexeddb_service';
 import * as importGoogleDriveService from '../services/import_google_drive_service';
+import * as practiceSevice from '../services/practice_sevice';
 import * as questionService from '../services/question_service';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 
@@ -55,6 +56,12 @@ export class Controller {
     this.view.on(UIEvent.CHANGE_QUESTIONS_PAGE, ({ page }) =>
       this.dispatch({ type: Action.CHANGE_QUESTIONS_PAGE, page }),
     );
+    this.view.on(UIEvent.CLICK_QLIST_SOLVE, ({ qListId }) =>
+      this.dispatch({ type: Action.PREPARE_PRACTICE_START, qListId }),
+    );
+    this.view.on(UIEvent.CLICK_PRACTICE_START, ({ qList, isShuffleQuestions, isShuffleChoices }) =>
+      this.dispatch({ type: Action.PREPARE_PRACTICE, qList, isShuffleQuestions, isShuffleChoices }),
+    );
   }
 
   private dispatch(action: ActionType): void {
@@ -74,6 +81,14 @@ export class Controller {
           })
           .catch((error) => {
             console.error('indexeddb connection error:', error);
+            this.dispatch({ 
+              type: Action.TOAST_ADD,
+              toastMessage: {
+                uuid: crypto.randomUUID(),
+                message: 'Indexeddbへの接続に失敗しました',
+                kind: ToastMessageKind.ERROR
+              }
+            })
           })
 
         const qLists = await qListRepository.selectByStandard();
@@ -117,6 +132,20 @@ export class Controller {
       case Effect.SEARCH_QUESTION: {
         const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
         this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
+        break;
+      }
+
+      case Effect.PREPARE_PRACTICE_START: {
+        const qList = await qListRepository.selectById(fx.qListId);
+        this.dispatch({ type: Action.SHOW_PRACTICE_START, qList });
+        break;
+      }
+
+      case Effect.PREPARE_PRACTICE: {
+        const practiceDetailDto = await practiceSevice.generatePracticeDetailDto(
+          fx.qList, fx.isShuffleQuestions, fx.isShuffleChoices
+        );
+        this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
         break;
       }
       }

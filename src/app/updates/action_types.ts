@@ -1,3 +1,4 @@
+import { PracticeDetailDto } from '../models/dtos/practice_detail_dto';
 import { QList, Question } from '../models/entities';
 import { ModalKindType, Theme, ToastMessage } from '../types';
 
@@ -17,6 +18,10 @@ export enum Action {
   TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
   SEARCH_QUESTION = 'SEARCH_QUESTION',
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
+  PREPARE_PRACTICE_START = "PREPARE_PRACTICE_START",
+  SHOW_PRACTICE_START = "SHOW_PRACTICE_START",
+  PREPARE_PRACTICE = "PREPARE_PRACTICE",
+  SHOW_PRACTICE = "SHOW_PRACTICE",
 }
 
 export type ActionType =
@@ -38,4 +43,8 @@ export type ActionType =
   | { type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE; }
   | { type: Action.SEARCH_QUESTION; }
   | { type: Action.CHANGE_QUESTIONS_PAGE; page: number }
+  | { type: Action.PREPARE_PRACTICE_START; qListId: number }
+  | { type: Action.SHOW_PRACTICE_START; qList: QList }
+  | { type: Action.PREPARE_PRACTICE; qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean }
+  | { type: Action.SHOW_PRACTICE; practiceDetailDto: PracticeDetailDto }
 ;

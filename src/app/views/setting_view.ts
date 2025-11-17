@@ -79,7 +79,7 @@ export function generateSettingModalConetnt(
     attr: [{ 'aria-hidden': 'true' }],
   });
   importBtn.appendChild(importIcon);
-  importBtn.append('データインポート');
+  importBtn.append('インポート');
 
   // データエクスポートボタン
   const exportBtn = el('button', {
@@ -92,7 +92,7 @@ export function generateSettingModalConetnt(
     attr: [{ 'aria-hidden': 'true' }],
   });
   exportBtn.appendChild(exportIcon);
-  exportBtn.append('データエクスポート');
+  exportBtn.append('エクスポート');
 
   // データ削除ボタン
   const deleteBtn = el('button', {
@@ -105,7 +105,7 @@ export function generateSettingModalConetnt(
     attr: [{ 'aria-hidden': 'true' }],
   });
   deleteBtn.appendChild(deleteIcon);
-  deleteBtn.append('データ削除');
+  deleteBtn.append('削除');
 
   historyActions.appendChild(importBtn);
   historyActions.appendChild(exportBtn);
