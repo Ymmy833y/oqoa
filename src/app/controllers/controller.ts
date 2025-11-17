@@ -5,12 +5,13 @@ import { UIEvent } from '../views/ui_event_types';
 import { initialModel, Model } from '../models';
 import { ModalKind, Theme, ToastMessageKind } from '../types';
 import { Effect, EffectType } from './effect_types';
-import { setGoogleClientId, setGoogleFolderId, setTheme } from '../storages';
+import { getLastImportedData, getLastUsedQuestions, setGoogleClientId, setGoogleFolderId, setLastUsedQuestions, setTheme } from '../storages';
 import * as indexeddbService from '../services/indexeddb_service';
 import * as importGoogleDriveService from '../services/import_google_drive_service';
 import * as practiceSevice from '../services/practice_sevice';
 import * as questionService from '../services/question_service';
 import { qListRepository } from '../repositories/qlist_repositoriy';
+import { questionRepository } from '../repositories/question_repositoriy';
 
 export class Controller {
   private model: Model = structuredClone(initialModel);
@@ -91,6 +92,15 @@ export class Controller {
             })
           })
 
+        const importDate = getLastImportedData();
+        if (importDate && (importDate.getTime() + 24 * 60 * 60 * 1000) < Date.now()) {
+          setLastUsedQuestions([]);
+        }
+        const lastUsedQuestions = getLastUsedQuestions();
+        if (lastUsedQuestions && lastUsedQuestions.length > 0) {
+          questionRepository.bulkInsert(lastUsedQuestions);
+        }
+
         const qLists = await qListRepository.selectByStandard();
         this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
         const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
@@ -122,10 +132,12 @@ export class Controller {
         const toastMessage = await importGoogleDriveService.importProbelmForGoogleDrive(fx.googleClientId, fx.googleFolderId);
         this.dispatch({ type: Action.TOAST_ADD, toastMessage })
 
-        const qLists = await qListRepository.selectByStandard();
-        this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
-        const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
+        if (toastMessage.kind === ToastMessageKind.SUCCESS) {
+          const qLists = await qListRepository.selectByStandard();
+          this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
+          const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+          this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
+        }
         break;
       }
 

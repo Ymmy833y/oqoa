@@ -9,10 +9,6 @@ export class Question {
   private explanation!: string;
 
   constructor(row: any) {
-    this.setRow(row);
-  }
-
-  setRow(row: any): void {
     this.id = row.id;
     this.url = row.url;
     this.problem = row.problem;

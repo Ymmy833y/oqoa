@@ -2,6 +2,7 @@ import { fetchAllJsonFromFolderStrict, requestAccessTokenWithClientId } from '..
 import { QList, Question } from '../models/entities';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
+import { setLastImportedData, setLastUsedQuestions } from '../storages';
 import { ToastMessage, ToastMessageKind } from '../types';
 
 export async function importProbelmForGoogleDrive(clientId: string, folderId: string): Promise<ToastMessage> {
@@ -24,7 +25,9 @@ export async function importProbelmForGoogleDrive(clientId: string, folderId: st
 
     // ここでアプリ側の保存処理や state 反映へ渡す
     console.info(`Imported: questions=${questions.length}, qLists=${qLists.length}`);
-    await questionRepository.bulkInsert(questions);
+    questionRepository.bulkInsert(questions);
+    setLastUsedQuestions(questionRepository.selectAll());
+    setLastImportedData(new Date());
     await qListRepository.bulkInsert(qLists);
     return {
       uuid: crypto.randomUUID(),

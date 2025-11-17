@@ -4,31 +4,8 @@ import { Question } from '../models/entities';
 
 class QuestionRepository {
   private questions: Question[] = [];
-  private dataLoaded = false;
 
-  /**
-   * JSONデータの配列を受け取り、各 JSON 内の "questions" 配列から
-   * Question インスタンスを生成して統合します。
-   */
-  public async loadDataFromObjects(jsonDataArray: any[]): Promise<void> {
-    if (this.dataLoaded) {
-      throw new Error('Question data has already been loaded');
-    }
-    try {
-      this.questions = jsonDataArray.flatMap((jsonData: any) =>
-        jsonData.questions.map((row: any) => new Question(row))
-      );
-      this.dataLoaded = true;
-      console.log(
-        `Loaded ${this.questions.length} questions from ${jsonDataArray.length} JSON files.`
-      );
-    } catch (error) {
-      console.error('Error loading questions:', error);
-      throw error;
-    }
-  }
-
-  public async bulkInsert(questions: Question[]): Promise<void> {
+  public bulkInsert(questions: Question[]): void {
     try {
       const existingIds = new Set(this.questions.map(q => q.getId()));
       let inserted = 0;
