@@ -1,4 +1,5 @@
 import { PracticeDetailDto } from '../models/dtos/practice_detail_dto';
+import { QuestionDetailDto } from '../models/dtos/question_detail_dto';
 import { QList, Question } from '../models/entities';
 import { ModalKindType, Theme, ToastMessage } from '../types';
 
@@ -18,10 +19,12 @@ export enum Action {
   TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
   SEARCH_QUESTION = 'SEARCH_QUESTION',
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
-  PREPARE_PRACTICE_START = "PREPARE_PRACTICE_START",
-  SHOW_PRACTICE_START = "SHOW_PRACTICE_START",
-  PREPARE_PRACTICE = "PREPARE_PRACTICE",
-  SHOW_PRACTICE = "SHOW_PRACTICE",
+  PREPARE_PRACTICE_START = 'PREPARE_PRACTICE_START',
+  SHOW_PRACTICE_START = 'SHOW_PRACTICE_START',
+  PREPARE_PRACTICE = 'PREPARE_PRACTICE',
+  SHOW_PRACTICE = 'SHOW_PRACTICE',
+  PREPARE_QUESTION_DETAIL = 'PREPARE_QUESTION_DETAIL',
+  SHOW_QUESTION_DETAIL = 'SHOW_QUESTION_DETAIL',
 }
 
 export type ActionType =
@@ -35,9 +38,9 @@ export type ActionType =
   | { type: Action.CHANGE_GOOGLE_FOLDER_ID; googleFolderId: string }
   | { type: Action.IMPORT_GOOGLE_DRIVE_DATA; }
   | { type: Action.UPDATE_QLIST_CONTAINER; qLists: QList[] }
-  | { 
+  | {
       type: Action.UPDATE_QUESTION_LIST_CONTAINER; currentPage: number,
-      questions: Question[], totalSize: number, pages: number[] 
+      questions: Question[], totalSize: number, pages: number[]
   }
   | { type: Action.CHANGE_QUESTION_SEARCH_KEYWORD; keyword: string }
   | { type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE; }
@@ -47,4 +50,6 @@ export type ActionType =
   | { type: Action.SHOW_PRACTICE_START; qList: QList }
   | { type: Action.PREPARE_PRACTICE; qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean }
   | { type: Action.SHOW_PRACTICE; practiceDetailDto: PracticeDetailDto }
+  | { type: Action.PREPARE_QUESTION_DETAIL; questionId: number }
+  | { type: Action.SHOW_QUESTION_DETAIL; questionDetailDto: QuestionDetailDto }
 ;

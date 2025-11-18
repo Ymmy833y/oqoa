@@ -8,6 +8,8 @@ module.exports = {
     'toast-close--error',
     'toast--success',
     'toast--error',
+    'answer-modal-text-correct',
+    'answer-modal-text-incorrect',
   ],
   theme: {
     extend: {},

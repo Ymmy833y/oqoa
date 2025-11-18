@@ -1,6 +1,6 @@
-import { AnsHistory, PracticeHistory, QList, Question } from "../entities"
+import { AnsHistory, PracticeHistory, QList, Question } from '../entities'
 
-export type PracticeDetailDto = {
+export interface PracticeDetailDto {
   practiceHistory: PracticeHistory,
   qList: QList,
   questions: Question[],

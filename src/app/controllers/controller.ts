@@ -12,6 +12,7 @@ import * as practiceSevice from '../services/practice_sevice';
 import * as questionService from '../services/question_service';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
+import { generateErrorToastMessage } from '../utils/toast_message';
 
 export class Controller {
   private model: Model = structuredClone(initialModel);
@@ -63,6 +64,9 @@ export class Controller {
     this.view.on(UIEvent.CLICK_PRACTICE_START, ({ qList, isShuffleQuestions, isShuffleChoices }) =>
       this.dispatch({ type: Action.PREPARE_PRACTICE, qList, isShuffleQuestions, isShuffleChoices }),
     );
+    this.view.on(UIEvent.CLICK_QUESTION_LIST_ROW, ({ questionId }) =>
+      this.dispatch({ type: Action.PREPARE_QUESTION_DETAIL, questionId }),
+    );
   }
 
   private dispatch(action: ActionType): void {
@@ -82,13 +86,9 @@ export class Controller {
           })
           .catch((error) => {
             console.error('indexeddb connection error:', error);
-            this.dispatch({ 
+            this.dispatch({
               type: Action.TOAST_ADD,
-              toastMessage: {
-                uuid: crypto.randomUUID(),
-                message: 'Indexeddbへの接続に失敗しました',
-                kind: ToastMessageKind.ERROR
-              }
+              toastMessage: generateErrorToastMessage('Indexeddbへの接続に失敗しました'),
             })
           })
 
@@ -158,6 +158,17 @@ export class Controller {
           fx.qList, fx.isShuffleQuestions, fx.isShuffleChoices
         );
         this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+        break;
+      }
+
+      case Effect.PREPARE_QUESTION_DETAIL: {
+        try {
+          const questionDetailDto = questionService.selectQuestionDetailDto(fx.questionId);
+          this.dispatch({ type: Action.SHOW_QUESTION_DETAIL, questionDetailDto });
+        } catch (e) {
+          const error = e as Error;
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage: generateErrorToastMessage(error) })
+        }
         break;
       }
       }

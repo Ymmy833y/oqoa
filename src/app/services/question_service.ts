@@ -1,3 +1,4 @@
+import { QuestionDetailDto } from '../models/dtos/question_detail_dto';
 import { Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { questionRepository } from '../repositories/question_repositoriy';
@@ -22,4 +23,15 @@ export function selectQuestionsForSearchForm(form: QuestionSearchForm): {
   const pages = getPaginationPages(currentPage, totalPages);
 
   return { questions: currentQuestions, currentPage, totalSize: questions.length, pages };
+}
+
+export function selectQuestionDetailDto(questionId: number): QuestionDetailDto {
+  const question = questionRepository.selectById(questionId);
+  if (!question) {
+    throw new Error(`Question not found: id=${questionId}`);
+  }
+  return {
+    question,
+    ansHistory: null,
+  }
 }

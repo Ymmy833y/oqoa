@@ -31,7 +31,7 @@
       bg-black bg-opacity-50 px-2;
   }
   .app-modal {
-    @apply w-full max-w-lg
+    @apply w-full max-w-lg max-h-[90vh] overflow-y-auto
       bg-white dark:bg-gray-800
       border border-gray-200 dark:border-gray-700
       rounded-lg shadow-lg
@@ -219,7 +219,7 @@
   }
   .question-card {
     @apply rounded-lg border border-gray-200 bg-white p-4 shadow-sm
-      dark:border-gray-700 dark:bg-gray-800 space-y-4;
+      dark:border-gray-700 dark:bg-gray-800 space-y-8;
   }
   .question-header {
     @apply flex items-center justify-between;
@@ -260,7 +260,7 @@
   }
   .question-answer-block {
     @apply border-t border-gray-200 dark:border-gray-700
-      pt-4 space-y-3;
+      pt-8 space-y-6;
   }
   .question-answer-label {
     @apply text-sm font-semibold text-green-700 dark:text-green-300;
@@ -463,6 +463,21 @@
       border-blue-600 bg-blue-600 text-white
       hover:bg-blue-700 hover:border-blue-700
       dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600;
+  }
+
+  
+  /* 正解 / 不正解 モーダル */
+  .answer-modal {
+    @apply p-6 flex flex-col items-center gap-3;
+  }
+  .answer-modal-text {
+    @apply text-2xl font-bold;
+  }
+  .answer-modal-text-correct {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+  .answer-modal-text-incorrect {
+    @apply text-red-600 dark:text-red-400;
   }
 
   /* footer

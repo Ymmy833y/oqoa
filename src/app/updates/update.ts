@@ -163,20 +163,35 @@ export function update(model: Model, action: ActionType): { model: Model; effect
   case Action.PREPARE_PRACTICE:
     return {
       model,
-      effects: [{ 
-        kind: Effect.PREPARE_PRACTICE, 
+      effects: [{
+        kind: Effect.PREPARE_PRACTICE,
         qList: action.qList,
         isShuffleQuestions: action.isShuffleQuestions,
         isShuffleChoices: action.isShuffleChoices
       }]
     }
-  
-  case Action.SHOW_PRACTICE:    
+
+  case Action.SHOW_PRACTICE:
     return {
       model: { ...model, practiceDetailDto: action.practiceDetailDto },
       effects: []
     }
 
+  case Action.PREPARE_QUESTION_DETAIL:
+    return {
+      model,
+      effects: [{ kind: Effect.PREPARE_QUESTION_DETAIL, questionId: action.questionId }]
+    }
+
+  case Action.SHOW_QUESTION_DETAIL:
+    return {
+      model: {
+        ...model,
+        defailtModalKind: ModalKind.QUESTION_DETAIL,
+        questionDetailDto: action.questionDetailDto
+      },
+      effects: []
+    }
   default:
     return { model, effects: []};
   }

@@ -8,8 +8,9 @@ export enum Effect {
   UPDATE_GOOGLE_FOLDER_ID = 'UPDATE_GOOGLE_FOLDER_ID',
   IMPORT_GOOGLE_DRIVE = 'IMPORT_GOOGLE_DRIVE',
   SEARCH_QUESTION = 'SEARCH_QUESTION',
-  PREPARE_PRACTICE_START = "PREPARE_PRACTICE_START",
-  PREPARE_PRACTICE = "PREPARE_PRACTICE",
+  PREPARE_PRACTICE_START = 'PREPARE_PRACTICE_START',
+  PREPARE_PRACTICE = 'PREPARE_PRACTICE',
+  PREPARE_QUESTION_DETAIL = 'PREPARE_QUESTION_DETAIL',
 }
 
 export type EffectType =
@@ -21,4 +22,5 @@ export type EffectType =
   | { kind: Effect.SEARCH_QUESTION }
   | { kind: Effect.PREPARE_PRACTICE_START; qListId: number }
   | { kind: Effect.PREPARE_PRACTICE; qList: QList; isShuffleQuestions: boolean, isShuffleChoices: boolean }
+  | { kind: Effect.PREPARE_QUESTION_DETAIL; questionId: number }
 ;

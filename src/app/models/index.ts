@@ -1,5 +1,6 @@
 import { ModalKindType, Theme, ToastMessage } from '../types'
 import { PracticeDetailDto } from './dtos/practice_detail_dto';
+import { QuestionDetailDto } from './dtos/question_detail_dto';
 import { QList, Question } from './entities'
 import { QuestionSearchForm } from './forms'
 
@@ -12,6 +13,7 @@ export interface Model {
 
   defailtModalKind: ModalKindType | null,
   preparePracticeStart: QList | null;
+  questionDetailDto: QuestionDetailDto | null,
 
   qLists: QList[],
   questions: Question[],
@@ -29,6 +31,7 @@ export const initialModel: Model = {
 
   defailtModalKind: null,
   preparePracticeStart: null,
+  questionDetailDto: null,
 
   qLists: [],
   questions: [],

@@ -150,9 +150,9 @@ export class View {
       );
       this.defaultModal.setModal(content, '設定', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
-    } else if (model.defailtModalKind === ModalKind.PRACTICE_START) {
+    } else if (model.defailtModalKind === ModalKind.PRACTICE_START && model.preparePracticeStart) {
       const content = generatePracticeStartContent(
-        model.preparePracticeStart!,
+        model.preparePracticeStart,
         (qList, isShuffleQuestions, isShuffleChoices) => {
           this.emit(UIEvent.CLICK_PRACTICE_START, { qList, isShuffleQuestions, isShuffleChoices });
           this.defaultModal.hide();
@@ -160,11 +160,17 @@ export class View {
       );
       this.defaultModal.setModal(content, '演習開始', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
+    } else if (model.defailtModalKind === ModalKind.QUESTION_DETAIL && model.questionDetailDto) {
+      const content = generateQuestionContent(
+        model.questionDetailDto.question,
+      );
+      this.defaultModal.setModal(content, '', ModalSize.XXL);
+      this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
     }
   }
 
   private applyQuestionContent(dto: PracticeDetailDto) {
-    this.els.questionContainer.innerHTML = "";
+    this.els.questionContainer.innerHTML = '';
     const question = dto.questions[dto.currentQuestionIndex];
     const ansHistory = dto.ansHistories
       .find(ansHistory => ansHistory.getQuestionId() === question.getId());
@@ -194,7 +200,12 @@ export class View {
   private applyQuestionsContent(questions: Question[]) {
     this.els.questionsContainer.innerHTML = '';
     questions.forEach(questions => {
-      const card = generateQuestionListRow(questions);
+      const card = generateQuestionListRow(
+        questions,
+        (questionId) => {
+          this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, { questionId });
+        }
+      );
       this.els.questionsContainer.appendChild(card);
     });
   }

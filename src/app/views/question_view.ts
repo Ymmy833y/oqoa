@@ -1,5 +1,6 @@
 
 import { AnsHistory, Question } from '../models/entities';
+import { Modal } from '../utils';
 import { el } from '../utils/view_utils';
 
 export function generateQuestionContent(
@@ -130,16 +131,30 @@ export function generateQuestionContent(
 
   card.appendChild(answerBlock);
 
+  // 内包モーダル
+  const innerModalElem = el('div', 'app-modal-overlay hidden');
+  const innerModal = new Modal(innerModalElem);
+  card.appendChild(innerModalElem);
+
   function checkAnswer() {
     const checkedList: number[] = [];
     choiceLabelElems.forEach(choice => {
-      if ((choice as HTMLInputElement).checked) {
-        checkedList.push(Number((choice as HTMLInputElement).value));
+      const input = choice.getElementsByTagName('input')[0];
+      if (input.checked) {
+        checkedList.push(Number(input.value));
       }
     });
     const sortedAnswers = [...question.getAnswer()].sort((a, b) => a - b);
     const sortedSelects = [...checkedList].sort((a, b) => a - b);
     const isCorrect = sortedAnswers.every((v, i) => v === sortedSelects[i]);
+
+    const modal = el('div', 'answer-modal');
+    const modalText = el('p',
+      `answer-modal-text answer-modal-text-${isCorrect ? 'correct ' : 'incorrect'}`,
+      `${isCorrect ? '正解' : '不正解'}`
+    );
+    modal.appendChild(modalText);
+    innerModal.setModal(modal);
 
     if (isCorrect) {
       showAnswerBlock();
@@ -157,12 +172,21 @@ export function generateQuestionContent(
     }
   }
   function showAnswerBlock() {
-    answerBlock.classList.remove("hidden");
+    choiceLabelElems.forEach(choice => {
+      const input = choice.getElementsByTagName('input')[0];
+      if (question.getAnswer().includes(Number(input.value))) {
+        choice.classList.add('question-answer-choice')
+      }
+    });
+    answerBlock.classList.remove('hidden');
   }
   return card;
 }
 
-export function generateQuestionListRow(question: Question): HTMLButtonElement {
+export function generateQuestionListRow(
+  question: Question,
+  handler: (questionId: number) => void
+): HTMLButtonElement {
   const id = question.getId();
   const problem = question.getProblem();
 
@@ -173,6 +197,9 @@ export function generateQuestionListRow(question: Question): HTMLButtonElement {
       { 'data-id': String(id) },
     ],
   }) as HTMLButtonElement;
+  row.addEventListener('click', () => {
+    handler(id);
+  });
 
   const idSpan = el(
     'span',
