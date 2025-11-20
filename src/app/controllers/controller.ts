@@ -6,8 +6,10 @@ import { initialModel, Model } from '../models';
 import { ModalKind, Theme, ToastMessageKind } from '../types';
 import { Effect, EffectType } from './effect_types';
 import { getLastImportedData, getLastUsedQuestions, setGoogleClientId, setGoogleFolderId, setLastUsedQuestions, setTheme } from '../storages';
-import * as indexeddbService from '../services/indexeddb_service';
+
+import * as ansHistoryService from '../services/ans_history_service';
 import * as importGoogleDriveService from '../services/import_google_drive_service';
+import * as indexeddbService from '../services/indexeddb_service';
 import * as practiceSevice from '../services/practice_sevice';
 import * as questionService from '../services/question_service';
 import { qListRepository } from '../repositories/qlist_repositoriy';
@@ -66,6 +68,21 @@ export class Controller {
     );
     this.view.on(UIEvent.CLICK_QUESTION_LIST_ROW, ({ questionId }) =>
       this.dispatch({ type: Action.PREPARE_QUESTION_DETAIL, questionId }),
+    );
+    this.view.on(UIEvent.CLICK_PRACTICE_PREV, () =>
+      this.dispatch({ type: Action.PRACTICE_PREV }),
+    );
+    this.view.on(UIEvent.CLICK_PRACTICE_NEXT, () =>
+      this.dispatch({ type: Action.PRACTICE_NEXT }),
+    );
+    this.view.on(UIEvent.CLICK_COMPLETE_ANSWER, () =>
+      this.dispatch({ type: Action.COMPLETE_ANSWER }),
+    );
+    this.view.on(UIEvent.PRACTICE_ANSWERED, ({ practiceHistoryId, questionId, isCorrect, selectChoice }) =>
+      this.dispatch({ type: Action.PRACTICE_ANSWERED, practiceHistoryId, questionId, isCorrect, selectChoice }),
+    );
+    this.view.on(UIEvent.PRACTICE_ANSWER_CANCELED, ({ practiceHistoryId, questionId }) =>
+      this.dispatch({ type: Action.PRACTICE_ANSWER_CANCELED, practiceHistoryId, questionId }),
     );
   }
 
@@ -169,6 +186,43 @@ export class Controller {
           const error = e as Error;
           this.dispatch({ type: Action.TOAST_ADD, toastMessage: generateErrorToastMessage(error) })
         }
+        break;
+      }
+
+      case Effect.COMPLETE_ANSWER: {
+        if (this.model.practiceDetailDto === null) {
+          break;
+        }
+        try {
+          const practiceDetailDto = await practiceSevice.doPracticeComplete(this.model.practiceDetailDto);
+          this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+        } catch (e) {
+          const error = e as Error;
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage: generateErrorToastMessage(error) })
+        }
+        break;
+      }
+
+      case Effect.PRACTICE_ANSWERED: {
+        if (this.model.practiceDetailDto === null) {
+          break;
+        }
+        const practiceDetailDto = await ansHistoryService.insertAnsHistory(
+          this.model.practiceDetailDto, fx.practiceHistoryId, fx.questionId, fx.isCorrect, fx.selectChoice
+        );
+        this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+        break;
+      }
+
+      case Effect.PRACTICE_ANSWER_CANCELED: {
+        if (this.model.practiceDetailDto === null) {
+          break;
+        }
+        const { practiceDetailDto, toastMessage } = await ansHistoryService.cancelAnsHistory(
+          this.model.practiceDetailDto, fx.practiceHistoryId, fx.questionId
+        );
+        this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+        this.dispatch({ type: Action.TOAST_ADD, toastMessage });
         break;
       }
       }

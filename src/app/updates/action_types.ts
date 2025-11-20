@@ -1,5 +1,5 @@
-import { PracticeDetailDto } from '../models/dtos/practice_detail_dto';
-import { QuestionDetailDto } from '../models/dtos/question_detail_dto';
+import { PracticeDetailDto, QuestionDetailDto } from '../models/dtos';
+import {  } from '../models/dtos/question_detail_dto';
 import { QList, Question } from '../models/entities';
 import { ModalKindType, Theme, ToastMessage } from '../types';
 
@@ -25,6 +25,11 @@ export enum Action {
   SHOW_PRACTICE = 'SHOW_PRACTICE',
   PREPARE_QUESTION_DETAIL = 'PREPARE_QUESTION_DETAIL',
   SHOW_QUESTION_DETAIL = 'SHOW_QUESTION_DETAIL',
+  PRACTICE_PREV = 'PRACTICE_PREV',
+  PRACTICE_NEXT = 'PRACTICE_NEXT',
+  COMPLETE_ANSWER = 'COMPLETE_ANSWER',
+  PRACTICE_ANSWERED = 'PRACTICE_ANSWERED',
+  PRACTICE_ANSWER_CANCELED = 'PRACTICE_ANSWER_CANCELED',
 }
 
 export type ActionType =
@@ -52,4 +57,9 @@ export type ActionType =
   | { type: Action.SHOW_PRACTICE; practiceDetailDto: PracticeDetailDto }
   | { type: Action.PREPARE_QUESTION_DETAIL; questionId: number }
   | { type: Action.SHOW_QUESTION_DETAIL; questionDetailDto: QuestionDetailDto }
+  | { type: Action.PRACTICE_PREV; }
+  | { type: Action.PRACTICE_NEXT; }
+  | { type: Action.COMPLETE_ANSWER; }
+  | { type: Action.PRACTICE_ANSWERED; practiceHistoryId: number, questionId: number, isCorrect: boolean, selectChoice: number[] }
+  | { type: Action.PRACTICE_ANSWER_CANCELED; practiceHistoryId: number, questionId: number }
 ;

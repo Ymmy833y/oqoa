@@ -192,6 +192,65 @@ export function update(model: Model, action: ActionType): { model: Model; effect
       },
       effects: []
     }
+
+  case Action.PRACTICE_PREV: {
+    if (model.practiceDetailDto) {
+      return {
+        model: {
+          ...model,
+          practiceDetailDto: {
+            ...model.practiceDetailDto,
+            currentQuestionIndex: model.practiceDetailDto.currentQuestionIndex - 1
+          }
+        },
+        effects: []
+      }
+    }
+  }
+
+  case Action.PRACTICE_NEXT: {
+    if (model.practiceDetailDto) {
+      return {
+        model: {
+          ...model,
+          practiceDetailDto: {
+            ...model.practiceDetailDto,
+            currentQuestionIndex: model.practiceDetailDto.currentQuestionIndex + 1
+          }
+        },
+        effects: []
+      }
+    }
+  }
+
+  case Action.COMPLETE_ANSWER:
+    return {
+      model: model,
+      effects: [{ kind: Effect.COMPLETE_ANSWER }]
+    }
+
+  case Action.PRACTICE_ANSWERED:
+    return {
+      model: model,
+      effects: [{
+        kind: Effect.PRACTICE_ANSWERED,
+        practiceHistoryId: action.practiceHistoryId,
+        questionId: action.questionId,
+        isCorrect: action.isCorrect,
+        selectChoice: action.selectChoice
+      }]
+    }
+
+  case Action.PRACTICE_ANSWER_CANCELED:
+    return {
+      model: model,
+      effects: [{
+        kind: Effect.PRACTICE_ANSWER_CANCELED,
+        practiceHistoryId: action.practiceHistoryId,
+        questionId: action.questionId
+      }]
+    }
+
   default:
     return { model, effects: []};
   }

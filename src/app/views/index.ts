@@ -1,12 +1,12 @@
 import { Model } from '../models';
-import { PracticeDetailDto } from '../models/dtos/practice_detail_dto';
+import { PracticeDetailDto } from '../models/dtos';
 import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
 import { el, Modal, renderPagination,  } from '../utils';
 import { generatePracticeStartContent } from './pracitce_view';
 import { generateQListRow } from './qlist_view';
-import { generateQuestionContent, generateQuestionListRow } from './question_view';
+import { generateQuestionContent, generatePracticeContent, generateQuestionListRow, generatePracticeResultContent } from './question_view';
 import { generateSettingModalConetnt } from './setting_view';
 import { UIEventPayloadMap, UIEvent } from './ui_event_types';
 
@@ -19,7 +19,7 @@ export class View {
     defaultModal: HTMLButtonElement;
     toastParent: HTMLDivElement;
 
-    questionContainer: HTMLDivElement;
+    practiceContainer: HTMLDivElement;
     qListsContainer: HTMLDivElement;
     questionsContainer: HTMLDivElement;
     questionsPagination: HTMLDivElement;
@@ -37,7 +37,7 @@ export class View {
       settingBtn: this.$('#settingBtn'),
       defaultModal: this.$('#defaultModal'),
       toastParent: this.$('#toastParent'),
-      questionContainer: this.$('#questionContainer'),
+      practiceContainer: this.$('#practiceContainer'),
       qListsContainer: this.$('#qListsContainer'),
       questionsContainer: this.$('#questionsContainer'),
       questionsPagination: this.$('#questionsPagination'),
@@ -78,7 +78,7 @@ export class View {
     this.applyDefaultModal(model);
 
     if (model.practiceDetailDto !== null) {
-      this.applyQuestionContent(model.practiceDetailDto);
+      this.applyPracticeContent(model.practiceDetailDto);
     }
     this.applyQListsContent(model.qLists);
     this.applyQuestionsContent(model.questions);
@@ -169,14 +169,33 @@ export class View {
     }
   }
 
-  private applyQuestionContent(dto: PracticeDetailDto) {
-    this.els.questionContainer.innerHTML = '';
-    const question = dto.questions[dto.currentQuestionIndex];
-    const ansHistory = dto.ansHistories
-      .find(ansHistory => ansHistory.getQuestionId() === question.getId());
+  private applyPracticeContent(dto: PracticeDetailDto) {
+    this.els.practiceContainer.innerHTML = '';
 
-    const content = generateQuestionContent(question, ansHistory);
-    this.els.questionContainer.appendChild(content);
+    const content = dto.practiceHistory.getIsAnswered()
+      ? generatePracticeResultContent(dto)
+      : generatePracticeContent(
+        dto,
+        {
+          onClickPrevBtn: () => {
+            this.emit(UIEvent.CLICK_PRACTICE_PREV, undefined);
+          },
+          onClickNextBtn: () => {
+            this.emit(UIEvent.CLICK_PRACTICE_NEXT, undefined);
+          },
+          onClickCompleteAnswer: () => {
+            this.emit(UIEvent.CLICK_COMPLETE_ANSWER, undefined);
+          },
+          onAnswered: (practiceHistoryId, questionId, isCorrect, selectChoice) => {
+            this.emit(UIEvent.PRACTICE_ANSWERED, { practiceHistoryId, questionId, isCorrect, selectChoice });
+          },
+          onAnswerCanceled: (practiceHistoryId, questionId) => {
+            this.emit(UIEvent.PRACTICE_ANSWER_CANCELED, { practiceHistoryId, questionId });
+          },
+        },
+        this.defaultModal
+      );
+    this.els.practiceContainer.appendChild(content);
   }
 
   private applyQListsContent(qLists: QList[]) {

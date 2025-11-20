@@ -1,4 +1,4 @@
 export * from './modal';
 export * from './pagination';
-export * from './sort';
+export * from './utils';
 export * from './view_utils';

@@ -81,6 +81,7 @@ export class Modal {
       dialogElem.classList.add('w-full');
       break;
     default:
+      dialogElem.classList.add('w-full', 'max-w-64');
       break;
     }
   }

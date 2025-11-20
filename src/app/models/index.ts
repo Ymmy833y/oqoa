@@ -1,6 +1,5 @@
 import { ModalKindType, Theme, ToastMessage } from '../types'
-import { PracticeDetailDto } from './dtos/practice_detail_dto';
-import { QuestionDetailDto } from './dtos/question_detail_dto';
+import { PracticeDetailDto, QuestionDetailDto } from './dtos';
 import { QList, Question } from './entities'
 import { QuestionSearchForm } from './forms'
 

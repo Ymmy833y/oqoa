@@ -53,6 +53,7 @@ export function getLastUsedQuestions(): Question[] | null {
   const json = LZString.decompressFromUTF16(compressed);
   if (!json) return null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return JSON.parse(json).map((q: any) => new Question(q)) as Question[];
 }
 

@@ -10,6 +10,8 @@ module.exports = {
     'toast--error',
     'answer-modal-text-correct',
     'answer-modal-text-incorrect',
+    'question-result-label-correct',
+    'question-result-label-incorrect',
   ],
   theme: {
     extend: {},

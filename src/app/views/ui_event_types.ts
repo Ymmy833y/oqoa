@@ -17,6 +17,11 @@ export enum UIEvent {
   CLICK_QLIST_EDIT = 'CLICK_QLIST_EDIT',
   CLICK_PRACTICE_START = 'CLICK_PRACTICE_START',
   CLICK_QUESTION_LIST_ROW = 'CLICK_QUESTION_LIST_ROW',
+  CLICK_PRACTICE_PREV = 'CLICK_PRACTICE_PREV',
+  CLICK_PRACTICE_NEXT = 'CLICK_PRACTICE_NEXT',
+  CLICK_COMPLETE_ANSWER = 'CLICK_COMPLETE_ANSWER',
+  PRACTICE_ANSWERED = 'PRACTICE_ANSWERED',
+  PRACTICE_ANSWER_CANCELED = 'PRACTICE_ANSWER_CANCELED',
 }
 
 export interface UIEventPayloadMap {
@@ -35,4 +40,9 @@ export interface UIEventPayloadMap {
   [UIEvent.CLICK_QLIST_EDIT]: { qListId: number };
   [UIEvent.CLICK_PRACTICE_START]: { qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean };
   [UIEvent.CLICK_QUESTION_LIST_ROW]: { questionId: number };
+  [UIEvent.CLICK_PRACTICE_PREV]: undefined;
+  [UIEvent.CLICK_PRACTICE_NEXT]: undefined;
+  [UIEvent.CLICK_COMPLETE_ANSWER]: undefined;
+  [UIEvent.PRACTICE_ANSWERED]: { practiceHistoryId: number, questionId: number, isCorrect: boolean, selectChoice: number[] };
+  [UIEvent.PRACTICE_ANSWER_CANCELED]: { practiceHistoryId: number, questionId: number };
 }
