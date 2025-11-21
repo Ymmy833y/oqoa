@@ -49,3 +49,11 @@ export function el<K extends keyof HTMLElementTagNameMap>(
 
   return node;
 }
+
+export function scrollToTop(isSmooth = true): void {
+  if (isSmooth) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    window.scrollTo(0, 0);
+  }
+}

@@ -1,9 +1,8 @@
-
 import { PracticeDetailDto } from '../models/dtos';
 import { AnsHistory, Question } from '../models/entities';
 import { ModalSize } from '../types';
-import { Modal } from '../utils';
-import { el } from '../utils/view_utils';
+import { Modal, shuffle } from '../utils';
+import { el, scrollToTop } from '../utils/view_utils';
 
 interface PracticeContenHandlers {
   onClickPrevBtn: () => void;
@@ -55,7 +54,7 @@ export function generatePracticeContent(
   nav.append(prevBtn, progress, nextBtn);
 
   const questionContent = generateQuestionContent(
-    question, ansHistory, dto.practiceHistory.getIsAnswered(),
+    question, ansHistory, dto.practiceHistory.getIsRandomC(), dto.practiceHistory.getIsAnswered(),
     {
       onAnswered: (isCorrect, selectChoice) => handlers.onAnswered(
         dto.practiceHistory.getId(), question.getId(), isCorrect, selectChoice
@@ -95,7 +94,17 @@ export function generatePracticeContent(
   return content;
 }
 
-export function generatePracticeResultContent(dto: PracticeDetailDto) {
+interface PracticeResultContentHandlers {
+  onClickRetryBtn: () => void;
+  onClickReviewBtn: (questionIds: number[]) => void;
+  onClickQuestionResult: (
+    questionId: number, ansHistoryId?: number
+  ) => void;
+}
+export function generatePracticeResultContent(
+  dto: PracticeDetailDto,
+  handlers: PracticeResultContentHandlers
+) {
   const correctCount = dto.ansHistories.filter(ah => ah.getIsCorrect()).length;
   const totalCount = dto.ansHistories.length;
   const rate = totalCount === 0 ? 0 : (correctCount / totalCount) * 100;
@@ -160,23 +169,43 @@ export function generatePracticeResultContent(dto: PracticeDetailDto) {
   main.appendChild(grid);
 
   const actions = el('section', 'practice-result-actions');
-  const retryBtn = el('button', 'practice-result-btn-re-practice', '再演習') as HTMLButtonElement;
-  retryBtn.type = 'button';
+  const retryBtn = el('button', {
+    class: 'practice-result-btn-re-practice',
+    text: '再演習',
+    attr: [{ type: 'button' }],
+  });
+  retryBtn.addEventListener('click', () => {
+    handlers.onClickRetryBtn();
+    scrollToTop();
+  });
 
-  const reviewBtn = el(
-    'button',
-    'practice-result-btn-review',
-    '誤答の復習',
-  ) as HTMLButtonElement;
-  reviewBtn.type = 'button';
+  const incorrectQuestionIds = dto.ansHistories.filter(ah => !ah.getIsCorrect()).map(ah => ah.getQuestionId());
+  const reviewBtn = el('button',{
+    class: 'practice-result-btn-review',
+    text: '誤答の復習',
+    attr: [{
+      type: 'button',
+    }],
+  });
+  reviewBtn.disabled = incorrectQuestionIds.length === 0;
+  reviewBtn.addEventListener('click', () => {
+    if (incorrectQuestionIds.length !== 0) {
+      handlers.onClickReviewBtn(incorrectQuestionIds);
+      scrollToTop();
+    };
+  });
 
   actions.appendChild(retryBtn);
   actions.appendChild(reviewBtn);
 
   const listSection = el('section', 'practice-result-list');
   for(const question of dto.questions) {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const row = generateQuestionListRow(question, (_) => {});
+    const ansHistory = dto.ansHistories.find(ah => ah.getQuestionId() === question.getId());
+    const row = generateQuestionListRow(
+      question,
+      () => handlers.onClickQuestionResult(question.getId(), ansHistory?.getId()),
+      ansHistory
+    );
     listSection.appendChild(row);
   }
 
@@ -194,6 +223,7 @@ interface QuestionContentHandlers {
 export function generateQuestionContent(
   question: Question,
   ansHistory?: AnsHistory,
+  isRandomC = false,
   isAnswered = true,
   handlers?: QuestionContentHandlers,
   modal?: Modal,
@@ -280,6 +310,9 @@ export function generateQuestionContent(
     });
     choiceLabelElems.push(choiceLabel);
   });
+  if (isRandomC || isAnswered) {
+    shuffle(choiceLabelElems);
+  }
   choiceLabelElems.forEach(label => choicesWrapper.appendChild(label));
   card.appendChild(choicesWrapper);
 
@@ -367,7 +400,7 @@ export function generateQuestionContent(
 
     const modal = el('div', 'answer-modal');
     const modalText = el('p',
-      `answer-modal-text answer-modal-text-${isCorrect ? 'correct ' : 'incorrect'}`,
+      `answer-modal-text text-${isCorrect ? 'correct ' : 'incorrect'}`,
       `${isCorrect ? '正解' : '不正解'}`
     );
     modal.appendChild(modalText);
@@ -412,7 +445,8 @@ export function generateQuestionContent(
 
 export function generateQuestionListRow(
   question: Question,
-  handler: (questionId: number) => void
+  handler: () => void,
+  ansHistory?: AnsHistory,
 ): HTMLButtonElement {
   const id = question.getId();
   const problem = question.getProblem();
@@ -425,7 +459,7 @@ export function generateQuestionListRow(
     ],
   }) as HTMLButtonElement;
   row.addEventListener('click', () => {
-    handler(id);
+    handler();
   });
 
   const idSpan = el(
@@ -442,6 +476,23 @@ export function generateQuestionListRow(
 
   row.appendChild(idSpan);
   row.appendChild(textSpan);
+
+  if (ansHistory) {
+    const isCorrect = ansHistory.getIsCorrect();
+    const statusSpan = el('span', {
+      class: `question-list-row-status ${isCorrect ? 'text-correct' : 'text-incorrect'}`,
+    });
+    const icon = el('i', {
+      class: isCorrect ? 'bi bi-circle' : 'bi bi-x-lg',
+      attr: [
+        { 'aria-hidden': 'true' },
+      ],
+    });
+
+    statusSpan.appendChild(icon);
+    statusSpan.setAttribute('aria-label', isCorrect ? '正解' : '不正解');
+    row.appendChild(statusSpan);
+  }
 
   return row;
 }

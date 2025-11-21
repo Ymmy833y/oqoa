@@ -1,3 +1,4 @@
+import { CustomPracticeStartDto } from '../models/dtos';
 import { QList } from '../models/entities';
 import { Theme } from '../types';
 
@@ -13,7 +14,8 @@ export enum UIEvent {
   TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
   CLICK_QUESTION_SEARCH_SUBMIT = 'CLICK_QUESTION_SEARCH_SUBMIT',
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
-  CLICK_QLIST_SOLVE = 'CLICK_QLIST_SOLVE',
+  CLICK_START_PRACTICE_SET = 'CLICK_START_PRACTICE_SET',
+  CLICK_RESTART_PRACTICE_SET = 'CLICK_RESTART_PRACTICE_SET',
   CLICK_QLIST_EDIT = 'CLICK_QLIST_EDIT',
   CLICK_PRACTICE_START = 'CLICK_PRACTICE_START',
   CLICK_QUESTION_LIST_ROW = 'CLICK_QUESTION_LIST_ROW',
@@ -36,10 +38,15 @@ export interface UIEventPayloadMap {
   [UIEvent.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE]: undefined;
   [UIEvent.CLICK_QUESTION_SEARCH_SUBMIT]: undefined;
   [UIEvent.CHANGE_QUESTIONS_PAGE]: { page: number };
-  [UIEvent.CLICK_QLIST_SOLVE]: { qListId: number };
+  [UIEvent.CLICK_START_PRACTICE_SET]: { qListId: number };
+  [UIEvent.CLICK_RESTART_PRACTICE_SET]: { name: string, questionIds: number[] };
   [UIEvent.CLICK_QLIST_EDIT]: { qListId: number };
-  [UIEvent.CLICK_PRACTICE_START]: { qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean };
-  [UIEvent.CLICK_QUESTION_LIST_ROW]: { questionId: number };
+  [UIEvent.CLICK_PRACTICE_START]: {
+    preparePracticeStart: QList | CustomPracticeStartDto,
+    isShuffleQuestions: boolean,
+    isShuffleChoices: boolean
+  };
+  [UIEvent.CLICK_QUESTION_LIST_ROW]: { questionId: number, ansHistoryId?: number };
   [UIEvent.CLICK_PRACTICE_PREV]: undefined;
   [UIEvent.CLICK_PRACTICE_NEXT]: undefined;
   [UIEvent.CLICK_COMPLETE_ANSWER]: undefined;

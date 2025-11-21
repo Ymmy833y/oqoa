@@ -1,14 +1,15 @@
-import { PracticeDetailDto } from '../models/dtos';
+import { CustomPracticeStartDto, PracticeDetailDto } from '../models/dtos';
 import { PracticeHistory, QList } from '../models/entities';
 import { practiceHistoryRepository } from '../repositories/practice_history_repositoriy';
+import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
 import { isSameNumbers, shuffle } from '../utils';
 
 export async function generatePracticeDetailDto(
-  qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean
+  qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean, isReview = false
 ): Promise<PracticeDetailDto> {
   const practiceHistory = PracticeHistory.fromRequiredArgs(
-    qList.getId(), false, isShuffleQuestions, isShuffleChoices
+    qList.getId(), isReview, isShuffleQuestions, isShuffleChoices
   );
   const practiceHistoryId = await practiceHistoryRepository.insert(practiceHistory.generateRow());
   practiceHistory.setId(practiceHistoryId);
@@ -24,6 +25,16 @@ export async function generatePracticeDetailDto(
   const currentQuestionIndex = (0 < questions.length) ? 0 : -1;
 
   return { practiceHistory, qList, questions, ansHistories: [], currentQuestionIndex }
+}
+
+export async function generatePracticeDetailDtoForCustom(
+  dto: CustomPracticeStartDto, isShuffleQuestions: boolean, isShuffleChoices: boolean
+): Promise<PracticeDetailDto> {
+  const qList = QList.fromCreateNew(dto.name, dto.questionIds, false);
+  const qListId = await qListRepository.insert(qList.generateRow());
+  qList.setId(qListId);
+
+  return generatePracticeDetailDto(qList, isShuffleQuestions, isShuffleChoices, dto.isReview);
 }
 
 export async function doPracticeComplete(dto: PracticeDetailDto) {

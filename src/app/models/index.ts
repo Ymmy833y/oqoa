@@ -1,5 +1,5 @@
 import { ModalKindType, Theme, ToastMessage } from '../types'
-import { PracticeDetailDto, QuestionDetailDto } from './dtos';
+import { CustomPracticeStartDto, PracticeDetailDto, QuestionDetailDto } from './dtos';
 import { QList, Question } from './entities'
 import { QuestionSearchForm } from './forms'
 
@@ -11,7 +11,7 @@ export interface Model {
   googleFolderId: string | null,
 
   defailtModalKind: ModalKindType | null,
-  preparePracticeStart: QList | null;
+  preparePracticeStart: QList | CustomPracticeStartDto | null;
   questionDetailDto: QuestionDetailDto | null,
 
   qLists: QList[],

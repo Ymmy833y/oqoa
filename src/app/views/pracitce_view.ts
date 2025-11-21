@@ -1,10 +1,15 @@
+import { CustomPracticeStartDto } from '../models/dtos';
 import { QList } from '../models/entities';
 import { el } from '../utils';
 
 export function generatePracticeStartContent(
-  qList: QList,
-  handler: (qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean) => void
+  preparePracticeStart: QList | CustomPracticeStartDto,
+  handler: (
+    preparePracticeStart: QList | CustomPracticeStartDto,
+    isShuffleQuestions: boolean, isShuffleChoices: boolean
+  ) => void
 ): HTMLElement {
+  const isCustom = !(preparePracticeStart instanceof QList);
   const content = el('div', 'app-modal-body');
 
   const infoSection = el('section', 'app-modal-section');
@@ -14,9 +19,26 @@ export function generatePracticeStartContent(
   // 問題集名
   const nameField = el('div', 'app-modal-field');
   const nameLabel = el('span', 'app-modal-field-label', '問題集名');
-  const nameText = el('p', 'practice-info-name', qList.getName());
   nameField.appendChild(nameLabel);
-  nameField.appendChild(nameText);
+  if (isCustom) {
+    const nameInput = el('input', {
+      id: 'customPracticeName',
+      class: 'practice-info-name-input',
+      attr: [
+        { type: 'text' },
+        { name: 'customPracticeName' },
+        { value: `${preparePracticeStart.isReview ? '【復習】' : ''}${preparePracticeStart.name + new Date().toISOString()}` },
+        { placeholder: '例：苦手問題だけ演習' },
+      ],
+    });
+    nameInput.addEventListener('change', () => {
+      preparePracticeStart.name = nameInput.value;
+    })
+    nameField.appendChild(nameInput);
+  } else {
+    const nameText = el('p', 'practice-info-name', preparePracticeStart.getName());
+    nameField.appendChild(nameText);
+  }
   infoSection.appendChild(nameField);
 
   // 問題数・問題集種別（2カラム）
@@ -25,7 +47,10 @@ export function generatePracticeStartContent(
   // 問題数
   const statDiv = el('div', 'practice-info-stat');
   const statLabel = el('span', 'font-medium', '問題数：');
-  const statValue = el('span', undefined, `${qList.getQuestions().length}問`);
+  const questionSize = isCustom
+    ? preparePracticeStart.questionIds.length
+    : preparePracticeStart.getQuestions().length;
+  const statValue = el('span', undefined, `${questionSize}問`);
   statDiv.appendChild(statLabel);
   statDiv.appendChild(statValue);
   infoGrid.appendChild(statDiv);
@@ -99,7 +124,7 @@ export function generatePracticeStartContent(
     attr: [{ type: 'button' }],
   });
   startButton.addEventListener('click', () => {
-    handler(qList, shuffleQuestionsInput.checked, shuffleChoicesInput.checked);
+    handler(preparePracticeStart, shuffleQuestionsInput.checked, shuffleChoicesInput.checked);
   });
   actions.appendChild(startButton);
   content.appendChild(actions);

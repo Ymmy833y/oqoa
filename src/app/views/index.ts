@@ -3,7 +3,7 @@ import { PracticeDetailDto } from '../models/dtos';
 import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
-import { el, Modal, renderPagination,  } from '../utils';
+import { el, Modal, renderPagination } from '../utils';
 import { generatePracticeStartContent } from './pracitce_view';
 import { generateQListRow } from './qlist_view';
 import { generateQuestionContent, generatePracticeContent, generateQuestionListRow, generatePracticeResultContent } from './question_view';
@@ -150,19 +150,25 @@ export class View {
       );
       this.defaultModal.setModal(content, '設定', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
-    } else if (model.defailtModalKind === ModalKind.PRACTICE_START && model.preparePracticeStart) {
+    } else if (
+      model.defailtModalKind === ModalKind.PRACTICE_START
+      && model.preparePracticeStart
+    ) {
       const content = generatePracticeStartContent(
         model.preparePracticeStart,
-        (qList, isShuffleQuestions, isShuffleChoices) => {
-          this.emit(UIEvent.CLICK_PRACTICE_START, { qList, isShuffleQuestions, isShuffleChoices });
+        (preparePracticeStart, isShuffleQuestions, isShuffleChoices) => {
+          this.emit(UIEvent.CLICK_PRACTICE_START, {
+            preparePracticeStart, isShuffleQuestions, isShuffleChoices
+          });
           this.defaultModal.hide();
         }
       );
       this.defaultModal.setModal(content, '演習開始', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
     } else if (model.defailtModalKind === ModalKind.QUESTION_DETAIL && model.questionDetailDto) {
+      const ansHistory = model.questionDetailDto.ansHistory ?? undefined;
       const content = generateQuestionContent(
-        model.questionDetailDto.question,
+        model.questionDetailDto.question, ansHistory
       );
       this.defaultModal.setModal(content, '', ModalSize.XXL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
@@ -173,7 +179,20 @@ export class View {
     this.els.practiceContainer.innerHTML = '';
 
     const content = dto.practiceHistory.getIsAnswered()
-      ? generatePracticeResultContent(dto)
+      ? generatePracticeResultContent(
+        dto,
+        {
+          onClickRetryBtn: () => {
+            this.emit(UIEvent.CLICK_START_PRACTICE_SET, { qListId: dto.qList.getId() });
+          },
+          onClickReviewBtn: (questionIds) => {
+            this.emit(UIEvent.CLICK_RESTART_PRACTICE_SET, { name: dto.qList.getName(), questionIds });
+          },
+          onClickQuestionResult: (questionId, ansHistoryId) => {
+            this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, { questionId, ansHistoryId });
+          },
+        }
+      )
       : generatePracticeContent(
         dto,
         {
@@ -205,7 +224,7 @@ export class View {
         qList,
         {
           onClickSolve: (qListId) => {
-            this.emit(UIEvent.CLICK_QLIST_SOLVE, { qListId });
+            this.emit(UIEvent.CLICK_START_PRACTICE_SET, { qListId });
           },
           onClickEdit: (qListId) => {
             this.emit(UIEvent.CLICK_QLIST_EDIT, { qListId });
@@ -218,11 +237,11 @@ export class View {
 
   private applyQuestionsContent(questions: Question[]) {
     this.els.questionsContainer.innerHTML = '';
-    questions.forEach(questions => {
+    questions.forEach(question => {
       const card = generateQuestionListRow(
-        questions,
-        (questionId) => {
-          this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, { questionId });
+        question,
+        () => {
+          this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, { questionId: question.getId() });
         }
       );
       this.els.questionsContainer.appendChild(card);

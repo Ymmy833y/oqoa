@@ -1,6 +1,7 @@
 import { QuestionDetailDto } from '../models/dtos/question_detail_dto';
 import { Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
+import { ansHistoryRepository } from '../repositories/ans_history_repository';
 import { questionRepository } from '../repositories/question_repositoriy';
 import { getPaginationPages } from '../utils';
 
@@ -25,13 +26,11 @@ export function selectQuestionsForSearchForm(form: QuestionSearchForm): {
   return { questions: currentQuestions, currentPage, totalSize: questions.length, pages };
 }
 
-export function selectQuestionDetailDto(questionId: number): QuestionDetailDto {
+export async function generateQuestionDetailDto(questionId: number, ansHistoryId?: number): Promise<QuestionDetailDto> {
   const question = questionRepository.selectById(questionId);
   if (!question) {
     throw new Error(`Question not found: id=${questionId}`);
   }
-  return {
-    question,
-    ansHistory: null,
-  }
+  const ansHistory = (ansHistoryId) ? await ansHistoryRepository.selectById(ansHistoryId) : null;
+  return { question, ansHistory }
 }

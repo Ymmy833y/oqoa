@@ -1,4 +1,4 @@
-import { PracticeDetailDto, QuestionDetailDto } from '../models/dtos';
+import { CustomPracticeStartDto, PracticeDetailDto, QuestionDetailDto } from '../models/dtos';
 import {  } from '../models/dtos/question_detail_dto';
 import { QList, Question } from '../models/entities';
 import { ModalKindType, Theme, ToastMessage } from '../types';
@@ -21,6 +21,7 @@ export enum Action {
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
   PREPARE_PRACTICE_START = 'PREPARE_PRACTICE_START',
   SHOW_PRACTICE_START = 'SHOW_PRACTICE_START',
+  SHOW_CUSTOM_PRACTICE_START = 'SHOW_CUSTOM_PRACTICE_START',
   PREPARE_PRACTICE = 'PREPARE_PRACTICE',
   SHOW_PRACTICE = 'SHOW_PRACTICE',
   PREPARE_QUESTION_DETAIL = 'PREPARE_QUESTION_DETAIL',
@@ -46,16 +47,20 @@ export type ActionType =
   | {
       type: Action.UPDATE_QUESTION_LIST_CONTAINER; currentPage: number,
       questions: Question[], totalSize: number, pages: number[]
-  }
+    }
   | { type: Action.CHANGE_QUESTION_SEARCH_KEYWORD; keyword: string }
   | { type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE; }
   | { type: Action.SEARCH_QUESTION; }
   | { type: Action.CHANGE_QUESTIONS_PAGE; page: number }
   | { type: Action.PREPARE_PRACTICE_START; qListId: number }
   | { type: Action.SHOW_PRACTICE_START; qList: QList }
-  | { type: Action.PREPARE_PRACTICE; qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean }
+  | { type: Action.SHOW_CUSTOM_PRACTICE_START; customPracticeStartDto: CustomPracticeStartDto }
+  | {
+      type: Action.PREPARE_PRACTICE; preparePracticeStart: QList | CustomPracticeStartDto,
+      isShuffleQuestions: boolean, isShuffleChoices: boolean
+    }
   | { type: Action.SHOW_PRACTICE; practiceDetailDto: PracticeDetailDto }
-  | { type: Action.PREPARE_QUESTION_DETAIL; questionId: number }
+  | { type: Action.PREPARE_QUESTION_DETAIL; questionId: number; ansHistoryId?: number }
   | { type: Action.SHOW_QUESTION_DETAIL; questionDetailDto: QuestionDetailDto }
   | { type: Action.PRACTICE_PREV; }
   | { type: Action.PRACTICE_NEXT; }

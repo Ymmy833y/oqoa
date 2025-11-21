@@ -160,12 +160,22 @@ export function update(model: Model, action: ActionType): { model: Model; effect
       effects: []
     }
 
+  case Action.SHOW_CUSTOM_PRACTICE_START:
+    return {
+      model: {
+        ...model,
+        defailtModalKind: ModalKind.PRACTICE_START,
+        preparePracticeStart: action.customPracticeStartDto,
+      },
+      effects: []
+    }
+
   case Action.PREPARE_PRACTICE:
     return {
       model,
       effects: [{
         kind: Effect.PREPARE_PRACTICE,
-        qList: action.qList,
+        preparePracticeStart: action.preparePracticeStart,
         isShuffleQuestions: action.isShuffleQuestions,
         isShuffleChoices: action.isShuffleChoices
       }]
@@ -180,7 +190,7 @@ export function update(model: Model, action: ActionType): { model: Model; effect
   case Action.PREPARE_QUESTION_DETAIL:
     return {
       model,
-      effects: [{ kind: Effect.PREPARE_QUESTION_DETAIL, questionId: action.questionId }]
+      effects: [{ kind: Effect.PREPARE_QUESTION_DETAIL, questionId: action.questionId, ansHistoryId: action.ansHistoryId }]
     }
 
   case Action.SHOW_QUESTION_DETAIL:

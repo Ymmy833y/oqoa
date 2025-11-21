@@ -1,5 +1,5 @@
 import { QList } from '../models/entities';
-import { el } from '../utils/view_utils';
+import { el, scrollToTop } from '../utils/view_utils';
 
 interface QListRowHandlers {
   onClickSolve: (qListId: number) => void;
@@ -56,6 +56,7 @@ export function generateQListRow(qList: QList, handlers: QListRowHandlers): HTML
   });
   solveButton.addEventListener('click', () => {
     handlers.onClickSolve(qList.getId());
+    scrollToTop();
   });
 
   const editButton = el('button', {

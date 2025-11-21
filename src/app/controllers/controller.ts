@@ -15,6 +15,7 @@ import * as questionService from '../services/question_service';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
 import { generateErrorToastMessage } from '../utils/toast_message';
+import { QList } from '../models/entities';
 
 export class Controller {
   private model: Model = structuredClone(initialModel);
@@ -60,14 +61,20 @@ export class Controller {
     this.view.on(UIEvent.CHANGE_QUESTIONS_PAGE, ({ page }) =>
       this.dispatch({ type: Action.CHANGE_QUESTIONS_PAGE, page }),
     );
-    this.view.on(UIEvent.CLICK_QLIST_SOLVE, ({ qListId }) =>
+    this.view.on(UIEvent.CLICK_START_PRACTICE_SET, ({ qListId }) =>
       this.dispatch({ type: Action.PREPARE_PRACTICE_START, qListId }),
     );
-    this.view.on(UIEvent.CLICK_PRACTICE_START, ({ qList, isShuffleQuestions, isShuffleChoices }) =>
-      this.dispatch({ type: Action.PREPARE_PRACTICE, qList, isShuffleQuestions, isShuffleChoices }),
+    this.view.on(UIEvent.CLICK_RESTART_PRACTICE_SET, ({ name, questionIds }) => {
+      this.dispatch({
+        type: Action.SHOW_CUSTOM_PRACTICE_START,
+        customPracticeStartDto: { name, questionIds, isReview: true },
+      });
+    });
+    this.view.on(UIEvent.CLICK_PRACTICE_START, ({ preparePracticeStart, isShuffleQuestions, isShuffleChoices }) =>
+      this.dispatch({ type: Action.PREPARE_PRACTICE, preparePracticeStart, isShuffleQuestions, isShuffleChoices }),
     );
-    this.view.on(UIEvent.CLICK_QUESTION_LIST_ROW, ({ questionId }) =>
-      this.dispatch({ type: Action.PREPARE_QUESTION_DETAIL, questionId }),
+    this.view.on(UIEvent.CLICK_QUESTION_LIST_ROW, ({ questionId, ansHistoryId }) =>
+      this.dispatch({ type: Action.PREPARE_QUESTION_DETAIL, questionId, ansHistoryId }),
     );
     this.view.on(UIEvent.CLICK_PRACTICE_PREV, () =>
       this.dispatch({ type: Action.PRACTICE_PREV }),
@@ -171,16 +178,22 @@ export class Controller {
       }
 
       case Effect.PREPARE_PRACTICE: {
-        const practiceDetailDto = await practiceSevice.generatePracticeDetailDto(
-          fx.qList, fx.isShuffleQuestions, fx.isShuffleChoices
-        );
+        const practiceDetailDto = (fx.preparePracticeStart instanceof QList)
+          ? await practiceSevice.generatePracticeDetailDto(
+            fx.preparePracticeStart, fx.isShuffleQuestions, fx.isShuffleChoices
+          )
+          : await practiceSevice.generatePracticeDetailDtoForCustom(
+            fx.preparePracticeStart, fx.isShuffleQuestions, fx.isShuffleChoices
+          );
         this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
         break;
       }
 
       case Effect.PREPARE_QUESTION_DETAIL: {
         try {
-          const questionDetailDto = questionService.selectQuestionDetailDto(fx.questionId);
+          const questionDetailDto = await questionService.generateQuestionDetailDto(
+            fx.questionId, fx.ansHistoryId
+          );
           this.dispatch({ type: Action.SHOW_QUESTION_DETAIL, questionDetailDto });
         } catch (e) {
           const error = e as Error;
