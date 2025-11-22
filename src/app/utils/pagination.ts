@@ -1,5 +1,7 @@
 import { el } from './view_utils';
 
+export const PAGE_ITEM_SIZE = 25;
+
 /**
  * ページネーションで表示するページ番号（0 始まり）を返す
  *

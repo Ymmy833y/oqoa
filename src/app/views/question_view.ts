@@ -2,7 +2,7 @@ import { PracticeDetailDto } from '../models/dtos';
 import { AnsHistory, Question } from '../models/entities';
 import { ModalSize } from '../types';
 import { Modal, shuffle } from '../utils';
-import { el, scrollToTop } from '../utils/view_utils';
+import { el } from '../utils/view_utils';
 
 interface PracticeContenHandlers {
   onClickPrevBtn: () => void;
@@ -176,7 +176,6 @@ export function generatePracticeResultContent(
   });
   retryBtn.addEventListener('click', () => {
     handlers.onClickRetryBtn();
-    scrollToTop();
   });
 
   const incorrectQuestionIds = dto.ansHistories.filter(ah => !ah.getIsCorrect()).map(ah => ah.getQuestionId());
@@ -191,7 +190,6 @@ export function generatePracticeResultContent(
   reviewBtn.addEventListener('click', () => {
     if (incorrectQuestionIds.length !== 0) {
       handlers.onClickReviewBtn(incorrectQuestionIds);
-      scrollToTop();
     };
   });
 

@@ -2,9 +2,9 @@ import { Model } from '../models';
 import { PracticeDetailDto } from '../models/dtos';
 import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
-import { ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
-import { el, Modal, renderPagination } from '../utils';
-import { generatePracticeStartContent } from './pracitce_view';
+import { HistoryActiveTab, ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
+import { el, Modal, renderPagination, scrollToTop } from '../utils';
+import { generatePracticeHistoryListRow, generatePracticeStartContent } from './pracitce_view';
 import { generateQListRow } from './qlist_view';
 import { generateQuestionContent, generatePracticeContent, generateQuestionListRow, generatePracticeResultContent } from './question_view';
 import { generateSettingModalConetnt } from './setting_view';
@@ -15,9 +15,14 @@ export class View {
 
   private els: {
     settingBtn: HTMLButtonElement;
+    menuBtn: HTMLButtonElement;
 
+    sideMenu: HTMLDivElement;
     defaultModal: HTMLButtonElement;
     toastParent: HTMLDivElement;
+
+    sideMenuCloseBtn: HTMLButtonElement;
+    practiceHistoryList: HTMLDivElement;
 
     practiceContainer: HTMLDivElement;
     qListsContainer: HTMLDivElement;
@@ -35,8 +40,15 @@ export class View {
   constructor(private doc: Document) {
     this.els = {
       settingBtn: this.$('#settingBtn'),
+      menuBtn: this.$('#menuBtn'),
+
+      sideMenu: this.$('#sideMenu'),
       defaultModal: this.$('#defaultModal'),
       toastParent: this.$('#toastParent'),
+
+      sideMenuCloseBtn: this.$('#sideMenuCloseBtn'),
+      practiceHistoryList: this.$('#practiceHistoryList'),
+
       practiceContainer: this.$('#practiceContainer'),
       qListsContainer: this.$('#qListsContainer'),
       questionsContainer: this.$('#questionsContainer'),
@@ -50,6 +62,13 @@ export class View {
 
     this.els.settingBtn.addEventListener('click', () => {
       this.emit(UIEvent.CLICK_SETTING_BTN, undefined);
+    });
+    this.els.menuBtn.addEventListener('click', () => {
+      this.emit(UIEvent.CLICK_MENU_BTN, undefined);
+      this.showSideMenuContent();
+    });
+    this.els.sideMenuCloseBtn.addEventListener('click', () => {
+      this.hideSideMenuContent();
     });
     this.els.questionSearchKeyword.addEventListener('input', () => {
       const keyword = this.els.questionSearchKeyword.value;
@@ -84,6 +103,8 @@ export class View {
     this.applyQuestionsContent(model.questions);
 
     this.applyQuestionSearchForm(model.questionSearchForm, model.questions.length);
+
+    this.applyHistoryContent(model);
   }
 
   private applyToastMessages(toastMessages: ToastMessage[]): void {
@@ -150,10 +171,7 @@ export class View {
       );
       this.defaultModal.setModal(content, '設定', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
-    } else if (
-      model.defailtModalKind === ModalKind.PRACTICE_START
-      && model.preparePracticeStart
-    ) {
+    } else if (model.defailtModalKind === ModalKind.PRACTICE_START && model.preparePracticeStart) {
       const content = generatePracticeStartContent(
         model.preparePracticeStart,
         (preparePracticeStart, isShuffleQuestions, isShuffleChoices) => {
@@ -161,6 +179,8 @@ export class View {
             preparePracticeStart, isShuffleQuestions, isShuffleChoices
           });
           this.defaultModal.hide();
+          scrollToTop();
+          this.hideSideMenuContent();
         }
       );
       this.defaultModal.setModal(content, '演習開始', ModalSize.XL);
@@ -258,6 +278,41 @@ export class View {
         this.emit(UIEvent.CHANGE_QUESTIONS_PAGE, { page });
       }
     )
+  }
+
+  private applyHistoryContent(model: Model) {
+    const pagination = el('div');
+
+    this.els.practiceHistoryList.innerHTML = ''
+    this.els.practiceHistoryList.appendChild(pagination);
+
+    if (model.historyActiveTab === HistoryActiveTab.PRACTICE) {
+      const dtos = model.practiceHistoryDtos;
+      const form = model.practiceHistorySearchForm;
+      dtos.forEach(dto => {
+        const card = generatePracticeHistoryListRow(dto,
+          () => {
+            this.emit(UIEvent.CLICK_EXIST_PRACTICE_START, { practiceHistoryId: dto.practiceHistory.getId() });
+            this.hideSideMenuContent();
+          }
+        );
+        this.els.practiceHistoryList.appendChild(card);
+      });
+      renderPagination(pagination,
+        form.currentPage, form.pages, dtos.length, form.totalSize,
+        (page) => this.emit(UIEvent.CHANGE_PRACTICE_HISTORY_PAGE, { page })
+      )
+    }
+  }
+
+  private showSideMenuContent() {
+    this.els.sideMenu.classList.remove('translate-x-full');
+    this.els.sideMenu.classList.add('translate-x-0');
+  }
+
+  private hideSideMenuContent() {
+    this.els.sideMenu.classList.add('translate-x-full');
+    this.els.sideMenu.classList.remove('translate-x-0');
   }
 
   private $<T extends Element>(selector: string): T {

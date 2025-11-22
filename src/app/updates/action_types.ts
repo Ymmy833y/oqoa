@@ -1,4 +1,4 @@
-import { CustomPracticeStartDto, PracticeDetailDto, QuestionDetailDto } from '../models/dtos';
+import { CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto, QuestionDetailDto } from '../models/dtos';
 import {  } from '../models/dtos/question_detail_dto';
 import { QList, Question } from '../models/entities';
 import { ModalKindType, Theme, ToastMessage } from '../types';
@@ -6,6 +6,7 @@ import { ModalKindType, Theme, ToastMessage } from '../types';
 export enum Action {
   INIT = 'INIT',
   OPEN_DEFAULT_MODAL = 'OPEN_DEFAULT_MODAL',
+  SEARCH_HISTORY = 'SEARCH_HISTORY',
   DEFAULT_MODAL_SHOWN = 'DEFAULT_MODAL_SHOWN',
   TOAST_ADD = 'TOAST_ADD',
   TOAST_DISMISS_REQUESTED = 'TOAST_DISMISS_REQUESTED',
@@ -31,11 +32,15 @@ export enum Action {
   COMPLETE_ANSWER = 'COMPLETE_ANSWER',
   PRACTICE_ANSWERED = 'PRACTICE_ANSWERED',
   PRACTICE_ANSWER_CANCELED = 'PRACTICE_ANSWER_CANCELED',
+  UPDATE_PRACTICE_HISTORY_LIST_CONTAINER = 'UPDATE_PRACTICE_HISTORY_LIST_CONTAINER',
+  CHANGE_PRACTICE_HISTORY_PAGE = 'CHANGE_PRACTICE_HISTORY_PAGE',
+  PREPARE_EXIST_PRACTICE = 'PREPARE_EXIST_PRACTICE',
 }
 
 export type ActionType =
   | { type: Action.INIT; }
   | { type: Action.OPEN_DEFAULT_MODAL; kind: ModalKindType }
+  | { type: Action.SEARCH_HISTORY; }
   | { type: Action.DEFAULT_MODAL_SHOWN; }
   | { type: Action.TOAST_ADD; toastMessage: ToastMessage }
   | { type: Action.TOAST_DISMISS_REQUESTED; uuid: string }
@@ -67,4 +72,10 @@ export type ActionType =
   | { type: Action.COMPLETE_ANSWER; }
   | { type: Action.PRACTICE_ANSWERED; practiceHistoryId: number, questionId: number, isCorrect: boolean, selectChoice: number[] }
   | { type: Action.PRACTICE_ANSWER_CANCELED; practiceHistoryId: number, questionId: number }
+  | {
+      type: Action.UPDATE_PRACTICE_HISTORY_LIST_CONTAINER; practiceHistoryDtos: PracticeHistoryDto[],
+      currentPage: number, totalSize: number, pages: number[]
+    }
+  | { type: Action.CHANGE_PRACTICE_HISTORY_PAGE; page: number }
+  | { type: Action.PREPARE_EXIST_PRACTICE; practiceHistoryId: number }
 ;

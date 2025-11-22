@@ -80,6 +80,31 @@
     </div>
   </footer>
 
+  <div id="sideMenu" class="side-menu translate-x-full">
+    <div class="side-menu-header">
+      <h3 class="side-menu-title">Menu</h3>
+      <div class="side-menu-actions">
+        <button type="button" id="sideMenuCloseBtn" class="side-menu-close-btn">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="side-menu-body">
+      <div class="side-menu-section-header">
+        <h5 class="side-menu-section-title">演習履歴</h5>
+      </div>
+      <div class="side-menu-tabs">
+        <button id="practiceHistoryForQListBtn" class="side-menu-tab side-menu-tab--active">
+          問題集
+        </button>
+        <button id="practiceHistoryForQuestionBtn" class="side-menu-tab side-menu-tab--inactive">
+          設問
+        </button>
+      </div>
+      <div id="practiceHistoryList" class="side-menu-history-list"></div>
+    </div>
+  </div>
+
   <div id="defaultModal" class="app-modal-overlay hidden"></div>
   <div id="toastParent" class="toast-stack"></div>
 

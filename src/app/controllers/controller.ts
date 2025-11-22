@@ -17,6 +17,7 @@ import { questionRepository } from '../repositories/question_repositoriy';
 import { generateErrorToastMessage } from '../utils/toast_message';
 import { QList } from '../models/entities';
 
+const ONE_DAY = 24 * 60 * 60 * 1000;
 export class Controller {
   private model: Model = structuredClone(initialModel);
 
@@ -30,6 +31,9 @@ export class Controller {
   private registerViewHandlers() {
     this.view.on(UIEvent.CLICK_SETTING_BTN, () =>
       this.dispatch({ type: Action.OPEN_DEFAULT_MODAL, kind: ModalKind.SETTING }),
+    );
+    this.view.on(UIEvent.CLICK_MENU_BTN, () =>
+      this.dispatch({ type: Action.SEARCH_HISTORY }),
     );
     this.view.on(UIEvent.DEFAULT_MODAL_SHOWN , () =>
       this.dispatch({ type: Action.DEFAULT_MODAL_SHOWN }),
@@ -91,6 +95,12 @@ export class Controller {
     this.view.on(UIEvent.PRACTICE_ANSWER_CANCELED, ({ practiceHistoryId, questionId }) =>
       this.dispatch({ type: Action.PRACTICE_ANSWER_CANCELED, practiceHistoryId, questionId }),
     );
+    this.view.on(UIEvent.CHANGE_PRACTICE_HISTORY_PAGE, ({ page }) =>
+      this.dispatch({ type: Action.CHANGE_PRACTICE_HISTORY_PAGE, page }),
+    );
+    this.view.on(UIEvent.CLICK_EXIST_PRACTICE_START, ({ practiceHistoryId }) =>
+      this.dispatch({ type: Action.PREPARE_EXIST_PRACTICE, practiceHistoryId }),
+    );
   }
 
   private dispatch(action: ActionType): void {
@@ -117,7 +127,7 @@ export class Controller {
           })
 
         const importDate = getLastImportedData();
-        if (importDate && (importDate.getTime() + 24 * 60 * 60 * 1000) < Date.now()) {
+        if (importDate && (importDate.getTime() + ONE_DAY) < Date.now()) {
           setLastUsedQuestions([]);
         }
         const lastUsedQuestions = getLastUsedQuestions();
@@ -189,6 +199,14 @@ export class Controller {
         break;
       }
 
+      case Effect.PREPARE_EXIST_PRACTICE: {
+        const practiceDetailDto = await practiceSevice.generatePracticeDetailDtoForExist(
+          fx.practiceHistoryId
+        );
+        this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+        break;
+      }
+
       case Effect.PREPARE_QUESTION_DETAIL: {
         try {
           const questionDetailDto = await questionService.generateQuestionDetailDto(
@@ -236,6 +254,14 @@ export class Controller {
         );
         this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
         this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+        break;
+      }
+
+      case Effect.SEARCH_PRACTICE_HISTORY: {
+        const { practiceHistoryDtos, currentPage, totalSize, pages } = await practiceSevice.selectPracticeHistoryDtos(
+          this.model.practiceHistorySearchForm
+        );
+        this.dispatch({ type: Action.UPDATE_PRACTICE_HISTORY_LIST_CONTAINER, practiceHistoryDtos, currentPage, totalSize, pages });
         break;
       }
       }

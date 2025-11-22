@@ -1,6 +1,6 @@
-import { CustomPracticeStartDto } from '../models/dtos';
+import { CustomPracticeStartDto, PracticeHistoryDto } from '../models/dtos';
 import { QList } from '../models/entities';
-import { el } from '../utils';
+import { el, formatToYMDHMS } from '../utils';
 
 export function generatePracticeStartContent(
   preparePracticeStart: QList | CustomPracticeStartDto,
@@ -58,7 +58,10 @@ export function generatePracticeStartContent(
   // 問題集種別（標準ラベル）
   const typeDiv = el('div', 'practice-info-type');
   const typeLabel = el('span', 'font-medium', '問題集種別：');
-  const typeBadge = el('span', 'q-list-card-badge-default', '標準');
+  const typeBadge = el('span',
+    `q-list-card-badge ${isCustom ? 'custom-badge' : 'default-badge'}`,
+    isCustom ? 'カスタム' : '標準'
+  );
   typeDiv.appendChild(typeLabel);
   typeDiv.appendChild(typeBadge);
   infoGrid.appendChild(typeDiv);
@@ -130,4 +133,40 @@ export function generatePracticeStartContent(
   content.appendChild(actions);
 
   return content;
+}
+
+export function generatePracticeHistoryListRow(
+  dto: PracticeHistoryDto,
+  handler: () => void,
+): HTMLElement {
+  const row = el('div', 'practice-history-list-row');
+
+  const header = el('div', 'practice-history-list-header');
+  const title = el('h4', 'practice-history-list-title', dto.qList.getName());
+  title.addEventListener('click', () => {
+    handler();
+  });
+  header.appendChild(title);
+
+  const detail = el('div', 'practice-history-list-detail');
+  const badges = el('div', 'practice-history-list-badges');
+  const isAnswerd = dto.practiceHistory.getIsAnswered();
+  const answerd = el('span',
+    `practice-history-list-badge ${isAnswerd ? 'answered-badge' : 'answering-badge'}`,
+    (isAnswerd ? '回答済み' : '演習途中')
+  );
+  badges.appendChild(answerd);
+  const isDefault = dto.qList.getIsDefault();
+  const qListkind = el('span',
+    `practice-history-list-badge ${isDefault ? 'default-badge' : 'custom-badge'}`,
+    (isDefault ? '標準' : 'カスタム')
+  );
+  badges.appendChild(qListkind);
+  detail.appendChild(badges);
+  const date = el('span', { text: formatToYMDHMS(dto.practiceHistory.getCreateAt())});
+  detail.appendChild(date);
+
+  row.appendChild(header);
+  row.appendChild(detail);
+  return row;
 }

@@ -25,6 +25,60 @@
     @apply text-2xl;
   }
 
+  /* sidemenu */
+  .side-menu {
+    @apply fixed right-0 top-0 h-full w-full overflow-y-auto
+      md:w-3/4 z-40
+      bg-gray-100 dark:bg-gray-900
+      shadow-lg
+      transform
+      transition-transform duration-300;
+  }
+  .side-menu-header {
+    @apply p-4 border-b border-gray-300 dark:border-gray-700
+      flex justify-between items-center;
+  }
+  .side-menu-title {
+    @apply text-lg font-semibold;
+  }
+  .side-menu-actions {
+    @apply flex space-x-2;
+  }
+  .side-menu-close-btn {
+    @apply w-10 h-10 flex items-center justify-center
+      border border-gray-500 text-gray-500
+      dark:border-gray-400 dark:text-gray-400
+      rounded
+      hover:bg-gray-200 dark:hover:bg-gray-700;
+  }
+  .side-menu-body {
+    @apply p-4;
+  }
+  .side-menu-section-header {
+    @apply mb-2;
+  }
+  .side-menu-section-title {
+    @apply text-lg font-medium;
+  }
+  .side-menu-tabs {
+    @apply flex border-b border-gray-300 dark:border-gray-700 mb-2;
+  }
+  .side-menu-tab {
+    @apply px-4 py-2 font-semibold
+      focus:outline-none;
+  }
+  .side-menu-tab--active {
+    @apply text-blue-600 dark:text-blue-400
+      border-b-2 border-blue-600 dark:border-blue-400;
+  }
+  .side-menu-tab--inactive {
+    @apply text-gray-600 dark:text-gray-300
+      hover:text-blue-600 dark:hover:text-blue-400;
+  }
+  .side-menu-history-list {
+    @apply space-y-2;
+  }
+
   /* modal */
   .app-modal-overlay {
     @apply fixed inset-0 z-50 flex items-center justify-center
@@ -187,7 +241,7 @@
   /* header
    ----------------------------------------------------- */
   .app-header {
-    @apply fixed top-0 inset-x-0 z-40
+    @apply fixed top-0 inset-x-0 z-30
       border-b border-gray-300 dark:border-gray-700
       bg-gray-100 dark:bg-gray-900;
   }
@@ -486,11 +540,9 @@
   .q-list-card-count {
     @apply font-semibold;
   }
-  .q-list-card-badge-default {
-    @apply inline-flex items-center
-      rounded-full border border-blue-200 bg-blue-50
-      px-2 py-0.5 text-[11px] font-medium text-blue-700
-      dark:border-blue-700 dark:bg-blue-900/40 dark:text-blue-100;
+  .q-list-card-badge {
+    @apply inline-flex items-center rounded
+      px-2 py-0.5 text-[11px] font-medium;
   }
   .q-list-card-meta {
     @apply text-[11px] text-gray-500 dark:text-gray-400
@@ -640,6 +692,43 @@
       dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600;
   }
 
+  /* practice history list row */
+  .practice-history-list-row {
+    @apply bg-white dark:bg-gray-800 p-4 
+      rounded shadow border dark:border-gray-700;
+  }
+  .practice-history-list-header {
+    @apply text-xl font-bold mb-2 text-gray-900 
+      dark:text-gray-100 cursor-pointer;
+  }
+  .practice-history-list-title {
+    @apply text-xl font-bold mb-2 text-gray-900
+      dark:text-gray-100 cursor-pointer;
+  }
+  .practice-history-list-detail {
+    @apply flex items-center justify-between text-sm
+      text-gray-700 dark:text-gray-300;
+  }
+  .practice-history-list-badges {
+    @apply flex items-center space-x-2;
+  }
+  .practice-history-list-badge {
+    @apply px-2 py-1 rounded text-xs font-semibold;
+  }
+
+  /* badge */
+  .answered-badge {
+    @apply bg-green-500 dark:bg-green-600 text-white;
+  }
+  .answering-badge {
+    @apply bg-yellow-500 dark:bg-yellow-600 text-white;
+  }
+  .default-badge {
+    @apply bg-blue-500 dark:bg-blue-600 text-white;
+  }
+  .custom-badge {
+    @apply bg-fuchsia-500 dark:bg-fuchsia-600 text-white;
+  }
   
   /* 正解 / 不正解 モーダル */
   .answer-modal {

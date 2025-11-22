@@ -4,6 +4,7 @@ import { Theme } from '../types';
 
 export enum UIEvent {
   CLICK_SETTING_BTN = 'CLICK_SETTING_BTN',
+  CLICK_MENU_BTN = 'CLICK_MENU_BTN',
   DEFAULT_MODAL_SHOWN = 'DEFAULT_MODAL_SHOWN',
   TOAST_DISMISS_REQUESTED = 'TOAST_DISMISS_REQUESTED',
   CHANGE_THEME = 'CHANGE_THEME',
@@ -24,10 +25,13 @@ export enum UIEvent {
   CLICK_COMPLETE_ANSWER = 'CLICK_COMPLETE_ANSWER',
   PRACTICE_ANSWERED = 'PRACTICE_ANSWERED',
   PRACTICE_ANSWER_CANCELED = 'PRACTICE_ANSWER_CANCELED',
+  CHANGE_PRACTICE_HISTORY_PAGE = 'CHANGE_PRACTICE_HISTORY_PAGE',
+  CLICK_EXIST_PRACTICE_START = 'CLICK_EXIST_PRACTICE_START',
 }
 
 export interface UIEventPayloadMap {
   [UIEvent.CLICK_SETTING_BTN]: undefined;
+  [UIEvent.CLICK_MENU_BTN]: undefined;
   [UIEvent.DEFAULT_MODAL_SHOWN]: undefined;
   [UIEvent.TOAST_DISMISS_REQUESTED]: { uuid: string };
   [UIEvent.CHANGE_THEME]: { theme: Theme };
@@ -52,4 +56,6 @@ export interface UIEventPayloadMap {
   [UIEvent.CLICK_COMPLETE_ANSWER]: undefined;
   [UIEvent.PRACTICE_ANSWERED]: { practiceHistoryId: number, questionId: number, isCorrect: boolean, selectChoice: number[] };
   [UIEvent.PRACTICE_ANSWER_CANCELED]: { practiceHistoryId: number, questionId: number };
+  [UIEvent.CHANGE_PRACTICE_HISTORY_PAGE]: { page: number };
+  [UIEvent.CLICK_EXIST_PRACTICE_START]: { practiceHistoryId: number };
 }

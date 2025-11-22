@@ -1,5 +1,5 @@
 import { QList } from '../models/entities';
-import { el, scrollToTop } from '../utils/view_utils';
+import { el } from '../utils/view_utils';
 
 interface QListRowHandlers {
   onClickSolve: (qListId: number) => void;
@@ -36,12 +36,11 @@ export function generateQListRow(qList: QList, handlers: QListRowHandlers): HTML
   headerMain.appendChild(title);
   headerMain.appendChild(subtitle);
   header.appendChild(headerMain);
-
-  // デフォルトバッジ
-  if (isDefault) {
-    const badge = el('span', 'q-list-card-badge-default', '標準');
-    header.appendChild(badge);
-  }
+  const badge = el('span',
+    `q-list-card-badge ${isDefault ? 'default-badge' : 'custom-badge'}`,
+    isDefault ? '標準' : 'カスタム'
+  );
+  header.appendChild(badge);
 
   // meta (UUID)
   const meta = el('div', 'q-list-card-meta', `UUID: ${uuid}`);
@@ -56,7 +55,6 @@ export function generateQListRow(qList: QList, handlers: QListRowHandlers): HTML
   });
   solveButton.addEventListener('click', () => {
     handlers.onClickSolve(qList.getId());
-    scrollToTop();
   });
 
   const editButton = el('button', {

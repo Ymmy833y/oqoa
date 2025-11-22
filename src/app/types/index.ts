@@ -1,3 +1,4 @@
+export * from './history_active_tab';
 export * from './modal_kind';
 export * from './modal_size';
 export * from './theme';

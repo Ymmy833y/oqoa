@@ -2,7 +2,7 @@ import { Model } from '../models';
 import { ActionType, Action } from './action_types';
 import { EffectType, Effect } from '../controllers/effect_types';
 import { getGoogleClientId, getGoogleFolderId, getTheme } from '../storages';
-import { ModalKind, Theme } from '../types';
+import { HistoryActiveTab, ModalKind, Theme } from '../types';
 
 export function update(model: Model, action: ActionType): { model: Model; effects: EffectType[] } {
   switch (action.type) {
@@ -28,6 +28,20 @@ export function update(model: Model, action: ActionType): { model: Model; effect
       model: { ...model, defailtModalKind: action.kind },
       effects: []
     }
+
+  case Action.SEARCH_HISTORY: {
+    if (model.historyActiveTab === HistoryActiveTab.PRACTICE) {
+      return {
+        model,
+        effects: [{ kind: Effect.SEARCH_PRACTICE_HISTORY }]
+      }
+    } else {
+      return {
+        model,
+        effects: [{ kind: Effect.SEARCH_ANS_HISTORY }]
+      }
+    }
+  }
 
   case Action.DEFAULT_MODAL_SHOWN:
     return {
@@ -181,6 +195,12 @@ export function update(model: Model, action: ActionType): { model: Model; effect
       }]
     }
 
+  case Action.PREPARE_EXIST_PRACTICE:
+    return {
+      model,
+      effects: [{ kind: Effect.PREPARE_EXIST_PRACTICE, practiceHistoryId: action.practiceHistoryId }]
+    }
+
   case Action.SHOW_PRACTICE:
     return {
       model: { ...model, practiceDetailDto: action.practiceDetailDto },
@@ -260,6 +280,47 @@ export function update(model: Model, action: ActionType): { model: Model; effect
         questionId: action.questionId
       }]
     }
+
+  case Action.UPDATE_PRACTICE_HISTORY_LIST_CONTAINER:
+    return {
+      model: {
+        ...model,
+        practiceHistorySearchForm: {
+          ...model.practiceHistorySearchForm,
+          currentPage: action.currentPage,
+          totalSize: action.totalSize,
+          pages: action.pages,
+        },
+        practiceHistoryDtos: action.practiceHistoryDtos
+      },
+      effects: []
+    }
+
+  case Action.CHANGE_PRACTICE_HISTORY_PAGE: {
+    if (model.historyActiveTab === HistoryActiveTab.PRACTICE) {
+      return {
+        model: {
+          ...model,
+          practiceHistorySearchForm: {
+            ...model.practiceHistorySearchForm,
+            currentPage: action.page
+          }
+        },
+        effects: [{ kind: Effect.SEARCH_PRACTICE_HISTORY }]
+      }
+    } else {
+      return {
+        model: {
+          ...model,
+          ansHistorySearchForm: {
+            ...model.ansHistorySearchForm,
+            currentPage: action.page
+          }
+        },
+        effects: [{ kind: Effect.SEARCH_ANS_HISTORY }]
+      }
+    }
+  }
 
   default:
     return { model, effects: []};
