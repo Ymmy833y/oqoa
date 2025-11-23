@@ -1,6 +1,6 @@
 import LZString from 'lz-string';
 import { Question } from '../models/entities';
-import { Theme } from '../types';
+import { Theme } from '../enums';
 
 const THEME_KEY = 'oqoa-theme';
 const GOOGLE_CLIENT_ID_KEY = 'oqoa-google-client-id';

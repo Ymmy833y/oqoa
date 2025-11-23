@@ -3,7 +3,7 @@ import { update } from '../updates/update';
 import { ActionType, Action } from '../updates/action_types';
 import { UIEvent } from '../views/ui_event_types';
 import { initialModel, Model } from '../models';
-import { ModalKind, Theme, ToastMessageKind } from '../types';
+import { ModalKind, Theme, ToastMessageKind } from '../enums';
 import { Effect, EffectType } from './effect_types';
 import { getLastImportedData, getLastUsedQuestions, setGoogleClientId, setGoogleFolderId, setLastUsedQuestions, setTheme } from '../storages';
 

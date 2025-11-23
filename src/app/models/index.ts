@@ -1,4 +1,4 @@
-import { HistoryActiveTab, ModalKindType, Theme, ToastMessage } from '../types'
+import { HistoryActiveTab, ModalKindType, Theme, ToastMessage } from '../enums'
 import { AnsHistoryDto, CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto, QuestionDetailDto } from './dtos';
 import { QList, Question } from './entities'
 import { QuestionSearchForm, PracticeHistorySearchForm, AnsHistorySearchForm } from './forms'

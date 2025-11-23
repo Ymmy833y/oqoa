@@ -5,7 +5,7 @@ import { ansHistoryRepository } from '../repositories/ans_history_repository';
 import { practiceHistoryRepository } from '../repositories/practice_history_repositoriy';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
-import { ToastMessage } from '../types';
+import { ToastMessage } from '../enums';
 import { generateErrorToastMessage, generateSuccessToastMessage, getPaginationPages, PAGE_ITEM_SIZE } from '../utils';
 
 export async function insertAnsHistory(

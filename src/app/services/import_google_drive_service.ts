@@ -3,7 +3,7 @@ import { QList, Question } from '../models/entities';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
 import { setLastImportedData, setLastUsedQuestions } from '../storages';
-import { ToastMessage, ToastMessageKind } from '../types';
+import { ToastMessage, ToastMessageKind } from '../enums';
 
 export async function importProbelmForGoogleDrive(clientId: string, folderId: string): Promise<ToastMessage> {
   try {

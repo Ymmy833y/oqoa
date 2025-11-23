@@ -1,6 +1,6 @@
 import { CustomPracticeStartDto } from '../models/dtos';
 import { QList } from '../models/entities';
-import { HistoryActiveTab, Theme } from '../types';
+import { HistoryActiveTab, Theme } from '../enums';
 
 export enum UIEvent {
   CLICK_SETTING_BTN = 'CLICK_SETTING_BTN',

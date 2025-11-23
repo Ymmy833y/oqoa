@@ -1,6 +1,6 @@
 import { PracticeDetailDto } from '../models/dtos';
 import { AnsHistory, Question } from '../models/entities';
-import { ModalSize } from '../types';
+import { ModalSize } from '../enums';
 import { Modal, shuffle } from '../utils';
 import { el } from '../utils/view_utils';
 

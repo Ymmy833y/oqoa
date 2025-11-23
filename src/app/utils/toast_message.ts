@@ -1,4 +1,4 @@
-import { ToastMessage, ToastMessageKind } from '../types';
+import { ToastMessage, ToastMessageKind } from '../enums';
 
 export function generateSuccessToastMessage(message: string): ToastMessage {
   return {

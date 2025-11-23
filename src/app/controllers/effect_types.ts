@@ -1,6 +1,6 @@
 import { CustomPracticeStartDto } from '../models/dtos';
 import { QList } from '../models/entities';
-import { Theme } from '../types';
+import { Theme } from '../enums';
 
 export enum Effect {
   INIT_REPOSITORY = 'INIT_REPOSITORY',

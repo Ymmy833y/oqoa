@@ -2,7 +2,7 @@ import { Model } from '../models';
 import { ActionType, Action } from './action_types';
 import { EffectType, Effect } from '../controllers/effect_types';
 import { getGoogleClientId, getGoogleFolderId, getTheme } from '../storages';
-import { HistoryActiveTab, ModalKind, Theme } from '../types';
+import { HistoryActiveTab, ModalKind, Theme } from '../enums';
 
 export function update(model: Model, action: ActionType): { model: Model; effects: EffectType[] } {
   switch (action.type) {

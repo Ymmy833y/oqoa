@@ -3,7 +3,7 @@ import { PracticeDetailDto } from '../models/dtos';
 import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { QListSearchForm } from '../models/forms/qlist_search_form';
-import { HistoryActiveTab, ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
+import { HistoryActiveTab, ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../enums';
 import { el, Modal, renderPagination, scrollToTop } from '../utils';
 import { generateAnsHistoryListRow } from './ans_history_view';
 import { generatePracticeHistoryListRow, generatePracticeStartContent } from './pracitce_view';

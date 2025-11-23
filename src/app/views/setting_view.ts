@@ -1,4 +1,4 @@
-import { Theme } from '../types';
+import { Theme } from '../enums';
 import { el } from '../utils';
 
 interface SettingModalHandlers {

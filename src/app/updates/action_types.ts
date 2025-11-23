@@ -1,7 +1,7 @@
 import { AnsHistoryDto, CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto, QuestionDetailDto } from '../models/dtos';
 import {  } from '../models/dtos/question_detail_dto';
 import { QList, Question } from '../models/entities';
-import { HistoryActiveTab, ModalKindType, Theme, ToastMessage } from '../types';
+import { HistoryActiveTab, ModalKindType, Theme, ToastMessage } from '../enums';
 
 export enum Action {
   INIT = 'INIT',

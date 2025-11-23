@@ -1,4 +1,4 @@
-import { ModalSize } from '../types';
+import { ModalSize } from '../enums';
 import { el } from './view_utils';
 
 export class Modal {
