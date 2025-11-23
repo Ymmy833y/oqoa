@@ -2,6 +2,7 @@ import { Model } from '../models';
 import { PracticeDetailDto } from '../models/dtos';
 import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
+import { QListSearchForm } from '../models/forms/qlist_search_form';
 import { HistoryActiveTab, ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
 import { el, Modal, renderPagination, scrollToTop } from '../utils';
 import { generateAnsHistoryListRow } from './ans_history_view';
@@ -29,6 +30,7 @@ export class View {
 
     practiceContainer: HTMLDivElement;
     qListsContainer: HTMLDivElement;
+    qListPagination: HTMLDivElement;
     questionsContainer: HTMLDivElement;
     questionsPagination: HTMLDivElement;
     questionSearchKeyword: HTMLInputElement;
@@ -56,6 +58,7 @@ export class View {
 
       practiceContainer: this.$('#practiceContainer'),
       qListsContainer: this.$('#qListsContainer'),
+      qListPagination: this.$('#qListPagination'),
       questionsContainer: this.$('#questionsContainer'),
       questionsPagination: this.$('#questionsPagination'),
       questionSearchKeyword: this.$('#questionSearchKeyword'),
@@ -112,7 +115,7 @@ export class View {
     if (model.practiceDetailDto !== null) {
       this.applyPracticeContent(model.practiceDetailDto);
     }
-    this.applyQListsContent(model.qLists);
+    this.applyQListsContent(model.qListSearchForm, model.qLists);
     this.applyQuestionsContent(model.questions);
 
     this.applyQuestionSearchForm(model.questionSearchForm, model.questions.length);
@@ -250,7 +253,7 @@ export class View {
     this.els.practiceContainer.appendChild(content);
   }
 
-  private applyQListsContent(qLists: QList[]) {
+  private applyQListsContent(form: QListSearchForm, qLists: QList[]) {
     this.els.qListsContainer.innerHTML = '';
     qLists.forEach(qList => {
       const card = generateQListRow(
@@ -266,6 +269,11 @@ export class View {
       );
       this.els.qListsContainer.appendChild(card);
     });
+
+    renderPagination(this.els.qListPagination,
+      form.currentPage, form.pages, qLists.length, form.totalSize,
+      (page) => this.emit(UIEvent.CHANGE_QLIST_PAGE, { page })
+    );
   }
 
   private applyQuestionsContent(questions: Question[]) {

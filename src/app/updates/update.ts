@@ -98,8 +98,29 @@ export function update(model: Model, action: ActionType): { model: Model; effect
 
   case Action.UPDATE_QLIST_CONTAINER:
     return {
-      model: { ...model, qLists: action.qLists },
+      model: {
+        ...model,
+        qLists: action.qLists,
+        qListSearchForm: {
+          ...model.qListSearchForm,
+          currentPage: action.currentPage,
+          totalSize: action.totalSize,
+          pages: action.pages,
+        }
+      },
       effects: []
+    }
+
+  case Action.CHANGE_QLIST_PAGE:
+    return {
+      model: {
+        ...model,
+        qListSearchForm: {
+          ...model.qListSearchForm,
+          currentPage: action.page,
+        }
+      },
+      effects: [{ kind: Effect.SEARCH_QLIST }]
     }
 
   case Action.UPDATE_QUESTION_LIST_CONTAINER:

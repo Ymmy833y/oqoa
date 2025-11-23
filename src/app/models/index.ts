@@ -2,6 +2,7 @@ import { HistoryActiveTab, ModalKindType, Theme, ToastMessage } from '../types'
 import { AnsHistoryDto, CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto, QuestionDetailDto } from './dtos';
 import { QList, Question } from './entities'
 import { QuestionSearchForm, PracticeHistorySearchForm, AnsHistorySearchForm } from './forms'
+import { QListSearchForm } from './forms/qlist_search_form';
 
 export interface Model {
   theme: Theme,
@@ -15,6 +16,7 @@ export interface Model {
   questionDetailDto: QuestionDetailDto | null,
 
   qLists: QList[],
+  qListSearchForm: QListSearchForm,
   questions: Question[],
   questionSearchForm: QuestionSearchForm,
 
@@ -39,6 +41,11 @@ export const initialModel: Model = {
   questionDetailDto: null,
 
   qLists: [],
+  qListSearchForm: {
+    currentPage: 0,
+    totalSize: 0,
+    pages: [],
+  },
   questions: [],
   questionSearchForm: {
     keyword: '',

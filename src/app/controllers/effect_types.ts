@@ -8,6 +8,7 @@ export enum Effect {
   UPDATE_GOOGLE_CLIENT_ID = 'UPDATE_GOOGLE_CLIENT_ID',
   UPDATE_GOOGLE_FOLDER_ID = 'UPDATE_GOOGLE_FOLDER_ID',
   IMPORT_GOOGLE_DRIVE = 'IMPORT_GOOGLE_DRIVE',
+  SEARCH_QLIST = 'SEARCH_QLIST',
   SEARCH_QUESTION = 'SEARCH_QUESTION',
   PREPARE_PRACTICE_START = 'PREPARE_PRACTICE_START',
   PREPARE_PRACTICE = 'PREPARE_PRACTICE',
@@ -26,6 +27,7 @@ export type EffectType =
   | { kind: Effect.UPDATE_GOOGLE_CLIENT_ID; googleClientId: string }
   | { kind: Effect.UPDATE_GOOGLE_FOLDER_ID; googleFolderId: string }
   | { kind: Effect.IMPORT_GOOGLE_DRIVE; googleClientId: string; googleFolderId: string }
+  | { kind: Effect.SEARCH_QLIST }
   | { kind: Effect.SEARCH_QUESTION }
   | { kind: Effect.PREPARE_PRACTICE_START; qListId: number }
   | {

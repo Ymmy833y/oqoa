@@ -11,6 +11,7 @@ import * as ansHistoryService from '../services/ans_history_service';
 import * as importGoogleDriveService from '../services/import_google_drive_service';
 import * as indexeddbService from '../services/indexeddb_service';
 import * as practiceSevice from '../services/practice_sevice';
+import * as qListService from '../services/qlist_service';
 import * as questionService from '../services/question_service';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
@@ -62,6 +63,9 @@ export class Controller {
     );
     this.view.on(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, () =>
       this.dispatch({ type: Action.SEARCH_QUESTION }),
+    );
+    this.view.on(UIEvent.CHANGE_QLIST_PAGE, ({ page }) =>
+      this.dispatch({ type: Action.CHANGE_QLIST_PAGE, page }),
     );
     this.view.on(UIEvent.CHANGE_QUESTIONS_PAGE, ({ page }) =>
       this.dispatch({ type: Action.CHANGE_QUESTIONS_PAGE, page }),
@@ -139,10 +143,16 @@ export class Controller {
           questionRepository.bulkInsert(lastUsedQuestions);
         }
 
-        const qLists = await qListRepository.selectByStandard();
-        this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
-        const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
+        const qListData = await qListService.selectQListsForSearchForm(this.model.qListSearchForm);
+        this.dispatch({
+          type: Action.UPDATE_QLIST_CONTAINER, qLists: qListData.qLists,
+          currentPage: qListData.currentPage, totalSize: qListData.totalSize, pages: qListData.pages
+        });
+        const questionData = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        this.dispatch({
+          type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions: questionData.questions,
+          currentPage: qListData.currentPage, totalSize: questionData.totalSize, pages: questionData.pages
+        });
         break;
       }
 
@@ -171,11 +181,23 @@ export class Controller {
         this.dispatch({ type: Action.TOAST_ADD, toastMessage })
 
         if (toastMessage.kind === ToastMessageKind.SUCCESS) {
-          const qLists = await qListRepository.selectByStandard();
-          this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists });
-          const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-          this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
+          const qListData = await qListService.selectQListsForSearchForm(this.model.qListSearchForm);
+          this.dispatch({
+            type: Action.UPDATE_QLIST_CONTAINER, qLists: qListData.qLists,
+            currentPage: qListData.currentPage, totalSize: qListData.totalSize, pages: qListData.pages
+          });
+          const questionData = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+          this.dispatch({
+            type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions: questionData.questions,
+            currentPage: qListData.currentPage, totalSize: questionData.totalSize, pages: questionData.pages
+          });
         }
+        break;
+      }
+
+      case Effect.SEARCH_QLIST: {
+        const { qLists, currentPage, totalSize, pages } = await qListService.selectQListsForSearchForm(this.model.qListSearchForm);
+        this.dispatch({ type: Action.UPDATE_QLIST_CONTAINER, qLists, currentPage, totalSize, pages });
         break;
       }
 

@@ -9,7 +9,8 @@ export function generatePracticeStartContent(
     isShuffleQuestions: boolean, isShuffleChoices: boolean
   ) => void
 ): HTMLElement {
-  const isCustom = !(preparePracticeStart instanceof QList);
+  const existQList = !(preparePracticeStart instanceof QList);
+  const isDefault = (preparePracticeStart instanceof QList) && preparePracticeStart.getIsDefault();
   const content = el('div', 'app-modal-body');
 
   const infoSection = el('section', 'app-modal-section');
@@ -20,14 +21,14 @@ export function generatePracticeStartContent(
   const nameField = el('div', 'app-modal-field');
   const nameLabel = el('span', 'app-modal-field-label', '問題集名');
   nameField.appendChild(nameLabel);
-  if (isCustom) {
+  if (existQList) {
     const nameInput = el('input', {
       id: 'customPracticeName',
       class: 'practice-info-name-input',
       attr: [
         { type: 'text' },
         { name: 'customPracticeName' },
-        { value: `${preparePracticeStart.isReview ? '【復習】' : ''}${preparePracticeStart.name + new Date().toISOString()}` },
+        { value: `${preparePracticeStart.isReview ? '【復習】' : ''}${preparePracticeStart.name} ${formatToYMDHMS(new Date())}` },
         { placeholder: '例：苦手問題だけ演習' },
       ],
     });
@@ -47,7 +48,7 @@ export function generatePracticeStartContent(
   // 問題数
   const statDiv = el('div', 'practice-info-stat');
   const statLabel = el('span', 'font-medium', '問題数：');
-  const questionSize = isCustom
+  const questionSize = existQList
     ? preparePracticeStart.questionIds.length
     : preparePracticeStart.getQuestions().length;
   const statValue = el('span', undefined, `${questionSize}問`);
@@ -59,8 +60,8 @@ export function generatePracticeStartContent(
   const typeDiv = el('div', 'practice-info-type');
   const typeLabel = el('span', 'font-medium', '問題集種別：');
   const typeBadge = el('span',
-    `q-list-card-badge ${isCustom ? 'custom-badge' : 'default-badge'}`,
-    isCustom ? 'カスタム' : '標準'
+    `q-list-card-badge ${isDefault ? 'default-badge' : 'custom-badge'}`,
+    isDefault ? '標準' : 'カスタム'
   );
   typeDiv.appendChild(typeLabel);
   typeDiv.appendChild(typeBadge);
