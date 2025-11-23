@@ -1,7 +1,7 @@
-import { CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto, QuestionDetailDto } from '../models/dtos';
+import { AnsHistoryDto, CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto, QuestionDetailDto } from '../models/dtos';
 import {  } from '../models/dtos/question_detail_dto';
 import { QList, Question } from '../models/entities';
-import { ModalKindType, Theme, ToastMessage } from '../types';
+import { HistoryActiveTab, ModalKindType, Theme, ToastMessage } from '../types';
 
 export enum Action {
   INIT = 'INIT',
@@ -33,14 +33,15 @@ export enum Action {
   PRACTICE_ANSWERED = 'PRACTICE_ANSWERED',
   PRACTICE_ANSWER_CANCELED = 'PRACTICE_ANSWER_CANCELED',
   UPDATE_PRACTICE_HISTORY_LIST_CONTAINER = 'UPDATE_PRACTICE_HISTORY_LIST_CONTAINER',
-  CHANGE_PRACTICE_HISTORY_PAGE = 'CHANGE_PRACTICE_HISTORY_PAGE',
+  UPDATE_ANS_HISTORY_LIST_CONTAINER = 'UPDATE_ANS_HISTORY_LIST_CONTAINER',
+  CHANGE_HISTORY_PAGE = 'CHANGE_HISTORY_PAGE',
   PREPARE_EXIST_PRACTICE = 'PREPARE_EXIST_PRACTICE',
 }
 
 export type ActionType =
   | { type: Action.INIT; }
   | { type: Action.OPEN_DEFAULT_MODAL; kind: ModalKindType }
-  | { type: Action.SEARCH_HISTORY; }
+  | { type: Action.SEARCH_HISTORY; activeTab?: HistoryActiveTab }
   | { type: Action.DEFAULT_MODAL_SHOWN; }
   | { type: Action.TOAST_ADD; toastMessage: ToastMessage }
   | { type: Action.TOAST_DISMISS_REQUESTED; uuid: string }
@@ -76,6 +77,10 @@ export type ActionType =
       type: Action.UPDATE_PRACTICE_HISTORY_LIST_CONTAINER; practiceHistoryDtos: PracticeHistoryDto[],
       currentPage: number, totalSize: number, pages: number[]
     }
-  | { type: Action.CHANGE_PRACTICE_HISTORY_PAGE; page: number }
+  | {
+      type: Action.UPDATE_ANS_HISTORY_LIST_CONTAINER; ansHistoryDtos: AnsHistoryDto[],
+      currentPage: number, totalSize: number, pages: number[]
+    }
+  | { type: Action.CHANGE_HISTORY_PAGE; page: number }
   | { type: Action.PREPARE_EXIST_PRACTICE; practiceHistoryId: number }
 ;

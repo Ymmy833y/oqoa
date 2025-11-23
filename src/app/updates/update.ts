@@ -30,14 +30,15 @@ export function update(model: Model, action: ActionType): { model: Model; effect
     }
 
   case Action.SEARCH_HISTORY: {
-    if (model.historyActiveTab === HistoryActiveTab.PRACTICE) {
+    const activeTab = action.activeTab ?? model.historyActiveTab;
+    if (activeTab === HistoryActiveTab.PRACTICE) {
       return {
-        model,
+        model: { ...model, historyActiveTab: activeTab },
         effects: [{ kind: Effect.SEARCH_PRACTICE_HISTORY }]
       }
     } else {
       return {
-        model,
+        model: { ...model, historyActiveTab: activeTab },
         effects: [{ kind: Effect.SEARCH_ANS_HISTORY }]
       }
     }
@@ -296,7 +297,22 @@ export function update(model: Model, action: ActionType): { model: Model; effect
       effects: []
     }
 
-  case Action.CHANGE_PRACTICE_HISTORY_PAGE: {
+  case Action.UPDATE_ANS_HISTORY_LIST_CONTAINER:
+    return {
+      model: {
+        ...model,
+        ansHistorySearchForm: {
+          ...model.ansHistorySearchForm,
+          currentPage: action.currentPage,
+          totalSize: action.totalSize,
+          pages: action.pages,
+        },
+        ansHistoryDtos: action.ansHistoryDtos
+      },
+      effects: []
+    }
+
+  case Action.CHANGE_HISTORY_PAGE: {
     if (model.historyActiveTab === HistoryActiveTab.PRACTICE) {
       return {
         model: {

@@ -14,10 +14,11 @@ import * as practiceSevice from '../services/practice_sevice';
 import * as questionService from '../services/question_service';
 import { qListRepository } from '../repositories/qlist_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
-import { generateErrorToastMessage } from '../utils/toast_message';
+import { generateErrorToastMessage } from '../utils';
 import { QList } from '../models/entities';
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
+const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+
 export class Controller {
   private model: Model = structuredClone(initialModel);
 
@@ -96,10 +97,13 @@ export class Controller {
       this.dispatch({ type: Action.PRACTICE_ANSWER_CANCELED, practiceHistoryId, questionId }),
     );
     this.view.on(UIEvent.CHANGE_PRACTICE_HISTORY_PAGE, ({ page }) =>
-      this.dispatch({ type: Action.CHANGE_PRACTICE_HISTORY_PAGE, page }),
+      this.dispatch({ type: Action.CHANGE_HISTORY_PAGE, page }),
     );
     this.view.on(UIEvent.CLICK_EXIST_PRACTICE_START, ({ practiceHistoryId }) =>
       this.dispatch({ type: Action.PREPARE_EXIST_PRACTICE, practiceHistoryId }),
+    );
+    this.view.on(UIEvent.CHANGE_HISTORY_ACTIVE_TAB, ({ activeTab }) =>
+      this.dispatch({ type: Action.SEARCH_HISTORY, activeTab }),
     );
   }
 
@@ -127,7 +131,7 @@ export class Controller {
           })
 
         const importDate = getLastImportedData();
-        if (importDate && (importDate.getTime() + ONE_DAY) < Date.now()) {
+        if (importDate && (importDate.getTime() + THREE_DAYS) < Date.now()) {
           setLastUsedQuestions([]);
         }
         const lastUsedQuestions = getLastUsedQuestions();
@@ -262,6 +266,14 @@ export class Controller {
           this.model.practiceHistorySearchForm
         );
         this.dispatch({ type: Action.UPDATE_PRACTICE_HISTORY_LIST_CONTAINER, practiceHistoryDtos, currentPage, totalSize, pages });
+        break;
+      }
+
+      case Effect.SEARCH_ANS_HISTORY: {
+        const { ansHistoryDtos, currentPage, totalSize, pages } = await ansHistoryService.selectAnsHistoryDtos(
+          this.model.ansHistorySearchForm
+        );
+        this.dispatch({ type: Action.UPDATE_ANS_HISTORY_LIST_CONTAINER, ansHistoryDtos, currentPage, totalSize, pages });
         break;
       }
       }

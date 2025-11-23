@@ -4,6 +4,7 @@ import { QList, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { HistoryActiveTab, ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../types';
 import { el, Modal, renderPagination, scrollToTop } from '../utils';
+import { generateAnsHistoryListRow } from './ans_history_view';
 import { generatePracticeHistoryListRow, generatePracticeStartContent } from './pracitce_view';
 import { generateQListRow } from './qlist_view';
 import { generateQuestionContent, generatePracticeContent, generateQuestionListRow, generatePracticeResultContent } from './question_view';
@@ -22,6 +23,8 @@ export class View {
     toastParent: HTMLDivElement;
 
     sideMenuCloseBtn: HTMLButtonElement;
+    historyForPracticeBtn: HTMLButtonElement;
+    historyForQuestionBtn: HTMLButtonElement;
     practiceHistoryList: HTMLDivElement;
 
     practiceContainer: HTMLDivElement;
@@ -47,6 +50,8 @@ export class View {
       toastParent: this.$('#toastParent'),
 
       sideMenuCloseBtn: this.$('#sideMenuCloseBtn'),
+      historyForPracticeBtn: this.$('#historyForPracticeBtn'),
+      historyForQuestionBtn: this.$('#historyForQuestionBtn'),
       practiceHistoryList: this.$('#practiceHistoryList'),
 
       practiceContainer: this.$('#practiceContainer'),
@@ -69,6 +74,14 @@ export class View {
     });
     this.els.sideMenuCloseBtn.addEventListener('click', () => {
       this.hideSideMenuContent();
+    });
+    this.els.historyForPracticeBtn.addEventListener('click', () => {
+      this.emit(UIEvent.CHANGE_HISTORY_ACTIVE_TAB, { activeTab: HistoryActiveTab.PRACTICE });
+      this.toggleHistoryTab(this.els.historyForPracticeBtn, this.els.historyForQuestionBtn);
+    });
+    this.els.historyForQuestionBtn.addEventListener('click', () => {
+      this.emit(UIEvent.CHANGE_HISTORY_ACTIVE_TAB, { activeTab: HistoryActiveTab.QUESTION });
+      this.toggleHistoryTab(this.els.historyForQuestionBtn, this.els.historyForPracticeBtn);
     });
     this.els.questionSearchKeyword.addEventListener('input', () => {
       const keyword = this.els.questionSearchKeyword.value;
@@ -301,7 +314,31 @@ export class View {
       renderPagination(pagination,
         form.currentPage, form.pages, dtos.length, form.totalSize,
         (page) => this.emit(UIEvent.CHANGE_PRACTICE_HISTORY_PAGE, { page })
-      )
+      );
+    } else {
+      const dtos = model.ansHistoryDtos;
+      const form = model.ansHistorySearchForm;
+      dtos.forEach(dto => {
+        const card = generateAnsHistoryListRow(dto,
+          {
+            onClickPractice: () => {
+              this.emit(UIEvent.CLICK_EXIST_PRACTICE_START, { practiceHistoryId: dto.ansHistory.getPracticeHistoryId() });
+              this.hideSideMenuContent();
+            },
+            onClickQuestion: () => {
+              this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, {
+                questionId: dto.question.getId(),
+                ansHistoryId: dto.ansHistory.getId(),
+              });
+            }
+          }
+        );
+        this.els.practiceHistoryList.appendChild(card);
+      });
+      renderPagination(pagination,
+        form.currentPage, form.pages, dtos.length, form.totalSize,
+        (page) => this.emit(UIEvent.CHANGE_PRACTICE_HISTORY_PAGE, { page })
+      );
     }
   }
 
@@ -313,6 +350,13 @@ export class View {
   private hideSideMenuContent() {
     this.els.sideMenu.classList.add('translate-x-full');
     this.els.sideMenu.classList.remove('translate-x-0');
+  }
+
+  private toggleHistoryTab(activeTab: HTMLButtonElement, inactiveTab: HTMLButtonElement) {
+    activeTab.classList.remove('side-menu-tab--inactive');
+    activeTab.classList.add('side-menu-tab--active');
+    inactiveTab.classList.remove('side-menu-tab--active');
+    inactiveTab.classList.add('side-menu-tab--inactive');
   }
 
   private $<T extends Element>(selector: string): T {

@@ -1,6 +1,6 @@
 import { CustomPracticeStartDto } from '../models/dtos';
 import { QList } from '../models/entities';
-import { Theme } from '../types';
+import { HistoryActiveTab, Theme } from '../types';
 
 export enum UIEvent {
   CLICK_SETTING_BTN = 'CLICK_SETTING_BTN',
@@ -27,6 +27,7 @@ export enum UIEvent {
   PRACTICE_ANSWER_CANCELED = 'PRACTICE_ANSWER_CANCELED',
   CHANGE_PRACTICE_HISTORY_PAGE = 'CHANGE_PRACTICE_HISTORY_PAGE',
   CLICK_EXIST_PRACTICE_START = 'CLICK_EXIST_PRACTICE_START',
+  CHANGE_HISTORY_ACTIVE_TAB = 'CHANGE_HISTORY_ACTIVE_TAB',
 }
 
 export interface UIEventPayloadMap {
@@ -58,4 +59,5 @@ export interface UIEventPayloadMap {
   [UIEvent.PRACTICE_ANSWER_CANCELED]: { practiceHistoryId: number, questionId: number };
   [UIEvent.CHANGE_PRACTICE_HISTORY_PAGE]: { page: number };
   [UIEvent.CLICK_EXIST_PRACTICE_START]: { practiceHistoryId: number };
+  [UIEvent.CHANGE_HISTORY_ACTIVE_TAB]: { activeTab: HistoryActiveTab };
 }

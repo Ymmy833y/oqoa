@@ -702,8 +702,11 @@
       dark:text-gray-100 cursor-pointer;
   }
   .practice-history-list-title {
-    @apply text-xl font-bold mb-2 text-gray-900
+    @apply text-xl font-bold mb-4 text-gray-900
       dark:text-gray-100 cursor-pointer;
+  }
+  .practice-history-list-title:hover {
+    @apply text-blue-600 dark:text-blue-400;
   }
   .practice-history-list-detail {
     @apply flex items-center justify-between text-sm
@@ -714,6 +717,27 @@
   }
   .practice-history-list-badge {
     @apply px-2 py-1 rounded text-xs font-semibold;
+  }
+
+  .ans-history-row {
+    @apply bg-white dark:bg-gray-800 p-4 rounded shadow
+      border dark:border-gray-700;
+  }
+  .ans-history-header {
+    @apply flex items-center justify-between cursor-pointer gap-2
+      py-2 text-sm;
+  }
+  .ans-history-header:hover {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+  .ans-history-q-list-name {
+    @apply mt-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer;
+  }
+  .ans-history-q-list-name:hover {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+  .ans-history-date {
+    @apply mt-2 text-right text-xs text-gray-500 dark:text-gray-400;
   }
 
   /* badge */
