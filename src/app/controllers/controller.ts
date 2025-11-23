@@ -73,6 +73,12 @@ export class Controller {
     this.view.on(UIEvent.CLICK_START_PRACTICE_SET, ({ qListId }) =>
       this.dispatch({ type: Action.PREPARE_PRACTICE_START, qListId }),
     );
+    this.view.on(UIEvent.CLICK_QLIST_EDIT, ({ qList }) =>
+      this.dispatch({ type: Action.SHOW_QLIST_EDIT, qList }),
+    );
+    this.view.on(UIEvent.CLICK_EDIT_APPLY, ({ qList, name, isDefault }) =>
+      this.dispatch({ type: Action.UPDATE_QLIST, qList, name, isDefault }),
+    );
     this.view.on(UIEvent.CLICK_RESTART_PRACTICE_SET, ({ name, questionIds }) => {
       this.dispatch({
         type: Action.SHOW_CUSTOM_PRACTICE_START,
@@ -210,6 +216,19 @@ export class Controller {
       case Effect.PREPARE_PRACTICE_START: {
         const qList = await qListRepository.selectById(fx.qListId);
         this.dispatch({ type: Action.SHOW_PRACTICE_START, qList });
+        break;
+      }
+
+      case Effect.UPDATE_QLIST: {
+        const qList = fx.qList;
+        qList.setName(fx.name);
+        qList.setIsDefault(fx.isDefault);
+        await qListRepository.update(qList.generateRow());
+        const qListData = await qListService.selectQListsForSearchForm(this.model.qListSearchForm);
+        this.dispatch({
+          type: Action.UPDATE_QLIST_CONTAINER, qLists: qListData.qLists,
+          currentPage: qListData.currentPage, totalSize: qListData.totalSize, pages: qListData.pages
+        });
         break;
       }
 

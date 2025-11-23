@@ -1,11 +1,13 @@
 export enum ModalKind {
   SETTING = 'SETTING',
   PRACTICE_START = 'PRACTICE_START',
+  QLIST_EDIT = 'QLIST_EDIT',
   QUESTION_DETAIL = 'QUESTION_DETAIL',
 };
 
 export type ModalKindType =
   | 'SETTING'
   | 'PRACTICE_START'
+  | 'QLIST_EDIT'
   | 'QUESTION_DETAIL'
 ;

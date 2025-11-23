@@ -20,6 +20,7 @@ export enum UIEvent {
   CLICK_RESTART_PRACTICE_SET = 'CLICK_RESTART_PRACTICE_SET',
   CLICK_QLIST_EDIT = 'CLICK_QLIST_EDIT',
   CLICK_PRACTICE_START = 'CLICK_PRACTICE_START',
+  CLICK_EDIT_APPLY = 'CLICK_EDIT_APPLY',
   CLICK_QUESTION_LIST_ROW = 'CLICK_QUESTION_LIST_ROW',
   CLICK_PRACTICE_PREV = 'CLICK_PRACTICE_PREV',
   CLICK_PRACTICE_NEXT = 'CLICK_PRACTICE_NEXT',
@@ -47,12 +48,13 @@ export interface UIEventPayloadMap {
   [UIEvent.CHANGE_QLIST_PAGE]: { page: number };
   [UIEvent.CLICK_START_PRACTICE_SET]: { qListId: number };
   [UIEvent.CLICK_RESTART_PRACTICE_SET]: { name: string, questionIds: number[] };
-  [UIEvent.CLICK_QLIST_EDIT]: { qListId: number };
+  [UIEvent.CLICK_QLIST_EDIT]: { qList: QList };
   [UIEvent.CLICK_PRACTICE_START]: {
     preparePracticeStart: QList | CustomPracticeStartDto,
     isShuffleQuestions: boolean,
     isShuffleChoices: boolean
   };
+  [UIEvent.CLICK_EDIT_APPLY]: { qList: QList, name: string, isDefault: boolean };
   [UIEvent.CLICK_QUESTION_LIST_ROW]: { questionId: number, ansHistoryId?: number };
   [UIEvent.CLICK_PRACTICE_PREV]: undefined;
   [UIEvent.CLICK_PRACTICE_NEXT]: undefined;

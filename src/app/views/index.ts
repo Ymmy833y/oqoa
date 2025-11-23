@@ -7,7 +7,7 @@ import { HistoryActiveTab, ModalKind, ModalSize, ToastMessage, ToastMessageKind 
 import { el, Modal, renderPagination, scrollToTop } from '../utils';
 import { generateAnsHistoryListRow } from './ans_history_view';
 import { generatePracticeHistoryListRow, generatePracticeStartContent } from './pracitce_view';
-import { generateQListRow } from './qlist_view';
+import { generateQListEditContent, generateQListRow } from './qlist_view';
 import { generateQuestionContent, generatePracticeContent, generateQuestionListRow, generatePracticeResultContent } from './question_view';
 import { generateSettingModalConetnt } from './setting_view';
 import { UIEventPayloadMap, UIEvent } from './ui_event_types';
@@ -201,6 +201,17 @@ export class View {
       );
       this.defaultModal.setModal(content, '演習開始', ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
+    } else if (model.defailtModalKind === ModalKind.QLIST_EDIT && model.editQList) {
+      const qList = model.editQList;
+      const content = generateQListEditContent(
+        qList,
+        (name, isDefault) => {
+          this.emit(UIEvent.CLICK_EDIT_APPLY, { qList, name, isDefault });
+          this.defaultModal.hide();
+        }
+      );
+      this.defaultModal.setModal(content, `問題集「${qList.getName()}」 編集`, ModalSize.XL);
+      this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
     } else if (model.defailtModalKind === ModalKind.QUESTION_DETAIL && model.questionDetailDto) {
       const ansHistory = model.questionDetailDto.ansHistory ?? undefined;
       const content = generateQuestionContent(
@@ -262,8 +273,8 @@ export class View {
           onClickSolve: (qListId) => {
             this.emit(UIEvent.CLICK_START_PRACTICE_SET, { qListId });
           },
-          onClickEdit: (qListId) => {
-            this.emit(UIEvent.CLICK_QLIST_EDIT, { qListId });
+          onClickEdit: () => {
+            this.emit(UIEvent.CLICK_QLIST_EDIT, { qList });
           },
         }
       );

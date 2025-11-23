@@ -59,61 +59,61 @@ export function generateSettingModalConetnt(
     return label;
   }
 
-  // 解答履歴セクション
-  const historySection = el('section', 'app-modal-section');
-  const historyTitle = el('h3','app-modal-section-title', '解答履歴');
-  const historyDesc = el(
-    'p','app-modal-section-description',
-    'ローカルに保存された解答履歴データの操作を行います。'
-  );
-  const historyActions = el('div', 'app-modal-actions');
+  // // 解答履歴セクション
+  // const historySection = el('section', 'app-modal-section');
+  // const historyTitle = el('h3','app-modal-section-title', '解答履歴');
+  // const historyDesc = el(
+  //   'p','app-modal-section-description',
+  //   'ローカルに保存された解答履歴データの操作を行います。'
+  // );
+  // const historyActions = el('div', 'app-modal-actions');
 
-  // データインポートボタン
-  const importBtn = el('button', {
-    class: 'app-modal-button',
-    id: 'historyImportBtn',
-  }) as HTMLButtonElement;
-  importBtn.type = 'button';
-  const importIcon = el('i', {
-    class: 'bi bi-file-earmark-arrow-up app-modal-button-icon',
-    attr: [{ 'aria-hidden': 'true' }],
-  });
-  importBtn.appendChild(importIcon);
-  importBtn.append('インポート');
+  // // データインポートボタン
+  // const importBtn = el('button', {
+  //   class: 'app-modal-button',
+  //   id: 'historyImportBtn',
+  // }) as HTMLButtonElement;
+  // importBtn.type = 'button';
+  // const importIcon = el('i', {
+  //   class: 'bi bi-file-earmark-arrow-up app-modal-button-icon',
+  //   attr: [{ 'aria-hidden': 'true' }],
+  // });
+  // importBtn.appendChild(importIcon);
+  // importBtn.append('インポート');
 
-  // データエクスポートボタン
-  const exportBtn = el('button', {
-    class: 'app-modal-button',
-    id: 'historyExportBtn',
-  }) as HTMLButtonElement;
-  exportBtn.type = 'button';
-  const exportIcon = el('i', {
-    class: 'bi bi-file-earmark-arrow-down app-modal-button-icon',
-    attr: [{ 'aria-hidden': 'true' }],
-  });
-  exportBtn.appendChild(exportIcon);
-  exportBtn.append('エクスポート');
+  // // データエクスポートボタン
+  // const exportBtn = el('button', {
+  //   class: 'app-modal-button',
+  //   id: 'historyExportBtn',
+  // }) as HTMLButtonElement;
+  // exportBtn.type = 'button';
+  // const exportIcon = el('i', {
+  //   class: 'bi bi-file-earmark-arrow-down app-modal-button-icon',
+  //   attr: [{ 'aria-hidden': 'true' }],
+  // });
+  // exportBtn.appendChild(exportIcon);
+  // exportBtn.append('エクスポート');
 
-  // データ削除ボタン
-  const deleteBtn = el('button', {
-    class: 'app-modal-button app-modal-button-danger',
-    id: 'historyDeleteBtn',
-  }) as HTMLButtonElement;
-  deleteBtn.type = 'button';
-  const deleteIcon = el('i', {
-    class: 'bi bi-trash app-modal-button-icon',
-    attr: [{ 'aria-hidden': 'true' }],
-  });
-  deleteBtn.appendChild(deleteIcon);
-  deleteBtn.append('削除');
+  // // データ削除ボタン
+  // const deleteBtn = el('button', {
+  //   class: 'app-modal-button app-modal-button-danger',
+  //   id: 'historyDeleteBtn',
+  // }) as HTMLButtonElement;
+  // deleteBtn.type = 'button';
+  // const deleteIcon = el('i', {
+  //   class: 'bi bi-trash app-modal-button-icon',
+  //   attr: [{ 'aria-hidden': 'true' }],
+  // });
+  // deleteBtn.appendChild(deleteIcon);
+  // deleteBtn.append('削除');
 
-  historyActions.appendChild(importBtn);
-  historyActions.appendChild(exportBtn);
-  historyActions.appendChild(deleteBtn);
+  // historyActions.appendChild(importBtn);
+  // historyActions.appendChild(exportBtn);
+  // historyActions.appendChild(deleteBtn);
 
-  historySection.appendChild(historyTitle);
-  historySection.appendChild(historyDesc);
-  historySection.appendChild(historyActions);
+  // historySection.appendChild(historyTitle);
+  // historySection.appendChild(historyDesc);
+  // historySection.appendChild(historyActions);
 
   // Google Drive 連携セクション
   const driveSection = el('section', 'app-modal-section');
@@ -202,7 +202,7 @@ export function generateSettingModalConetnt(
 
   // body に各セクションを追加
   body.appendChild(themeSection);
-  body.appendChild(historySection);
+  // body.appendChild(historySection);
   body.appendChild(driveSection);
 
   return body;

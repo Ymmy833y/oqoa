@@ -13,6 +13,7 @@ export interface Model {
 
   defailtModalKind: ModalKindType | null,
   preparePracticeStart: QList | CustomPracticeStartDto | null;
+  editQList: QList | null;
   questionDetailDto: QuestionDetailDto | null,
 
   qLists: QList[],
@@ -38,6 +39,7 @@ export const initialModel: Model = {
 
   defailtModalKind: null,
   preparePracticeStart: null,
+  editQList: null,
   questionDetailDto: null,
 
   qLists: [],

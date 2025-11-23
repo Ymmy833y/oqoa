@@ -186,6 +186,21 @@ export function update(model: Model, action: ActionType): { model: Model; effect
       effects: [{ kind: Effect.PREPARE_PRACTICE_START, qListId: action.qListId }]
     }
 
+  case Action.SHOW_QLIST_EDIT:
+    return {
+      model: {
+        ...model,
+        defailtModalKind: ModalKind.QLIST_EDIT,
+        editQList: action.qList
+      },
+      effects: []
+    }
+
+  case Action.UPDATE_QLIST:
+    return {
+      model,
+      effects: [{ kind: Effect.UPDATE_QLIST, qList: action.qList, name: action.name, isDefault: action.isDefault }]
+    }
   case Action.SHOW_PRACTICE_START:
     return {
       model: {

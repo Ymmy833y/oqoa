@@ -22,8 +22,10 @@ export enum Action {
   CHANGE_QLIST_PAGE = 'CHANGE_QLIST_PAGE',
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
   PREPARE_PRACTICE_START = 'PREPARE_PRACTICE_START',
+  SHOW_QLIST_EDIT = 'SHOW_QLIST_EDIT',
   SHOW_PRACTICE_START = 'SHOW_PRACTICE_START',
   SHOW_CUSTOM_PRACTICE_START = 'SHOW_CUSTOM_PRACTICE_START',
+  UPDATE_QLIST = 'UPDATE_QLIST',
   PREPARE_PRACTICE = 'PREPARE_PRACTICE',
   SHOW_PRACTICE = 'SHOW_PRACTICE',
   PREPARE_QUESTION_DETAIL = 'PREPARE_QUESTION_DETAIL',
@@ -64,8 +66,10 @@ export type ActionType =
   | { type: Action.SEARCH_QUESTION; }
   | { type: Action.CHANGE_QUESTIONS_PAGE; page: number }
   | { type: Action.PREPARE_PRACTICE_START; qListId: number }
+  | { type: Action.SHOW_QLIST_EDIT; qList: QList }
   | { type: Action.SHOW_PRACTICE_START; qList: QList }
   | { type: Action.SHOW_CUSTOM_PRACTICE_START; customPracticeStartDto: CustomPracticeStartDto }
+  | { type: Action.UPDATE_QLIST; qList: QList, name: string, isDefault: boolean }
   | {
       type: Action.PREPARE_PRACTICE; preparePracticeStart: QList | CustomPracticeStartDto,
       isShuffleQuestions: boolean, isShuffleChoices: boolean

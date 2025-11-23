@@ -11,6 +11,7 @@ export enum Effect {
   SEARCH_QLIST = 'SEARCH_QLIST',
   SEARCH_QUESTION = 'SEARCH_QUESTION',
   PREPARE_PRACTICE_START = 'PREPARE_PRACTICE_START',
+  UPDATE_QLIST = 'UPDATE_QLIST',
   PREPARE_PRACTICE = 'PREPARE_PRACTICE',
   PREPARE_EXIST_PRACTICE = 'PREPARE_EXIST_PRACTICE',
   PREPARE_QUESTION_DETAIL = 'PREPARE_QUESTION_DETAIL',
@@ -30,6 +31,7 @@ export type EffectType =
   | { kind: Effect.SEARCH_QLIST }
   | { kind: Effect.SEARCH_QUESTION }
   | { kind: Effect.PREPARE_PRACTICE_START; qListId: number }
+  | { kind: Effect.UPDATE_QLIST; qList: QList, name: string, isDefault: boolean }
   | {
       kind: Effect.PREPARE_PRACTICE; preparePracticeStart: QList | CustomPracticeStartDto;
       isShuffleQuestions: boolean, isShuffleChoices: boolean
