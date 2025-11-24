@@ -38,7 +38,7 @@ export type EffectType =
       isShuffleQuestions: boolean, isShuffleChoices: boolean
     }
   | { kind: Effect.PREPARE_EXIST_PRACTICE; practiceHistoryId: number }
-  | { kind: Effect.PREPARE_QUESTION_DETAIL; questionId: number; ansHistoryId?: number }
+  | { kind: Effect.PREPARE_QUESTION_DETAIL; questionId: number; practiceHistoryId?: number }
   | { kind: Effect.COMPLETE_ANSWER }
   | { kind: Effect.PRACTICE_ANSWERED; practiceHistoryId: number, questionId: number, isCorrect: boolean, selectChoice: number[] }
   | { kind: Effect.PRACTICE_ANSWER_CANCELED; practiceHistoryId: number, questionId: number }

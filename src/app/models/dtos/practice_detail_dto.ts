@@ -1,9 +1,9 @@
-import { AnsHistory, PracticeHistory, QList, Question } from '../entities'
+import { PracticeHistory, QList } from '../entities'
+import { QuestionDetailDto } from './question_detail_dto'
 
 export interface PracticeDetailDto {
   practiceHistory: PracticeHistory,
   qList: QList,
-  questions: Question[],
-  ansHistories: AnsHistory[],
+  questionDetailDtos: QuestionDetailDto[],
   currentQuestionIndex: number,
 }

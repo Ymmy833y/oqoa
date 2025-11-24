@@ -88,8 +88,8 @@ export class Controller {
     this.view.on(UIEvent.CLICK_PRACTICE_START, ({ preparePracticeStart, isShuffleQuestions, isShuffleChoices }) =>
       this.dispatch({ type: Action.PREPARE_PRACTICE, preparePracticeStart, isShuffleQuestions, isShuffleChoices }),
     );
-    this.view.on(UIEvent.CLICK_QUESTION_LIST_ROW, ({ questionId, ansHistoryId }) =>
-      this.dispatch({ type: Action.PREPARE_QUESTION_DETAIL, questionId, ansHistoryId }),
+    this.view.on(UIEvent.CLICK_QUESTION_LIST_ROW, ({ questionId, practiceHistoryId }) =>
+      this.dispatch({ type: Action.PREPARE_QUESTION_DETAIL, questionId, practiceHistoryId }),
     );
     this.view.on(UIEvent.CLICK_PRACTICE_PREV, () =>
       this.dispatch({ type: Action.PRACTICE_PREV }),
@@ -265,8 +265,8 @@ export class Controller {
 
       case Effect.PREPARE_QUESTION_DETAIL: {
         try {
-          const questionDetailDto = await questionService.generateQuestionDetailDto(
-            fx.questionId, fx.ansHistoryId
+          const questionDetailDto = await questionService.selectQuestionDetailDto(
+            fx.questionId, fx.practiceHistoryId
           );
           this.dispatch({ type: Action.SHOW_QUESTION_DETAIL, questionDetailDto });
         } catch (e) {

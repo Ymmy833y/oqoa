@@ -1,233 +1,22 @@
-import { PracticeDetailDto } from '../models/dtos';
+import { QuestionDetailDto } from '../models/dtos';
 import { AnsHistory, Question } from '../models/entities';
 import { ModalSize } from '../enums';
-import { Modal, shuffle } from '../utils';
+import { formatToYDHM, Modal, shuffle } from '../utils';
 import { el } from '../utils/view_utils';
-
-interface PracticeContenHandlers {
-  onClickPrevBtn: () => void;
-  onClickNextBtn: () => void;
-  onClickCompleteAnswer: () => void;
-  onAnswered: (
-    practiceHistoryId: number, questionId: number,
-    isCorrect: boolean, selectChoice: number[]
-  ) => void;
-  onAnswerCanceled: (practiceHistoryId: number, questionId: number) => void;
-}
-
-export function generatePracticeContent(
-  dto: PracticeDetailDto,
-  handlers: PracticeContenHandlers,
-  defaultModal: Modal,
-): HTMLElement {
-  const question = dto.questions[dto.currentQuestionIndex];
-  const ansHistory = dto.ansHistories
-    .find(ansHistory => ansHistory.getQuestionId() === question.getId());
-
-  const content = el('div', 'practice-body');
-
-  const header = el('div', 'practice-header');
-  const qListTitle = el('h2', 'practice-title', dto.qList.getName());
-  header.appendChild(qListTitle);
-  if (dto.questions.length === dto.ansHistories.length) {
-    const headerActions = el('div', 'practice-header-actions');
-    const submitButton = el('button', {
-      class: 'practice-submit-button',
-      text: '回答を提出',
-      attr: [
-        { type: 'button' },
-      ],
-    });
-    submitButton.addEventListener('click', () => {
-      handlers.onClickCompleteAnswer();
-    });
-    headerActions.appendChild(submitButton);
-    header.appendChild(headerActions);
-  }
-
-  const nav = el('div', 'practice-nav-row');
-  const prevBtn = el('button', 'practice-nav-button', '前の問題');
-  const progress = el('div', 'practice-progress',
-    `${dto.currentQuestionIndex + 1} 問目 / ${dto.questions.length} 問中`
-  );
-  const nextBtn = el('button', 'practice-nav-button', '次の問題');
-  nav.append(prevBtn, progress, nextBtn);
-
-  const questionContent = generateQuestionContent(
-    question, ansHistory, dto.practiceHistory.getIsRandomC(), dto.practiceHistory.getIsAnswered(),
-    {
-      onAnswered: (isCorrect, selectChoice) => handlers.onAnswered(
-        dto.practiceHistory.getId(), question.getId(), isCorrect, selectChoice
-      ),
-      onAnswerCanceled: () => handlers.onAnswerCanceled(
-        dto.practiceHistory.getId(), question.getId()
-      )
-    },
-    defaultModal
-  );
-  content.append(header, nav, questionContent);
-
-  const innerModalElem = el('div', 'app-modal-overlay hidden');
-  const innerModal = new Modal(innerModalElem);
-  content.appendChild(innerModalElem);
-
-  prevBtn.addEventListener('click', () => {
-    if (dto.currentQuestionIndex <= 0) {
-      const modal = el('div', 'answer-modal');
-      const modalText = el('p', 'answer-modal-text', '前の問題はありません');
-      modal.appendChild(modalText);
-      innerModal.setModal(modal, undefined, ModalSize.LG);
-    } else {
-      handlers.onClickPrevBtn();
-    }
-  });
-  nextBtn.addEventListener('click', () => {
-    if (dto.questions.length <= dto.currentQuestionIndex + 1) {
-      const modal = el('div', 'answer-modal');
-      const modalText = el('p', 'answer-modal-text', '次の問題はありません');
-      modal.appendChild(modalText);
-      innerModal.setModal(modal, undefined, ModalSize.LG);
-    } else {
-      handlers.onClickNextBtn();
-    }
-  });
-  return content;
-}
-
-interface PracticeResultContentHandlers {
-  onClickRetryBtn: () => void;
-  onClickReviewBtn: (questionIds: number[]) => void;
-  onClickQuestionResult: (
-    questionId: number, ansHistoryId?: number
-  ) => void;
-}
-export function generatePracticeResultContent(
-  dto: PracticeDetailDto,
-  handlers: PracticeResultContentHandlers
-) {
-  const correctCount = dto.ansHistories.filter(ah => ah.getIsCorrect()).length;
-  const totalCount = dto.ansHistories.length;
-  const rate = totalCount === 0 ? 0 : (correctCount / totalCount) * 100;
-  const rateText = rate.toFixed(2);
-  const rateLabel = `${rateText}%`;
-
-  const body = el('div', 'practice-body practice-result');
-
-  const header = el('header', 'practice-result-header');
-  const title = el('h2', 'practice-result-title', dto.qList.getName());
-  header.appendChild(title);
-
-  const main = el('section', 'practice-result-main');
-  const grid = el('div', 'practice-result-grid');
-
-  const chartWrapper = el('div', 'practice-result-chart-wrapper');
-  const chartCircle = el('div', 'practice-result-chart-circle') as HTMLDivElement;
-  chartCircle.setAttribute('role', 'img');
-  chartCircle.setAttribute('aria-label', `正答率 ${rateLabel}`);
-  chartWrapper.appendChild(chartCircle);
-  const clampedRate = Math.max(0, Math.min(100, rate));
-  const deg = clampedRate * 3.6;
-  chartCircle.style.setProperty('--practice-result-rate-deg', `${deg}deg`);
-  chartWrapper.appendChild(chartCircle);
-
-  const summary = el('div', 'practice-result-summary');
-
-  const summaryRow = el('div', 'practice-result-summary-row');
-  const summaryLabel = el(
-    'span',
-    'practice-result-summary-label',
-    '正答率',
-  );
-  const summaryRate = el(
-    'span',
-    'practice-result-summary-rate',
-    rateLabel,
-  );
-  summaryRow.appendChild(summaryLabel);
-  summaryRow.appendChild(summaryRate);
-
-  const count = el('p', 'practice-result-summary-count');
-  count.append('正答数 ');
-  const countStrong = el(
-    'span',
-    'practice-result-summary-count-strong',
-    String(correctCount),
-  );
-  const countTotal = el(
-    'span',
-    'practice-result-summary-count-total',
-    `/ ${totalCount}問`,
-  );
-  count.appendChild(countStrong);
-  count.appendChild(countTotal);
-
-  summary.appendChild(summaryRow);
-  summary.appendChild(count);
-
-  grid.appendChild(chartWrapper);
-  grid.appendChild(summary);
-  main.appendChild(grid);
-
-  const actions = el('section', 'practice-result-actions');
-  const retryBtn = el('button', {
-    class: 'practice-result-btn-re-practice',
-    text: '再演習',
-    attr: [{ type: 'button' }],
-  });
-  retryBtn.addEventListener('click', () => {
-    handlers.onClickRetryBtn();
-  });
-
-  const incorrectQuestionIds = dto.ansHistories.filter(ah => !ah.getIsCorrect()).map(ah => ah.getQuestionId());
-  const reviewBtn = el('button',{
-    class: 'practice-result-btn-review',
-    text: '誤答の復習',
-    attr: [{
-      type: 'button',
-    }],
-  });
-  reviewBtn.disabled = incorrectQuestionIds.length === 0;
-  reviewBtn.addEventListener('click', () => {
-    if (incorrectQuestionIds.length !== 0) {
-      handlers.onClickReviewBtn(incorrectQuestionIds);
-    };
-  });
-
-  actions.appendChild(retryBtn);
-  actions.appendChild(reviewBtn);
-
-  const listSection = el('section', 'practice-result-list');
-  for(const question of dto.questions) {
-    const ansHistory = dto.ansHistories.find(ah => ah.getQuestionId() === question.getId());
-    const row = generateQuestionListRow(
-      question,
-      () => handlers.onClickQuestionResult(question.getId(), ansHistory?.getId()),
-      ansHistory
-    );
-    listSection.appendChild(row);
-  }
-
-  body.appendChild(header);
-  body.appendChild(main);
-  body.appendChild(actions);
-  body.appendChild(listSection);
-  return body;
-}
 
 interface QuestionContentHandlers {
   onAnswered: (isCorrect: boolean, selectChoice: number[]) => void;
   onAnswerCanceled: () => void;
 }
 export function generateQuestionContent(
-  question: Question,
-  ansHistory?: AnsHistory,
+  dto: QuestionDetailDto,
   isRandomC = false,
   isAnswered = true,
   handlers?: QuestionContentHandlers,
   modal?: Modal,
 ): HTMLElement {
-  let isFirstAnswer = !ansHistory;
-  const inputType = question.getSelectionFormat() === 'radio' ? 'radio' : 'checkbox';
+  let isFirstAnswer = !dto.ansHistory;
+  const inputType = dto.question.getSelectionFormat() === 'radio' ? 'radio' : 'checkbox';
 
   // ルートカード
   const card = el('div', 'question-card');
@@ -237,10 +26,10 @@ export function generateQuestionContent(
   const leftWrapper = el('div', 'question-header-left');
   const title = el('span', 'question-title', '問題');
   leftWrapper.appendChild(title);
-  if (ansHistory) {
+  if (dto.ansHistory) {
     const label = el('span',
-      `question-result-label question-result-label-${ansHistory.getIsCorrect() ? 'correct' : 'incorrect'}`,
-      `${ansHistory.getIsCorrect() ? '正解' : '不正解'}`
+      `question-result-label question-result-label-${dto.ansHistory.getIsCorrect() ? 'correct' : 'incorrect'}`,
+      `${dto.ansHistory.getIsCorrect() ? '正解' : '不正解'}`
     );
     leftWrapper.appendChild(label);
   }
@@ -250,7 +39,7 @@ export function generateQuestionContent(
   const idValue = el('span', {
     id: 'questionId',
     class: 'question-id-value blur',
-    text: `#${question.getId()}`,
+    text: `#${dto.question.getId()}`,
   });
   idWrapper.appendChild(idLabel);
   idWrapper.appendChild(idValue);
@@ -271,7 +60,7 @@ export function generateQuestionContent(
     class: 'question-text',
   });
   problemText.toggleAttribute('data-auto-tailwind', true);
-  problemText.innerHTML = question.getProblem();
+  problemText.innerHTML = dto.question.getProblem();
   problemWrapper.appendChild(problemText);
   card.appendChild(problemWrapper);
 
@@ -281,8 +70,8 @@ export function generateQuestionContent(
     id: 'choices',
     class: 'question-choices',
   });
-  const choices = question.getChoice();
-  const selectedChoices = ansHistory ? ansHistory.getSelectChoice() : [];
+  const choices = dto.question.getChoice();
+  const selectedChoices = dto.ansHistory ? dto.ansHistory.getSelectChoice() : [];
   choices.forEach((choiceText, index) => {
     const choiceLabel = el('label', 'question-choice');
     const input = el('input', {
@@ -325,7 +114,7 @@ export function generateQuestionContent(
   answerButton.addEventListener('click', () => {
     showAnswerBlock();
   });
-  if (ansHistory && !isAnswered) {
+  if (dto.ansHistory && !isAnswered) {
     const answerCancelButton = el('button', {
       class: 'question-answer-cancel-button',
       text: '回答を取り消す',
@@ -345,7 +134,7 @@ export function generateQuestionContent(
   });
 
   // 正解
-  const correctChoices = question.getAnswer().map(idx => question.getChoice()[idx]);
+  const correctChoices = dto.question.getAnswer().map(idx => dto.question.getChoice()[idx]);
   const answerWrapper = el('div');
   const answerLabel = el('span', 'question-answer-label', '正解');
 
@@ -365,13 +154,70 @@ export function generateQuestionContent(
   const explainLabel = el('span', 'question-explain-label', '解説');
   const explainText = el('p', 'question-explain-text');
   explainText.toggleAttribute('data-auto-tailwind', true);
-  explainText.innerHTML = question.getExplanation();
+  explainText.innerHTML = dto.question.getExplanation();
 
   explainWrapper.appendChild(explainLabel);
   explainWrapper.appendChild(explainText);
 
   answerBlock.appendChild(answerWrapper);
   answerBlock.appendChild(explainWrapper);
+
+  // 解答履歴（直近5件まで表示）
+  if (dto.ansHistories && dto.ansHistories.length > 0) {
+    const historySection = el('div', 'question-answer-history');
+
+    const historyLabel = el('span', 'question-answer-history-label', '解答履歴');
+    historySection.appendChild(historyLabel);
+
+    // 横並びのコンテナ
+    const historyList = el('div', {
+      class: 'question-answer-history-list',
+    });
+
+    // 直近5件に絞る（answerDate の新しい順）
+    const histories = dto.ansHistories
+      .slice()
+      .sort(
+        (a, b) =>
+          new Date(b.getAnswerDate()).getTime() - new Date(a.getAnswerDate()).getTime(),
+      )
+      .slice(0, 5);
+
+    histories.forEach((history) => {
+      const isCorrect = history.getIsCorrect();
+      const answerDate = history.getAnswerDate();
+
+      const item = el('div', {
+        class: 'question-answer-history-item',
+      });
+
+      const iconWrapper = el('span', {
+        class: `question-answer-history-icon ${
+          isCorrect ? 'text-correct' : 'text-incorrect'
+        }`,
+      });
+
+      const icon = el('i', {
+        class: isCorrect ? 'bi bi-circle' : 'bi bi-x-lg',
+        attr: [{ 'aria-hidden': 'true' }],
+      });
+
+      iconWrapper.appendChild(icon);
+
+      const dateSpan = el('span', {
+        class: 'question-answer-history-date',
+        text: formatToYDHM(answerDate),
+      });
+
+      item.appendChild(iconWrapper);
+      item.appendChild(dateSpan);
+
+      historyList.appendChild(item);
+    });
+
+    historySection.appendChild(historyList);
+    answerBlock.appendChild(historySection);
+  }
 
   card.appendChild(answerBlock);
 
@@ -388,11 +234,11 @@ export function generateQuestionContent(
         checkedList.push(Number(input.value));
       }
     });
-    if (checkedList.length !== question.getAnswer().length) {
+    if (checkedList.length !== dto.question.getAnswer().length) {
       return;
     }
 
-    const sortedAnswers = [...question.getAnswer()].sort((a, b) => a - b);
+    const sortedAnswers = [...dto.question.getAnswer()].sort((a, b) => a - b);
     const sortedSelects = [...checkedList].sort((a, b) => a - b);
     const isCorrect = sortedAnswers.every((v, i) => v === sortedSelects[i]);
 
@@ -415,7 +261,7 @@ export function generateQuestionContent(
     }
   }
 
-  if (ansHistory && ansHistory.getIsCorrect()) {
+  if (dto.ansHistory && dto.ansHistory.getIsCorrect()) {
     showAnswerBlock();
     toggleQuestionIdBlur();
   }
@@ -432,7 +278,7 @@ export function generateQuestionContent(
   function showAnswerBlock() {
     choiceLabelElems.forEach(choice => {
       const input = choice.getElementsByTagName('input')[0];
-      if (question.getAnswer().includes(Number(input.value))) {
+      if (dto.question.getAnswer().includes(Number(input.value))) {
         const text = choice.getElementsByTagName('span')[0];
         text.classList.add('question-answer-choice')
       }

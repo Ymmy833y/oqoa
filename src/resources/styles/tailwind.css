@@ -793,7 +793,7 @@
   .question-answer-text {
     @apply mt-1 text-base
       border border-green-300 bg-green-50 text-green-800
-      rounded px-3 py-2
+      rounded px-3 py-2 space-y-3
       dark:border-green-600 dark:bg-green-900/40 dark:text-green-100;
   }
   .question-answer-choice {
@@ -804,6 +804,25 @@
   }
   .question-explain-text {
     @apply mt-1 text-base text-gray-700 dark:text-gray-200 leading-relaxed;
+  }
+    .question-answer-history {
+    @apply mt-2;
+  }
+  .question-answer-history-label {
+    @apply text-xs font-semibold text-gray-600 dark:text-gray-300;
+  }
+  .question-answer-history-list {
+    @apply flex items-center gap-2 my-2;
+  }
+  .question-answer-history-item {
+    @apply flex flex-col items-center px-2 py-1 rounded
+      bg-gray-100 dark:bg-gray-700;
+  }
+  .question-answer-history-icon {
+    @apply my-1;
+  }
+  .question-answer-history-date {
+    @apply text-xs text-center text-gray-500 dark:text-gray-400;
   }
 
   /* q-list (問題集一覧) */

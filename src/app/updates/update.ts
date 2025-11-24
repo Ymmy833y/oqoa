@@ -231,7 +231,7 @@ export function update(model: Model, action: ActionType): { model: Model; effect
   case Action.PREPARE_QUESTION_DETAIL:
     return {
       model,
-      effects: [{ kind: Effect.PREPARE_QUESTION_DETAIL, questionId: action.questionId, ansHistoryId: action.ansHistoryId }]
+      effects: [{ kind: Effect.PREPARE_QUESTION_DETAIL, questionId: action.questionId, practiceHistoryId: action.practiceHistoryId }]
     }
 
   case Action.SHOW_QUESTION_DETAIL:

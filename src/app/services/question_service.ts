@@ -2,6 +2,7 @@ import { QuestionDetailDto } from '../models/dtos/question_detail_dto';
 import { AnsHistory, Question } from '../models/entities';
 import { QuestionSearchForm } from '../models/forms';
 import { ansHistoryRepository } from '../repositories/ans_history_repository';
+import { favoriteRepository } from '../repositories/favorite_repositoriy';
 import { questionRepository } from '../repositories/question_repositoriy';
 import { getPaginationPages, isWithinRange, PAGE_ITEM_SIZE } from '../utils';
 
@@ -110,11 +111,13 @@ function calcCorrectRate(ansHistories: AnsHistory[]): number {
   return (correctCount / ansHistories.length) * 100;
 }
 
-export async function generateQuestionDetailDto(questionId: number, ansHistoryId?: number): Promise<QuestionDetailDto> {
+export async function selectQuestionDetailDto(questionId: number, practiceHistoryId?: number): Promise<QuestionDetailDto> {
   const question = questionRepository.selectById(questionId);
   if (!question) {
     throw new Error(`Question not found: id=${questionId}`);
   }
-  const ansHistory = (ansHistoryId) ? await ansHistoryRepository.selectById(ansHistoryId) : null;
-  return { question, ansHistory }
+  const ansHistories = await ansHistoryRepository.selectByQuestionId(questionId);
+  const ansHistory = ansHistories.find(ah => ah.getPracticeHistoryId() === practiceHistoryId) ?? null;
+  const favorites = await favoriteRepository.selectByQuestionId(questionId);
+  return { question, ansHistory, ansHistories, favorites }
 }

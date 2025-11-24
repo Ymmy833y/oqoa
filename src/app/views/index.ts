@@ -6,9 +6,9 @@ import { QListSearchForm } from '../models/forms/qlist_search_form';
 import { HistoryActiveTab, ModalKind, ModalSize, ToastMessage, ToastMessageKind } from '../enums';
 import { el, Modal, renderPagination, scrollToTop } from '../utils';
 import { generateAnsHistoryListRow } from './ans_history_view';
-import { generatePracticeHistoryListRow, generatePracticeStartContent } from './pracitce_view';
+import { generatePracticeHistoryListRow, generatePracticeStartContent, generatePracticeContent, generatePracticeResultContent } from './pracitce_view';
 import { generateQListEditContent, generateQListRow } from './qlist_view';
-import { generateQuestionContent, generatePracticeContent, generateQuestionListRow, generatePracticeResultContent } from './question_view';
+import { generateQuestionContent, generateQuestionListRow } from './question_view';
 import { generateSettingModalConetnt } from './setting_view';
 import { UIEventPayloadMap, UIEvent } from './ui_event_types';
 
@@ -263,10 +263,7 @@ export class View {
       this.defaultModal.setModal(content, `問題集「${qList.getName()}」 編集`, ModalSize.XL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
     } else if (model.defailtModalKind === ModalKind.QUESTION_DETAIL && model.questionDetailDto) {
-      const ansHistory = model.questionDetailDto.ansHistory ?? undefined;
-      const content = generateQuestionContent(
-        model.questionDetailDto.question, ansHistory
-      );
+      const content = generateQuestionContent(model.questionDetailDto);
       this.defaultModal.setModal(content, '', ModalSize.XXL);
       this.emit(UIEvent.DEFAULT_MODAL_SHOWN, undefined);
     }
@@ -285,8 +282,8 @@ export class View {
           onClickReviewBtn: (questionIds) => {
             this.emit(UIEvent.CLICK_RESTART_PRACTICE_SET, { name: dto.qList.getName(), questionIds });
           },
-          onClickQuestionResult: (questionId, ansHistoryId) => {
-            this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, { questionId, ansHistoryId });
+          onClickQuestionResult: (questionId) => {
+            this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, { questionId, practiceHistoryId: dto.practiceHistory.getId() });
           },
         }
       )
@@ -396,7 +393,7 @@ export class View {
             onClickQuestion: () => {
               this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, {
                 questionId: dto.question.getId(),
-                ansHistoryId: dto.ansHistory.getId(),
+                practiceHistoryId: dto.ansHistory.getPracticeHistoryId(),
               });
             }
           }

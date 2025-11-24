@@ -78,7 +78,7 @@ export type ActionType =
       isShuffleQuestions: boolean, isShuffleChoices: boolean
     }
   | { type: Action.SHOW_PRACTICE; practiceDetailDto: PracticeDetailDto }
-  | { type: Action.PREPARE_QUESTION_DETAIL; questionId: number; ansHistoryId?: number }
+  | { type: Action.PREPARE_QUESTION_DETAIL; questionId: number; practiceHistoryId?: number }
   | { type: Action.SHOW_QUESTION_DETAIL; questionDetailDto: QuestionDetailDto }
   | { type: Action.PRACTICE_PREV; }
   | { type: Action.PRACTICE_NEXT; }

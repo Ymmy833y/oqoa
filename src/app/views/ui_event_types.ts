@@ -61,7 +61,7 @@ export interface UIEventPayloadMap {
     isShuffleChoices: boolean
   };
   [UIEvent.CLICK_EDIT_APPLY]: { qList: QList, name: string, isDefault: boolean };
-  [UIEvent.CLICK_QUESTION_LIST_ROW]: { questionId: number, ansHistoryId?: number };
+  [UIEvent.CLICK_QUESTION_LIST_ROW]: { questionId: number, practiceHistoryId?: number };
   [UIEvent.CLICK_PRACTICE_PREV]: undefined;
   [UIEvent.CLICK_PRACTICE_NEXT]: undefined;
   [UIEvent.CLICK_COMPLETE_ANSWER]: undefined;

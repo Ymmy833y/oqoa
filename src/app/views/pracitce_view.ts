@@ -1,6 +1,8 @@
-import { CustomPracticeStartDto, PracticeHistoryDto } from '../models/dtos';
+import { ModalSize } from '../enums';
+import { CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto } from '../models/dtos';
 import { QList } from '../models/entities';
-import { el, formatToYMDHMS } from '../utils';
+import { el, formatToYMDHMS, Modal } from '../utils';
+import { generateQuestionContent, generateQuestionListRow } from './question_view';
 
 export function generatePracticeStartContent(
   preparePracticeStart: QList | CustomPracticeStartDto,
@@ -22,16 +24,17 @@ export function generatePracticeStartContent(
   const nameLabel = el('span', 'app-modal-field-label', '問題集名');
   nameField.appendChild(nameLabel);
   if (existQList) {
+    const initName = `${preparePracticeStart.isReview ? '【復習】' : ''}${preparePracticeStart.name} ${formatToYMDHMS(new Date())}`;
     const nameInput = el('input', {
       id: 'customPracticeName',
       class: 'practice-info-name-input',
       attr: [
         { type: 'text' },
         { name: 'customPracticeName' },
-        { value: `${preparePracticeStart.isReview ? '【復習】' : ''}${preparePracticeStart.name} ${formatToYMDHMS(new Date())}` },
-        { placeholder: '例：苦手問題だけ演習' },
+        { value: initName },
       ],
     });
+    preparePracticeStart.name = initName;
     nameInput.addEventListener('change', () => {
       preparePracticeStart.name = nameInput.value;
     })
@@ -170,4 +173,214 @@ export function generatePracticeHistoryListRow(
   row.appendChild(header);
   row.appendChild(detail);
   return row;
+}
+
+interface PracticeContenHandlers {
+  onClickPrevBtn: () => void;
+  onClickNextBtn: () => void;
+  onClickCompleteAnswer: () => void;
+  onAnswered: (
+    practiceHistoryId: number, questionId: number,
+    isCorrect: boolean, selectChoice: number[]
+  ) => void;
+  onAnswerCanceled: (practiceHistoryId: number, questionId: number) => void;
+}
+export function generatePracticeContent(
+  practiceDetailDto: PracticeDetailDto,
+  handlers: PracticeContenHandlers,
+  defaultModal: Modal,
+): HTMLElement {
+  const questionDetailDto = practiceDetailDto.questionDetailDtos[practiceDetailDto.currentQuestionIndex];
+
+  const content = el('div', 'practice-body');
+
+  const header = el('div', 'practice-header');
+  const qListTitle = el('h2', 'practice-title', practiceDetailDto.qList.getName());
+  header.appendChild(qListTitle);
+  if (practiceDetailDto.questionDetailDtos.filter(dto => dto.ansHistory === null).length === 0) {
+    const headerActions = el('div', 'practice-header-actions');
+    const submitButton = el('button', {
+      class: 'practice-submit-button',
+      text: '回答を提出',
+      attr: [
+        { type: 'button' },
+      ],
+    });
+    submitButton.addEventListener('click', () => {
+      handlers.onClickCompleteAnswer();
+    });
+    headerActions.appendChild(submitButton);
+    header.appendChild(headerActions);
+  }
+
+  const nav = el('div', 'practice-nav-row');
+  const prevBtn = el('button', 'practice-nav-button', '前の問題');
+  const progress = el('div', 'practice-progress',
+    `${practiceDetailDto.currentQuestionIndex + 1} 問目 / ${practiceDetailDto.questionDetailDtos.length} 問中`
+  );
+  const nextBtn = el('button', 'practice-nav-button', '次の問題');
+  nav.append(prevBtn, progress, nextBtn);
+
+  const questionContent = generateQuestionContent(
+    questionDetailDto,
+    practiceDetailDto.practiceHistory.getIsRandomC(),
+    practiceDetailDto.practiceHistory.getIsAnswered(),
+    {
+      onAnswered: (isCorrect, selectChoice) => handlers.onAnswered(
+        practiceDetailDto.practiceHistory.getId(),
+        questionDetailDto.question.getId(), isCorrect, selectChoice
+      ),
+      onAnswerCanceled: () => handlers.onAnswerCanceled(
+        practiceDetailDto.practiceHistory.getId(),
+        questionDetailDto.question.getId()
+      )
+    },
+    defaultModal
+  );
+  content.append(header, nav, questionContent);
+
+  const innerModalElem = el('div', 'app-modal-overlay hidden');
+  const innerModal = new Modal(innerModalElem);
+  content.appendChild(innerModalElem);
+
+  prevBtn.addEventListener('click', () => {
+    if (practiceDetailDto.currentQuestionIndex <= 0) {
+      const modal = el('div', 'answer-modal');
+      const modalText = el('p', 'answer-modal-text', '前の問題はありません');
+      modal.appendChild(modalText);
+      innerModal.setModal(modal, undefined, ModalSize.LG);
+    } else {
+      handlers.onClickPrevBtn();
+    }
+  });
+  nextBtn.addEventListener('click', () => {
+    if (practiceDetailDto.questionDetailDtos.length <= practiceDetailDto.currentQuestionIndex + 1) {
+      const modal = el('div', 'answer-modal');
+      const modalText = el('p', 'answer-modal-text', '次の問題はありません');
+      modal.appendChild(modalText);
+      innerModal.setModal(modal, undefined, ModalSize.LG);
+    } else {
+      handlers.onClickNextBtn();
+    }
+  });
+  return content;
+}
+
+interface PracticeResultContentHandlers {
+  onClickRetryBtn: () => void;
+  onClickReviewBtn: (questionIds: number[]) => void;
+  onClickQuestionResult: (questionId: number) => void;
+}
+export function generatePracticeResultContent(
+  practiceDetailDto: PracticeDetailDto,
+  handlers: PracticeResultContentHandlers
+) {
+  const correctQuestions = practiceDetailDto.questionDetailDtos.filter(dto => {
+    if (dto.ansHistory && dto.ansHistory.getIsCorrect()) return true;
+    return false;
+  });
+  const totalCount = practiceDetailDto.questionDetailDtos.length;
+  const rate = totalCount === 0 ? 0 : (correctQuestions.length / totalCount) * 100;
+  const rateText = rate.toFixed(2);
+  const rateLabel = `${rateText}%`;
+
+  const body = el('div', 'practice-body practice-result');
+
+  const header = el('header', 'practice-result-header');
+  const title = el('h2', 'practice-result-title', practiceDetailDto.qList.getName());
+  header.appendChild(title);
+
+  const main = el('section', 'practice-result-main');
+  const grid = el('div', 'practice-result-grid');
+
+  const chartWrapper = el('div', 'practice-result-chart-wrapper');
+  const chartCircle = el('div', 'practice-result-chart-circle') as HTMLDivElement;
+  chartCircle.setAttribute('role', 'img');
+  chartCircle.setAttribute('aria-label', `正答率 ${rateLabel}`);
+  chartWrapper.appendChild(chartCircle);
+  const clampedRate = Math.max(0, Math.min(100, rate));
+  const deg = clampedRate * 3.6;
+  chartCircle.style.setProperty('--practice-result-rate-deg', `${deg}deg`);
+  chartWrapper.appendChild(chartCircle);
+
+  const summary = el('div', 'practice-result-summary');
+
+  const summaryRow = el('div', 'practice-result-summary-row');
+  const summaryLabel = el(
+    'span',
+    'practice-result-summary-label',
+    '正答率',
+  );
+  const summaryRate = el(
+    'span',
+    'practice-result-summary-rate',
+    rateLabel,
+  );
+  summaryRow.appendChild(summaryLabel);
+  summaryRow.appendChild(summaryRate);
+
+  const count = el('p', 'practice-result-summary-count');
+  count.append('正答数 ');
+  const countStrong = el(
+    'span',
+    'practice-result-summary-count-strong',
+    String(correctQuestions.length),
+  );
+  const countTotal = el(
+    'span',
+    'practice-result-summary-count-total',
+    `/ ${totalCount}問`,
+  );
+  count.appendChild(countStrong);
+  count.appendChild(countTotal);
+
+  summary.appendChild(summaryRow);
+  summary.appendChild(count);
+
+  grid.appendChild(chartWrapper);
+  grid.appendChild(summary);
+  main.appendChild(grid);
+
+  const actions = el('section', 'practice-result-actions');
+  const retryBtn = el('button', {
+    class: 'practice-result-btn-re-practice',
+    text: '再演習',
+    attr: [{ type: 'button' }],
+  });
+  retryBtn.addEventListener('click', () => {
+    handlers.onClickRetryBtn();
+  });
+
+  const reviewBtn = el('button',{
+    class: 'practice-result-btn-review',
+    text: '誤答の復習',
+    attr: [{
+      type: 'button',
+    }],
+  });
+  reviewBtn.disabled = correctQuestions.length === totalCount;
+  reviewBtn.addEventListener('click', () => {
+    if (correctQuestions.length !== totalCount) {
+      handlers.onClickReviewBtn(correctQuestions.map(dto => dto.question.getId()));
+    };
+  });
+
+  actions.appendChild(retryBtn);
+  actions.appendChild(reviewBtn);
+
+  const listSection = el('section', 'practice-result-list');
+  for(const dto of practiceDetailDto.questionDetailDtos) {
+    const row = generateQuestionListRow(
+      dto.question,
+      () => handlers.onClickQuestionResult(dto.question.getId()),
+      dto.ansHistory ?? undefined
+    );
+    listSection.appendChild(row);
+  }
+
+  body.appendChild(header);
+  body.appendChild(main);
+  body.appendChild(actions);
+  body.appendChild(listSection);
+  return body;
 }

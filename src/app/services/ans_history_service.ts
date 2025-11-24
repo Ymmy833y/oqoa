@@ -9,7 +9,7 @@ import { ToastMessage } from '../enums';
 import { generateErrorToastMessage, generateSuccessToastMessage, getPaginationPages, PAGE_ITEM_SIZE } from '../utils';
 
 export async function insertAnsHistory(
-  dto: PracticeDetailDto, practiceHistoryId: number, questionId: number, isCorrect: boolean, selectChoice: number[]
+  practiceDetailDto: PracticeDetailDto, practiceHistoryId: number, questionId: number, isCorrect: boolean, selectChoice: number[]
 ): Promise<PracticeDetailDto> {
   const ansHistory = AnsHistory.fromRequiredArgs(
     practiceHistoryId, questionId, isCorrect, selectChoice, new Date().toISOString()
@@ -17,27 +17,38 @@ export async function insertAnsHistory(
   const ansHistoryId = await ansHistoryRepository.insert(ansHistory.generateRow());
   ansHistory.setId(ansHistoryId);
 
-  dto.ansHistories.push(ansHistory);
-
-  return dto;
+  practiceDetailDto.questionDetailDtos.map(questionDetailDto => {
+    if (questionDetailDto.question.getId() === questionId) {
+      questionDetailDto.ansHistory = ansHistory;
+      questionDetailDto.ansHistories.push(ansHistory);
+    }
+    return questionDetailDto;
+  });
+  return practiceDetailDto;
 }
 
 export async function cancelAnsHistory(
-  dto: PracticeDetailDto, practiceHistoryId: number, questionId: number
+  practiceDetailDto: PracticeDetailDto, practiceHistoryId: number, questionId: number
 ): Promise<{ practiceDetailDto: PracticeDetailDto, toastMessage: ToastMessage}> {
   const ansHistory = (await ansHistoryRepository.selectByPracticeHistoryId(practiceHistoryId))
     .find(ah => ah.getQuestionId() === questionId);
   if (ansHistory) {
     await ansHistoryRepository.deleteById(ansHistory.getId());
-    const ansHistories = dto.ansHistories.filter(ah => ah.getId() !== ansHistory.getId());
+    practiceDetailDto.questionDetailDtos.map(questionDetailDto => {
+      if (questionDetailDto.question.getId() === questionId) {
+        questionDetailDto.ansHistory = null;
+        questionDetailDto.ansHistories.filter(ah => ah.getId() !== ansHistory.getId());
+      }
+      return questionDetailDto;
+    });
     return {
-      practiceDetailDto: { ...dto, ansHistories },
+      practiceDetailDto,
       toastMessage: generateSuccessToastMessage('回答を取り消ししました。')
     };
   }
 
   return {
-    practiceDetailDto: dto,
+    practiceDetailDto: practiceDetailDto,
     toastMessage: generateErrorToastMessage('取り消す回答が存在しません。')
   }
 }

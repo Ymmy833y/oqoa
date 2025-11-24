@@ -1,11 +1,10 @@
-import { CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto } from '../models/dtos';
-import { PracticeHistory, QList, Question } from '../models/entities';
+import { CustomPracticeStartDto, PracticeDetailDto, PracticeHistoryDto, QuestionDetailDto } from '../models/dtos';
+import { PracticeHistory, QList } from '../models/entities';
 import { PracticeHistorySearchForm } from '../models/forms';
-import { ansHistoryRepository } from '../repositories/ans_history_repository';
 import { practiceHistoryRepository } from '../repositories/practice_history_repositoriy';
 import { qListRepository } from '../repositories/qlist_repositoriy';
-import { questionRepository } from '../repositories/question_repositoriy';
-import { getPaginationPages, isSameNumbers, PAGE_ITEM_SIZE, shuffle } from '../utils';
+import { getPaginationPages, PAGE_ITEM_SIZE, shuffle } from '../utils';
+import { selectQuestionDetailDto } from './question_service';
 
 export async function generatePracticeDetailDto(
   qList: QList, isShuffleQuestions: boolean, isShuffleChoices: boolean, isReview = false
@@ -16,17 +15,17 @@ export async function generatePracticeDetailDto(
   const practiceHistoryId = await practiceHistoryRepository.insert(practiceHistory.generateRow());
   practiceHistory.setId(practiceHistoryId);
 
-  const questions = qList.getQuestions()
-    .map(questionId => questionRepository.selectById(questionId))
-    .filter(question => question !== undefined);
+  const questionDetailDtos = await Promise.all(
+    qList.getQuestions().map(q => selectQuestionDetailDto(q, practiceHistoryId))
+  );
 
   if (isShuffleQuestions) {
-    shuffle(questions);
+    shuffle(questionDetailDtos);
   }
 
-  const currentQuestionIndex = (0 < questions.length) ? 0 : -1;
+  const currentQuestionIndex = (0 < questionDetailDtos.length) ? 0 : -1;
 
-  return { practiceHistory, qList, questions, ansHistories: [], currentQuestionIndex }
+  return { practiceHistory, qList, questionDetailDtos, currentQuestionIndex }
 }
 
 export async function generatePracticeDetailDtoForCustom(
@@ -42,19 +41,17 @@ export async function generatePracticeDetailDtoForCustom(
 export async function generatePracticeDetailDtoForExist(practiceHistoryId: number): Promise<PracticeDetailDto> {
   const practiceHistory = await practiceHistoryRepository.selectById(practiceHistoryId);
   const qList = await qListRepository.selectById(practiceHistory.getQListId());
-  const ansHistories = await ansHistoryRepository.selectByPracticeHistoryId(practiceHistoryId);
-  const questions = qList.getQuestions()
-    .map(questionId => questionRepository.selectById(questionId))
-    .filter(question => question !== undefined);
+  const questionDetailDtos = await Promise.all(
+    qList.getQuestions().map(q => selectQuestionDetailDto(q, practiceHistoryId))
+  );
 
-  const answeredQuestionIds = ansHistories.map(ah => ah.getQuestionId());
-  const answeredQuestions: Question[] = [];
-  const notAnsweredQuestions: Question[] = [];
-  questions.forEach(q => {
-    if (answeredQuestionIds.includes(q.getId())) {
-      answeredQuestions.push(q);
+  const answeredQuestions: QuestionDetailDto[] = [];
+  const notAnsweredQuestions: QuestionDetailDto[] = [];
+  questionDetailDtos.forEach(dto => {
+    if (dto.ansHistory) {
+      answeredQuestions.push(dto);
     } else {
-      notAnsweredQuestions.push(q);
+      notAnsweredQuestions.push(dto);
     }
   });
 
@@ -68,16 +65,13 @@ export async function generatePracticeDetailDtoForExist(practiceHistoryId: numbe
   return {
     practiceHistory,
     qList,
-    questions: [...answeredQuestions, ...notAnsweredQuestions],
-    ansHistories,
+    questionDetailDtos: [...answeredQuestions, ...notAnsweredQuestions],
     currentQuestionIndex
   }
 }
 
 export async function doPracticeComplete(dto: PracticeDetailDto) {
-  const questionIds = dto.questions.map(q => q.getId());
-  const ansHistoryids = dto.ansHistories.map(ah => ah.getQuestionId());
-  if (!isSameNumbers(questionIds, ansHistoryids)) {
+  if (dto.questionDetailDtos.filter(q => q.ansHistory === null).length > 0) {
     throw new Error('全ての問題を解き終えていません');
   }
 
