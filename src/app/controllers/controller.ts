@@ -55,14 +55,14 @@ export class Controller {
     this.view.on(UIEvent.CLICK_GOOGLE_DRIVE_IMPORT_BTN, () =>
       this.dispatch({ type: Action.IMPORT_GOOGLE_DRIVE_DATA }),
     );
-    this.view.on(UIEvent.CHANGE_QUESTION_SEARCH_KEYWORD, ({ keyword }) =>
-      this.dispatch({ type: Action.CHANGE_QUESTION_SEARCH_KEYWORD, keyword }),
-    );
-    this.view.on(UIEvent.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE, () =>
-      this.dispatch({ type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE }),
-    );
-    this.view.on(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, () =>
-      this.dispatch({ type: Action.SEARCH_QUESTION }),
+    this.view.on(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, ({
+      keyword, isCaseSensitive, correctRate,
+      answerDateFrom, answerDateTo, unansweredFrom, unansweredTo
+    }) =>
+      this.dispatch({
+        type: Action.SEARCH_QUESTION, keyword, isCaseSensitive,
+        correctRate, answerDateFrom, answerDateTo, unansweredFrom, unansweredTo
+      }),
     );
     this.view.on(UIEvent.CHANGE_QLIST_PAGE, ({ page }) =>
       this.dispatch({ type: Action.CHANGE_QLIST_PAGE, page }),
@@ -115,6 +115,9 @@ export class Controller {
     this.view.on(UIEvent.CHANGE_HISTORY_ACTIVE_TAB, ({ activeTab }) =>
       this.dispatch({ type: Action.SEARCH_HISTORY, activeTab }),
     );
+    this.view.on(UIEvent.CLICK_CUSTOM_PRACTICE_START, () =>
+      this.dispatch({ type: Action.PREPARE_CUSTOM_PRACTICE }),
+    );
   }
 
   private dispatch(action: ActionType): void {
@@ -154,7 +157,7 @@ export class Controller {
           type: Action.UPDATE_QLIST_CONTAINER, qLists: qListData.qLists,
           currentPage: qListData.currentPage, totalSize: qListData.totalSize, pages: qListData.pages
         });
-        const questionData = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+        const questionData = await questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
         this.dispatch({
           type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions: questionData.questions,
           currentPage: qListData.currentPage, totalSize: questionData.totalSize, pages: questionData.pages
@@ -192,7 +195,7 @@ export class Controller {
             type: Action.UPDATE_QLIST_CONTAINER, qLists: qListData.qLists,
             currentPage: qListData.currentPage, totalSize: qListData.totalSize, pages: qListData.pages
           });
-          const questionData = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+          const questionData = await questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
           this.dispatch({
             type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions: questionData.questions,
             currentPage: qListData.currentPage, totalSize: questionData.totalSize, pages: questionData.pages
@@ -208,8 +211,13 @@ export class Controller {
       }
 
       case Effect.SEARCH_QUESTION: {
-        const { questions, currentPage, totalSize, pages } = questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
-        this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
+        try {
+          const { questions, currentPage, totalSize, pages } = await questionService.selectQuestionsForSearchForm(this.model.questionSearchForm);
+          this.dispatch({ type: Action.UPDATE_QUESTION_LIST_CONTAINER, questions, currentPage, totalSize, pages });
+        } catch (e) {
+          const error = e as Error;
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage: generateErrorToastMessage(error) })
+        }
         break;
       }
 
@@ -316,6 +324,25 @@ export class Controller {
         );
         this.dispatch({ type: Action.UPDATE_ANS_HISTORY_LIST_CONTAINER, ansHistoryDtos, currentPage, totalSize, pages });
         break;
+      }
+
+      case Effect.PREPARE_CUSTOM_PRACTICE: {
+        const { questions } = await questionService.selectQuestionsForSearchForm(this.model.questionSearchForm, Number.MAX_SAFE_INTEGER);
+        if (questions.length <= 0) {
+          this.dispatch({
+            type: Action.TOAST_ADD,
+            toastMessage: generateErrorToastMessage('カスタム問題集の作成には、設問一覧に1問以上の設問を表示させる必要があります。')
+          });
+        } else {
+          this.dispatch({
+            type: Action.SHOW_CUSTOM_PRACTICE_START,
+            customPracticeStartDto: {
+              questionIds: questions.map(q => q.getId()),
+              isReview: false,
+              name: 'カスタム問題集'
+            }
+          });
+        }
       }
       }
     }

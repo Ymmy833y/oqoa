@@ -20,6 +20,7 @@ export enum Effect {
   PRACTICE_ANSWER_CANCELED = 'PRACTICE_ANSWER_CANCELED',
   SEARCH_PRACTICE_HISTORY = 'SEARCH_PRACTICE_HISTORY',
   SEARCH_ANS_HISTORY = 'SEARCH_ANS_HISTORY',
+  PREPARE_CUSTOM_PRACTICE = 'PREPARE_CUSTOM_PRACTICE',
 }
 
 export type EffectType =
@@ -43,4 +44,5 @@ export type EffectType =
   | { kind: Effect.PRACTICE_ANSWER_CANCELED; practiceHistoryId: number, questionId: number }
   | { kind: Effect.SEARCH_PRACTICE_HISTORY; }
   | { kind: Effect.SEARCH_ANS_HISTORY; }
+  | { kind: Effect.PREPARE_CUSTOM_PRACTICE; }
 ;

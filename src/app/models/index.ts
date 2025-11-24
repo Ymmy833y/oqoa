@@ -52,6 +52,11 @@ export const initialModel: Model = {
   questionSearchForm: {
     keyword: '',
     isCaseSensitive: false,
+    correctRate: 0,
+    answerDateFrom: null,
+    answerDateTo: null,
+    unansweredFrom: null,
+    unansweredTo: null,
     currentPage: 0,
     totalSize: 0,
     pages: [],

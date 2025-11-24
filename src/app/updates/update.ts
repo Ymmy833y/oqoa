@@ -138,33 +138,17 @@ export function update(model: Model, action: ActionType): { model: Model; effect
       effects: []
     }
 
-  case Action.CHANGE_QUESTION_SEARCH_KEYWORD:
-    return {
-      model: {
-        ...model,
-        questionSearchForm: {
-          ...model.questionSearchForm,
-          keyword: action.keyword,
-        }
-      },
-      effects: []
-    }
-
-  case Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE:
-    return {
-      model: {
-        ...model,
-        questionSearchForm: {
-          ...model.questionSearchForm,
-          isCaseSensitive: !model.questionSearchForm.isCaseSensitive,
-        }
-      },
-      effects: []
-    }
-
   case Action.SEARCH_QUESTION:
     return {
-      model,
+      model: {
+        ...model,
+        questionSearchForm: {
+          ...model.questionSearchForm,
+          keyword: action.keyword, isCaseSensitive: action.isCaseSensitive, correctRate: action.correctRate,
+          answerDateFrom: action.answerDateFrom, answerDateTo: action.answerDateTo,
+          unansweredFrom: action.unansweredFrom, unansweredTo: action.unansweredTo,
+        }
+      },
       effects: [{ kind: Effect.SEARCH_QUESTION }]
     }
 
@@ -371,6 +355,13 @@ export function update(model: Model, action: ActionType): { model: Model; effect
         },
         effects: [{ kind: Effect.SEARCH_ANS_HISTORY }]
       }
+    }
+  }
+
+  case Action.PREPARE_CUSTOM_PRACTICE: {
+    return {
+      model,
+      effects: [{ kind: Effect.PREPARE_CUSTOM_PRACTICE }]
     }
   }
 

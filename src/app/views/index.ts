@@ -31,10 +31,23 @@ export class View {
     practiceContainer: HTMLDivElement;
     qListsContainer: HTMLDivElement;
     qListPagination: HTMLDivElement;
+
     questionsContainer: HTMLDivElement;
     questionsPagination: HTMLDivElement;
+
+    createCustomQListBtn: HTMLButtonElement;
+
     questionSearchKeyword: HTMLInputElement;
     questionSearchIsCaseSensitive: HTMLButtonElement;
+
+    questionAdvancedSearchToggle: HTMLButtonElement;
+    questionAdvancedSearch: HTMLDivElement;
+    questionSearchCorrectRate: HTMLSelectElement;
+    questionSearchAnswerDateFrom: HTMLInputElement;
+    questionSearchAnswerDateTo: HTMLInputElement;
+    questionSearchUnansweredFrom: HTMLInputElement;
+    questionSearchUnansweredTo: HTMLInputElement;
+
     questionSearchSubmit: HTMLButtonElement;
   }
 
@@ -59,10 +72,24 @@ export class View {
       practiceContainer: this.$('#practiceContainer'),
       qListsContainer: this.$('#qListsContainer'),
       qListPagination: this.$('#qListPagination'),
+
       questionsContainer: this.$('#questionsContainer'),
       questionsPagination: this.$('#questionsPagination'),
+
+      createCustomQListBtn: this.$('#createCustomQListBtn'),
+
       questionSearchKeyword: this.$('#questionSearchKeyword'),
       questionSearchIsCaseSensitive: this.$('#questionSearchIsCaseSensitive'),
+
+      questionAdvancedSearchToggle: this.$('#questionAdvancedSearchToggle'),
+      questionAdvancedSearch: this.$('#questionAdvancedSearch'),
+
+      questionSearchCorrectRate: this.$('#questionSearchCorrectRate'),
+      questionSearchAnswerDateFrom: this.$('#questionSearchAnswerDateFrom'),
+      questionSearchAnswerDateTo: this.$('#questionSearchAnswerDateTo'),
+      questionSearchUnansweredFrom: this.$('#questionSearchUnansweredFrom'),
+      questionSearchUnansweredTo: this.$('#questionSearchUnansweredTo'),
+
       questionSearchSubmit: this.$('#questionSearchSubmit'),
     };
 
@@ -86,15 +113,32 @@ export class View {
       this.emit(UIEvent.CHANGE_HISTORY_ACTIVE_TAB, { activeTab: HistoryActiveTab.QUESTION });
       this.toggleHistoryTab(this.els.historyForQuestionBtn, this.els.historyForPracticeBtn);
     });
-    this.els.questionSearchKeyword.addEventListener('input', () => {
-      const keyword = this.els.questionSearchKeyword.value;
-      this.emit(UIEvent.CHANGE_QUESTION_SEARCH_KEYWORD, { keyword });
+    this.els.createCustomQListBtn.addEventListener('click', () => {
+      this.emit(UIEvent.CLICK_CUSTOM_PRACTICE_START, undefined);
     });
     this.els.questionSearchIsCaseSensitive.addEventListener('click', () => {
-      this.emit(UIEvent.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE, undefined);
+      const isCaseSensitive = this.els.questionSearchIsCaseSensitive.getAttribute('aria-pressed') === 'true';
+      this.els.questionSearchIsCaseSensitive.setAttribute('aria-pressed', String(!isCaseSensitive));
+    });
+    this.els.questionAdvancedSearchToggle.addEventListener('click', () => {
+      this.els.questionAdvancedSearch.classList.toggle('hidden');
     });
     this.els.questionSearchSubmit.addEventListener('click', () => {
-      this.emit(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, undefined);
+      const keyword = this.els.questionSearchKeyword.value;
+      const isCaseSensitive = this.els.questionSearchIsCaseSensitive.getAttribute('aria-pressed') === 'true';
+      const correctRate = Number(this.els.questionSearchCorrectRate.value);
+      const answerDateFrom = this.els.questionSearchAnswerDateFrom.value
+        ? new Date(this.els.questionSearchAnswerDateFrom.value) : null;
+      const answerDateTo = this.els.questionSearchAnswerDateTo.value
+        ? new Date(this.els.questionSearchAnswerDateTo.value) : null;
+      const unansweredFrom = this.els.questionSearchUnansweredFrom.value
+        ? new Date(this.els.questionSearchUnansweredFrom.value) : null;
+      const unansweredTo = this.els.questionSearchUnansweredTo.value
+        ? new Date(this.els.questionSearchUnansweredTo.value) : null;
+      this.emit(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, {
+        keyword, isCaseSensitive, correctRate,
+        answerDateFrom, answerDateTo, unansweredFrom, unansweredTo
+      });
     });
   }
 
@@ -143,7 +187,8 @@ export class View {
         attr: [{ 'aria-hidden': 'true' }],
       });
     const toastBody = el('div', 'toast-body');
-    const desc = el('p', 'toast-desc', toastMessage.message);
+    const desc = el('p', 'toast-desc');
+    desc.innerHTML = toastMessage.message;
     toastBody.appendChild(desc);
     const closeBtn = el('button', `toast-close toast-close--${toastMessage.kind.toLocaleLowerCase()}`);
     const closeIcon = el('i', {
@@ -301,8 +346,6 @@ export class View {
   }
 
   private applyQuestionSearchForm(form: QuestionSearchForm, itemSize: number) {
-    this.els.questionSearchKeyword.value = form.keyword;
-    this.els.questionSearchIsCaseSensitive.setAttribute('aria-pressed', String(form.isCaseSensitive));
     renderPagination(
       this.els.questionsPagination,
       form.currentPage, form.pages, itemSize, form.totalSize,

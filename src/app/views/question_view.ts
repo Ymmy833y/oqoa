@@ -433,7 +433,8 @@ export function generateQuestionContent(
     choiceLabelElems.forEach(choice => {
       const input = choice.getElementsByTagName('input')[0];
       if (question.getAnswer().includes(Number(input.value))) {
-        choice.classList.add('question-answer-choice')
+        const text = choice.getElementsByTagName('span')[0];
+        text.classList.add('question-answer-choice')
       }
     });
     answerBlock.classList.remove('hidden');

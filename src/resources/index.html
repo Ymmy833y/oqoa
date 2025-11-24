@@ -46,6 +46,9 @@
     <section class="question-list-section">
       <div class="question-list-header">
         <h2 class="question-list-title">設問一覧</h2>
+        <button type="button" id="createCustomQListBtn" class="question-list-create-btn">
+          カスタム問題集作成
+        </button>
       </div>
       <!-- 検索バー -->
       <div class="question-list-toolbar">
@@ -57,15 +60,75 @@
           </button>
         </div>
 
+        <!-- 詳細検索トグル -->
+        <div class="question-list-advanced-toggle">
+          <button type="button" id="questionAdvancedSearchToggle" class="question-list-advanced-link"
+            aria-expanded="false" aria-controls="questionAdvancedSearch">
+            詳細検索
+          </button>
+        </div>
+
+        <!-- 詳細検索エリア（初期は非表示） -->
+        <div id="questionAdvancedSearch" class="question-list-advanced hidden">
+          <div class="question-list-advanced-field">
+            <label for="questionSearchCorrectRate" class="question-list-advanced-label">
+              正答率（未解答を除く）
+            </label>
+            <select id="questionSearchCorrectRate" class="question-list-advanced-select">
+              <option value="0">指定なし</option>
+              <option value="25">25%以下</option>
+              <option value="40">40%以下</option>
+              <option value="50">50%以下</option>
+              <option value="75">75%以下</option>
+            </select>
+          </div>
+
+          <div class="question-list-advanced-field">
+            <span class="question-list-advanced-label">解答期間</span>
+            <div class="question-list-advanced-date-range">
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchAnswerDateFrom" class="question-list-advanced-date-label">
+                  From
+                </label>
+                <input type="date" id="questionSearchAnswerDateFrom" class="question-list-advanced-date-input" />
+              </div>
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchAnswerDateTo" class="question-list-advanced-date-label">
+                  To
+                </label>
+                <input type="date" id="questionSearchAnswerDateTo" class="question-list-advanced-date-input" />
+              </div>
+            </div>
+          </div>
+
+          <div class="question-list-advanced-field">
+            <span class="question-list-advanced-label">未解答期間</span>
+            <div class="question-list-advanced-date-range">
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchUnansweredFrom" class="question-list-advanced-date-label">
+                  From
+                </label>
+                <input type="date" id="questionSearchUnansweredFrom" class="question-list-advanced-date-input" />
+              </div>
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchUnansweredTo" class="question-list-advanced-date-label">
+                  To
+                </label>
+                <input type="date" id="questionSearchUnansweredTo" class="question-list-advanced-date-input" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="question-list-search-submit">
           <button type="button" id="questionSearchSubmit" class="question-list-search-btn">
             検索
           </button>
         </div>
       </div>
+
       <div id="questionsPagination"></div>
 
-      <!-- 設問一覧 -->
       <div id="questionsContainer" class="question-list"></div>
     </section>
   </main>

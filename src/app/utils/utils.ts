@@ -42,3 +42,40 @@ export function formatToYMDHMS(iso: string | Date): string {
 
   return `${yyyy}/${MM}/${dd} ${HH}:${mm}:${ss}`;
 }
+
+export function isWithinRange(
+  dateStr: string,
+  from: Date | null,
+  to: Date | null,
+): boolean {
+  if (!dateStr) return false;
+
+  const target = new Date(dateStr);
+  if (Number.isNaN(target.getTime())) return false;
+
+  let fromBoundary: Date | null = null;
+  let toBoundary: Date | null = null;
+
+  if (from) {
+    const f = new Date(from.getTime());
+    f.setHours(0, 0, 0, 0);
+    fromBoundary = f;
+  }
+
+  if (to) {
+    const t = new Date(to.getTime());
+    t.setHours(23, 59, 59, 999);
+    toBoundary = t;
+  }
+
+  const time = target.getTime();
+
+  if (fromBoundary && time < fromBoundary.getTime()) {
+    return false;
+  }
+
+  if (toBoundary && time > toBoundary.getTime()) {
+    return false;
+  }
+  return true;
+}

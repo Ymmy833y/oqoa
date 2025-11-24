@@ -16,8 +16,6 @@ export enum Action {
   IMPORT_GOOGLE_DRIVE_DATA = 'IMPORT_GOOGLE_DRIVE_DATA',
   UPDATE_QLIST_CONTAINER = 'UPDATE_QLIST_CONTAINER',
   UPDATE_QUESTION_LIST_CONTAINER = 'UPDATE_QUESTION_LIST_CONTAINER',
-  CHANGE_QUESTION_SEARCH_KEYWORD = 'CHANGE_QUESTION_SEARCH_KEYWORD',
-  TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
   SEARCH_QUESTION = 'SEARCH_QUESTION',
   CHANGE_QLIST_PAGE = 'CHANGE_QLIST_PAGE',
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
@@ -39,6 +37,7 @@ export enum Action {
   UPDATE_ANS_HISTORY_LIST_CONTAINER = 'UPDATE_ANS_HISTORY_LIST_CONTAINER',
   CHANGE_HISTORY_PAGE = 'CHANGE_HISTORY_PAGE',
   PREPARE_EXIST_PRACTICE = 'PREPARE_EXIST_PRACTICE',
+  PREPARE_CUSTOM_PRACTICE = 'PREPARE_CUSTOM_PRACTICE',
 }
 
 export type ActionType =
@@ -61,9 +60,12 @@ export type ActionType =
       type: Action.UPDATE_QUESTION_LIST_CONTAINER; questions: Question[],
       currentPage: number, totalSize: number, pages: number[]
     }
-  | { type: Action.CHANGE_QUESTION_SEARCH_KEYWORD; keyword: string }
-  | { type: Action.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE; }
-  | { type: Action.SEARCH_QUESTION; }
+  | {
+      type: Action.SEARCH_QUESTION; keyword: string,
+      isCaseSensitive: boolean, correctRate: number,
+      answerDateFrom: Date | null, answerDateTo: Date | null,
+      unansweredFrom: Date | null, unansweredTo: Date | null,
+    }
   | { type: Action.CHANGE_QUESTIONS_PAGE; page: number }
   | { type: Action.PREPARE_PRACTICE_START; qListId: number }
   | { type: Action.SHOW_QLIST_EDIT; qList: QList }
@@ -92,4 +94,5 @@ export type ActionType =
     }
   | { type: Action.CHANGE_HISTORY_PAGE; page: number }
   | { type: Action.PREPARE_EXIST_PRACTICE; practiceHistoryId: number }
+  | { type: Action.PREPARE_CUSTOM_PRACTICE; }
 ;

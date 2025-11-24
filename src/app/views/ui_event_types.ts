@@ -11,8 +11,6 @@ export enum UIEvent {
   CHANGE_GOOGLE_CLIENT_ID = 'CHANGE_GOOGLE_CLIENT_ID',
   CHANGE_GOOGLE_FOLDER_ID = 'CHANGE_GOOGLE_FOLDER_ID',
   CLICK_GOOGLE_DRIVE_IMPORT_BTN = 'CLICK_GOOGLE_DRIVE_IMPORT_BTN',
-  CHANGE_QUESTION_SEARCH_KEYWORD = 'CHANGE_QUESTION_SEARCH_KEYWORD',
-  TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE = 'TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE',
   CLICK_QUESTION_SEARCH_SUBMIT = 'CLICK_QUESTION_SEARCH_SUBMIT',
   CHANGE_QUESTIONS_PAGE = 'CHANGE_QUESTIONS_PAGE',
   CHANGE_QLIST_PAGE = 'CHANGE_QLIST_PAGE',
@@ -30,6 +28,7 @@ export enum UIEvent {
   CHANGE_PRACTICE_HISTORY_PAGE = 'CHANGE_PRACTICE_HISTORY_PAGE',
   CLICK_EXIST_PRACTICE_START = 'CLICK_EXIST_PRACTICE_START',
   CHANGE_HISTORY_ACTIVE_TAB = 'CHANGE_HISTORY_ACTIVE_TAB',
+  CLICK_CUSTOM_PRACTICE_START = 'CLICK_CUSTOM_PRACTICE_START',
 }
 
 export interface UIEventPayloadMap {
@@ -41,9 +40,15 @@ export interface UIEventPayloadMap {
   [UIEvent.CHANGE_GOOGLE_CLIENT_ID]: { googleClientId: string };
   [UIEvent.CHANGE_GOOGLE_FOLDER_ID]: { googleFolderId: string };
   [UIEvent.CLICK_GOOGLE_DRIVE_IMPORT_BTN]: undefined;
-  [UIEvent.CHANGE_QUESTION_SEARCH_KEYWORD]: { keyword: string };
-  [UIEvent.TOGGLE_QUESTION_SEARCH_IS_CASE_SENSITIVE]: undefined;
-  [UIEvent.CLICK_QUESTION_SEARCH_SUBMIT]: undefined;
+  [UIEvent.CLICK_QUESTION_SEARCH_SUBMIT]: {
+    keyword: string,
+    isCaseSensitive: boolean,
+    correctRate: number,
+    answerDateFrom: Date | null,
+    answerDateTo: Date | null,
+    unansweredFrom: Date | null,
+    unansweredTo: Date | null,
+  };
   [UIEvent.CHANGE_QUESTIONS_PAGE]: { page: number };
   [UIEvent.CHANGE_QLIST_PAGE]: { page: number };
   [UIEvent.CLICK_START_PRACTICE_SET]: { qListId: number };
@@ -64,4 +69,5 @@ export interface UIEventPayloadMap {
   [UIEvent.CHANGE_PRACTICE_HISTORY_PAGE]: { page: number };
   [UIEvent.CLICK_EXIST_PRACTICE_START]: { practiceHistoryId: number };
   [UIEvent.CHANGE_HISTORY_ACTIVE_TAB]: { activeTab: HistoryActiveTab };
+  [UIEvent.CLICK_CUSTOM_PRACTICE_START]: undefined;
 }
