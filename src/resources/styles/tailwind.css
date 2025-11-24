@@ -813,6 +813,9 @@
   .q-list-header {
     @apply flex items-center justify-between mb-4;
   }
+  .q-list-header-main {
+    @apply flex-1;
+  }
   .q-list-title {
     @apply text-lg font-semibold;
   }

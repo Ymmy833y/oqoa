@@ -44,6 +44,7 @@ export const initialModel: Model = {
 
   qLists: [],
   qListSearchForm: {
+    standardOnly: true,
     currentPage: 0,
     totalSize: 0,
     pages: [],

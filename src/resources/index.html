@@ -34,10 +34,14 @@
 
     <section class="q-list-section">
       <div class="q-list-header">
-        <div>
+        <div class="q-list-header-main">
           <h2 class="q-list-title">問題集一覧</h2>
           <p class="q-list-desc">登録済みの問題集から、解きたいセットを選択できます。</p>
         </div>
+        <label class="practice-setting-checkbox">
+          <input id="qListsStandardCheckBox" type="checkbox" class="practice-setting-checkbox-input" />
+          <span>標準のみ</span>
+        </label>
       </div>
       <div id="qListPagination"></div>
       <div id="qListsContainer" class="q-list-grid"></div>

@@ -358,6 +358,18 @@ export function update(model: Model, action: ActionType): { model: Model; effect
     }
   }
 
+  case Action.TOGGLE_QLISTS_STANDARD_CHECK:
+    return {
+      model: {
+        ...model,
+        qListSearchForm: {
+          ...model.qListSearchForm,
+          standardOnly: action.standardOnly
+        }
+      },
+      effects: [{ kind: Effect.SEARCH_QLIST }]
+    }
+
   case Action.PREPARE_CUSTOM_PRACTICE: {
     return {
       model,

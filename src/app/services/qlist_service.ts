@@ -8,7 +8,9 @@ const PAGE_ITEM_SIZE = 12;
 export async function selectQListsForSearchForm(form: QListSearchForm): Promise<{
   qLists: QList[], currentPage: number, totalSize: number, pages: number[]
 }> {
-  const qLists = await qListRepository.selectAll();
+  const qLists = form.standardOnly
+    ? await qListRepository.selectByStandard()
+    : await qListRepository.selectAll();
 
   const totalPages = Math.floor(qLists.length / PAGE_ITEM_SIZE) + ((qLists.length % PAGE_ITEM_SIZE === 0) ? 0 : 1);
   const currentPage = (totalPages <= form.currentPage) ? 0 : form.currentPage;

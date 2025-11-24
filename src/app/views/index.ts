@@ -29,6 +29,7 @@ export class View {
     practiceHistoryList: HTMLDivElement;
 
     practiceContainer: HTMLDivElement;
+    qListsStandardCheckBox: HTMLInputElement;
     qListsContainer: HTMLDivElement;
     qListPagination: HTMLDivElement;
 
@@ -70,6 +71,7 @@ export class View {
       practiceHistoryList: this.$('#practiceHistoryList'),
 
       practiceContainer: this.$('#practiceContainer'),
+      qListsStandardCheckBox: this.$('#qListsStandardCheckBox'),
       qListsContainer: this.$('#qListsContainer'),
       qListPagination: this.$('#qListPagination'),
 
@@ -112,6 +114,9 @@ export class View {
     this.els.historyForQuestionBtn.addEventListener('click', () => {
       this.emit(UIEvent.CHANGE_HISTORY_ACTIVE_TAB, { activeTab: HistoryActiveTab.QUESTION });
       this.toggleHistoryTab(this.els.historyForQuestionBtn, this.els.historyForPracticeBtn);
+    });
+    this.els.qListsStandardCheckBox.addEventListener('change', () => {
+      this.emit(UIEvent.TOGGLE_QLISTS_STANDARD_CHECK, { standardOnly: this.els.qListsStandardCheckBox.checked });
     });
     this.els.createCustomQListBtn.addEventListener('click', () => {
       this.emit(UIEvent.CLICK_CUSTOM_PRACTICE_START, undefined);
@@ -310,6 +315,7 @@ export class View {
   }
 
   private applyQListsContent(form: QListSearchForm, qLists: QList[]) {
+    this.els.qListsStandardCheckBox.checked = form.standardOnly;
     this.els.qListsContainer.innerHTML = '';
     qLists.forEach(qList => {
       const card = generateQListRow(

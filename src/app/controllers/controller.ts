@@ -115,6 +115,9 @@ export class Controller {
     this.view.on(UIEvent.CHANGE_HISTORY_ACTIVE_TAB, ({ activeTab }) =>
       this.dispatch({ type: Action.SEARCH_HISTORY, activeTab }),
     );
+    this.view.on(UIEvent.TOGGLE_QLISTS_STANDARD_CHECK, ({ standardOnly }) =>
+      this.dispatch({ type: Action.TOGGLE_QLISTS_STANDARD_CHECK, standardOnly }),
+    );
     this.view.on(UIEvent.CLICK_CUSTOM_PRACTICE_START, () =>
       this.dispatch({ type: Action.PREPARE_CUSTOM_PRACTICE }),
     );
