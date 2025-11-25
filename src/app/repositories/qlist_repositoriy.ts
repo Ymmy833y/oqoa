@@ -1,22 +1,26 @@
-import { QList } from '../models/entities';
-import { BaseRepository } from './base_repositoriy';
+import { QList } from "../models/entities";
+
+import { BaseRepository } from "./base_repositoriy";
 
 class QListRepository extends BaseRepository<QList> {
   constructor() {
-    super('q_list');
+    super("q_list");
   }
 
   initStore(event: IDBVersionChangeEvent): void {
     const db = (event.target as IDBOpenDBRequest).result;
     if (!db.objectStoreNames.contains(this.storeName)) {
       const store = db.createObjectStore(this.storeName, {
-        keyPath: 'id',
+        keyPath: "id",
         autoIncrement: true,
       });
-      store.createIndex('uuid', 'uuid', { unique: false });
-      store.createIndex('name', 'name', { unique: false });
-      store.createIndex('questions', 'questions', { unique: false, multiEntry: true });
-      store.createIndex('is_default', 'is_default', { unique: false });
+      store.createIndex("uuid", "uuid", { unique: false });
+      store.createIndex("name", "name", { unique: false });
+      store.createIndex("questions", "questions", {
+        unique: false,
+        multiEntry: true,
+      });
+      store.createIndex("is_default", "is_default", { unique: false });
     }
   }
 
@@ -30,10 +34,12 @@ class QListRepository extends BaseRepository<QList> {
    * - 既存の uuid と重複するものはスキップする
    * @returns { inserted: number, skipped: number }
    */
-  async bulkInsert(qLists: QList[]): Promise<{ inserted: number; skipped: number }> {
+  async bulkInsert(
+    qLists: QList[],
+  ): Promise<{ inserted: number; skipped: number }> {
     // すでに DB に存在する uuid を取得
     const existing = await this.selectAll();
-    const existingUuids = new Set(existing.map(q => q.getUuid()));
+    const existingUuids = new Set(existing.map((q) => q.getUuid()));
 
     let inserted = 0;
     let skipped = 0;
@@ -52,25 +58,30 @@ class QListRepository extends BaseRepository<QList> {
       inserted++;
     }
 
-    console.log(`QListDB.bulkInsert: inserted=${inserted}, skipped=${skipped}`);
+    console.info(
+      `QListDB.bulkInsert: inserted=${inserted}, skipped=${skipped}`,
+    );
     return { inserted, skipped };
   }
 
   async selectByStandard(): Promise<QList[]> {
-    return (await this.selectAll()).filter(qList => qList.getIsDefault());
+    return (await this.selectAll()).filter((qList) => qList.getIsDefault());
   }
 
   async selectByUuid(uuid: string): Promise<QList | undefined> {
-    const qLists = await this.selectExample('uuid', uuid);
+    const qLists = await this.selectExample("uuid", uuid);
     if (qLists.length === 0) {
       return undefined;
     }
     return qLists[0];
   }
 
-  async selectByNameAndQuestions(name: string, questions: number[]): Promise<QList | undefined> {
-    const qLists = await this.selectExample('name', name);
-    const filteredQLists = qLists.filter(qList => {
+  async selectByNameAndQuestions(
+    name: string,
+    questions: number[],
+  ): Promise<QList | undefined> {
+    const qLists = await this.selectExample("name", name);
+    const filteredQLists = qLists.filter((qList) => {
       const qListQuestions = qList.getQuestions();
       if (qListQuestions.length !== questions.length) {
         return false;

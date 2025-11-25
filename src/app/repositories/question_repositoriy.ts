@@ -1,13 +1,11 @@
-
-
-import { Question } from '../models/entities';
+import { Question } from "../models/entities";
 
 class QuestionRepository {
   private questions: Question[] = [];
 
   public bulkInsert(questions: Question[]): void {
     try {
-      const existingIds = new Set(this.questions.map(q => q.getId()));
+      const existingIds = new Set(this.questions.map((q) => q.getId()));
       let inserted = 0;
       let skipped = 0;
 
@@ -22,11 +20,11 @@ class QuestionRepository {
         inserted++;
       }
       this.questions.sort((a, b) => a.getId() - b.getId());
-      console.log(
-        `bulkInsert: inserted=${inserted}, skipped=${skipped}, total=${this.questions.length}`
+      console.info(
+        `bulkInsert: inserted=${inserted}, skipped=${skipped}, total=${this.questions.length}`,
       );
     } catch (error) {
-      console.error('Error in bulkInsert:', error);
+      console.error("Error in bulkInsert:", error);
       throw error;
     }
   }

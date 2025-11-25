@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const DB_NAME = 'oqoa';
+export const DB_NAME = "oqoa";
 export const DB_VERSION = 2;
 
 export abstract class BaseRepository<T> {
@@ -45,7 +45,7 @@ export abstract class BaseRepository<T> {
   async insert(data: T): Promise<any> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readwrite');
+      const transaction = db.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.add(data);
       request.onsuccess = () => resolve(request.result);
@@ -59,7 +59,7 @@ export abstract class BaseRepository<T> {
   async update(data: T): Promise<any> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readwrite');
+      const transaction = db.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.put(data);
       request.onsuccess = () => resolve(request.result);
@@ -73,7 +73,7 @@ export abstract class BaseRepository<T> {
   async deleteById(id: number): Promise<any> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readwrite');
+      const transaction = db.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.delete(id);
       request.onsuccess = () => resolve(request.result);
@@ -87,7 +87,7 @@ export abstract class BaseRepository<T> {
   async selectById(id: number): Promise<T> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readonly');
+      const transaction = db.transaction([this.storeName], "readonly");
       const store = transaction.objectStore(this.storeName);
       const request = store.get(id);
       request.onsuccess = (e: any) => {
@@ -95,7 +95,7 @@ export abstract class BaseRepository<T> {
         if (result !== undefined) {
           resolve(this.convertRow(result));
         } else {
-          reject(new Error('No data found'));
+          reject(new Error("No data found"));
         }
       };
       request.onerror = () => reject(request.error);
@@ -108,7 +108,7 @@ export abstract class BaseRepository<T> {
   async selectAll(): Promise<T[]> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readonly');
+      const transaction = db.transaction([this.storeName], "readonly");
       const store = transaction.objectStore(this.storeName);
       const request = store.getAll();
       request.onsuccess = (e: any) => {
@@ -125,7 +125,7 @@ export abstract class BaseRepository<T> {
   protected async selectExample(indexName: string, value: any): Promise<T[]> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readonly');
+      const transaction = db.transaction([this.storeName], "readonly");
       const store = transaction.objectStore(this.storeName);
       const index = store.index(indexName);
       const request = index.getAll(value);

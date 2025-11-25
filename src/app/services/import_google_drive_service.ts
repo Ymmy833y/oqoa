@@ -1,11 +1,17 @@
-import { fetchAllJsonFromFolderStrict, requestAccessTokenWithClientId } from '../api/google_auth';
-import { QList, Question } from '../models/entities';
-import { qListRepository } from '../repositories/qlist_repositoriy';
-import { questionRepository } from '../repositories/question_repositoriy';
-import { setLastImportedData, setLastUsedQuestions } from '../storages';
-import { ToastMessage, ToastMessageKind } from '../enums';
+import {
+  fetchAllJsonFromFolderStrict,
+  requestAccessTokenWithClientId,
+} from "../api/google_auth";
+import { ToastMessage, ToastMessageKind } from "../enums";
+import { QList, Question } from "../models/entities";
+import { qListRepository } from "../repositories/qlist_repositoriy";
+import { questionRepository } from "../repositories/question_repositoriy";
+import { setLastImportedData, setLastUsedQuestions } from "../storages";
 
-export async function importProbelmForGoogleDrive(clientId: string, folderId: string): Promise<ToastMessage> {
+export async function importProbelmForGoogleDrive(
+  clientId: string,
+  folderId: string,
+): Promise<ToastMessage> {
   try {
     // Google Identity Services のトークン取得
     const accessToken = await requestAccessTokenWithClientId(clientId);
@@ -15,30 +21,34 @@ export async function importProbelmForGoogleDrive(clientId: string, folderId: st
     if (!files.length) {
       return {
         uuid: crypto.randomUUID(),
-        message: '対象フォルダに JSON ファイルが見つかりませんでした。',
-        kind: ToastMessageKind.SUCCESS
+        message: "対象フォルダに JSON ファイルが見つかりませんでした。",
+        kind: ToastMessageKind.SUCCESS,
       };
     }
 
     // すべての JSON をドメインオブジェクトへ変換
-    const { questions, qLists } = convertPayloadsToDomain(files.map(f => f.content));
+    const { questions, qLists } = convertPayloadsToDomain(
+      files.map((f) => f.content),
+    );
 
     // ここでアプリ側の保存処理や state 反映へ渡す
-    console.info(`Imported: questions=${questions.length}, qLists=${qLists.length}`);
+    console.info(
+      `Imported: questions=${questions.length}, qLists=${qLists.length}`,
+    );
     questionRepository.bulkInsert(questions);
     setLastUsedQuestions(questionRepository.selectAll());
     setLastImportedData(new Date());
     await qListRepository.bulkInsert(qLists);
     return {
       uuid: crypto.randomUUID(),
-      message: '問題のインポートが完了しました。',
-      kind: ToastMessageKind.SUCCESS
+      message: "問題のインポートが完了しました。",
+      kind: ToastMessageKind.SUCCESS,
     };
   } catch (error) {
     return {
       uuid: crypto.randomUUID(),
       message: String(error),
-      kind: ToastMessageKind.ERROR
+      kind: ToastMessageKind.ERROR,
     };
   }
 }
@@ -59,7 +69,7 @@ function convertPayloadsToDomain(payloads: unknown[]): {
   const qLists: QList[] = [];
 
   for (const p of payloads) {
-    if (!p || typeof p !== 'object') continue;
+    if (!p || typeof p !== "object") continue;
 
     const payload = p as {
       qLists?: { name: string; isDefault: boolean; questions: number[] }[];
@@ -70,8 +80,8 @@ function convertPayloadsToDomain(payloads: unknown[]): {
     // Questions: id 重複は「後勝ち」で上書き
     if (Array.isArray(payload.questions)) {
       for (const row of payload.questions) {
-        if (!row || typeof row !== 'object') continue;
-        if (typeof row.id !== 'number') continue;
+        if (!row || typeof row !== "object") continue;
+        if (typeof row.id !== "number") continue;
         questionMap.set(row.id, new Question(row));
       }
     }
@@ -79,7 +89,8 @@ function convertPayloadsToDomain(payloads: unknown[]): {
     // QLists: id を持たない想定
     if (Array.isArray(payload.qLists)) {
       for (const ql of payload.qLists) {
-        if (!ql || typeof ql.name !== 'string' || !Array.isArray(ql.questions)) continue;
+        if (!ql || typeof ql.name !== "string" || !Array.isArray(ql.questions))
+          continue;
         const list = QList.fromRow(ql);
         qLists.push(list);
       }

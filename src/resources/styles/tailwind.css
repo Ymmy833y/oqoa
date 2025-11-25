@@ -14,7 +14,6 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --tw-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
-    /* コード用に CJK も考慮した等幅スタック（環境にあれば先頭を使用） */
     --tw-font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "M PLUS 1 Code", "Source Han Code JP",
       "Noto Sans Mono CJK JP", "PlemolJP Console", "Cica", "UDEV Gothic 35NF",
@@ -30,9 +29,8 @@
     --tw-code-bg: #0f172a;
     --tw-code-text: #e5e7eb;
 
-    /* inline code（インライン）用の配色（ライト） */
-    --tw-code-inline-bg: #f1f5f9; /* slate-100 */
-    --tw-code-inline-fg: #111827; /* gray-900  */
+    --tw-code-inline-bg: #f1f5f9;
+    --tw-code-inline-fg: #111827;
 
     --tw-radius: 0.5rem;
     --tw-leading: 1.75;
@@ -40,34 +38,27 @@
     color: var(--tw-muted);
   }
 
-  @media (prefers-color-scheme: dark) {
-    [data-auto-tailwind] {
-      --tw-text: #e5e7eb;
-      --tw-muted: #cbd5e1;
-      --tw-subtle: #94a3b8;
-      --tw-border: #334155;
-      --tw-soft: #0b1220;
-      --tw-link: #60a5fa;
-      --tw-link-hover: #3b82f6;
-      --tw-code-bg: #0b1220;
-      --tw-code-text: #e5e7eb;
-
-      /* inline code（インライン）用の配色（ダーク） */
-      --tw-code-inline-bg: #0b1220;
-      --tw-code-inline-fg: #e5e7eb;
-    }
-    [data-auto-tailwind] :where(tr:nth-child(even) td):not([class]) {
-      background: #0f172a;
-    }
-  }
-
-  /* Tailwind の darkMode:'class' にも対応 */
   .dark [data-auto-tailwind] {
+    --tw-text: #e5e7eb;
+    --tw-muted: #cbd5e1;
+    --tw-subtle: #94a3b8;
+    --tw-border: #334155;
+    --tw-soft: #0b1220;
+    --tw-link: #60a5fa;
+    --tw-link-hover: #3b82f6;
+    --tw-code-bg: #0b1220;
+    --tw-code-text: #e5e7eb;
+
     --tw-code-inline-bg: #0b1220;
     --tw-code-inline-fg: #e5e7eb;
+
+    color: var(--tw-muted);
   }
 
-  /* 文章系（classが付いていない素の要素のみ） */
+  .dark [data-auto-tailwind] :where(tr:nth-child(even) td):not([class]) {
+    background: #0f172a;
+  }
+
   [data-auto-tailwind]
     :where(p, ul, ol, pre, blockquote, table, hr, figure):not([class]) {
     margin-block: 1em;
@@ -82,7 +73,6 @@
     color: var(--tw-muted);
   }
 
-  /* 見出し */
   [data-auto-tailwind] :where(h1, h2, h3, h4, h5, h6):not([class]) {
     color: var(--tw-text);
     line-height: 1.25;
@@ -152,6 +142,7 @@
     max-width: 100%;
     height: auto;
     border-radius: 0.375rem;
+    background-color: white;
   }
 
   /* コード（インライン） — 等幅＆ダーク対応 */
@@ -799,6 +790,9 @@
   .question-answer-choice {
     @apply text-green-600 dark:text-green-400 font-semibold;
   }
+  .question-answer-choice-label {
+    @apply border border-green-600 dark:border-green-400;;
+  }
   .question-explain-label {
     @apply text-sm font-semibold text-gray-600 dark:text-gray-300;
   }
@@ -823,6 +817,31 @@
   }
   .question-answer-history-date {
     @apply text-xs text-center text-gray-500 dark:text-gray-400;
+  }
+  .question-favorite {
+    @apply mt-3 pt-3 border-t border-dashed border-gray-200 dark:border-gray-700
+      flex items-center justify-between;
+  }
+  .question-favorite-label {
+    @apply text-xs font-medium text-gray-600 dark:text-gray-300;
+  }
+  .question-favorite-list {
+    @apply flex items-center gap-2;
+  }
+  .question-favorite-btn {
+    @apply inline-flex items-center justify-center
+      w-8 h-8 rounded-full
+      border border-gray-300 bg-white text-gray-400
+      hover:bg-gray-50 hover:text-gray-600
+      dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400
+      dark:hover:bg-gray-600;
+  }
+  .question-favorite-btn--active {
+    @apply border-fuchsia-500 bg-fuchsia-50 text-fuchsia-600
+      dark:border-fuchsia-400 dark:bg-fuchsia-900/40 dark:text-fuchsia-300;
+  }
+  .question-favorite-btn-icon {
+    @apply text-base;
   }
 
   /* q-list (問題集一覧) */
@@ -1068,6 +1087,16 @@
   }
   .practice-setting-group {
     @apply mt-2 space-y-2;
+  }
+  .practice-setting-field {
+    @apply flex flex-col gap-1 text-sm;
+  }
+  .practice-setting-select {
+    @apply w-full rounded-md border border-gray-300 bg-white
+      px-2 py-1.5 text-sm text-gray-900
+      focus:outline-none focus:ring-2 focus:ring-blue-500
+      dark:border-gray-600 dark:bg-gray-800
+      dark:text-gray-100 dark:focus:ring-blue-400;
   }
   .practice-setting-checkbox {
     @apply flex items-center gap-2 text-sm;

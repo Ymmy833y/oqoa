@@ -1,8 +1,8 @@
-import { ansHistoryRepository } from '../repositories/ans_history_repository';
-import { DB_NAME, DB_VERSION } from '../repositories/base_repositoriy';
-import { favoriteRepository } from '../repositories/favorite_repositoriy';
-import { practiceHistoryRepository } from '../repositories/practice_history_repositoriy';
-import { qListRepository } from '../repositories/qlist_repositoriy';
+import { ansHistoryRepository } from "../repositories/ans_history_repository";
+import { DB_NAME, DB_VERSION } from "../repositories/base_repositoriy";
+import { favoriteRepository } from "../repositories/favorite_repositoriy";
+import { practiceHistoryRepository } from "../repositories/practice_history_repositoriy";
+import { qListRepository } from "../repositories/qlist_repositoriy";
 
 export async function initDatabase(): Promise<void> {
   return new Promise((resolve, reject) => {

@@ -1,5 +1,5 @@
 export interface AnsHistorySearchForm {
   currentPage: number;
-  totalSize: number,
+  totalSize: number;
   pages: number[];
 }

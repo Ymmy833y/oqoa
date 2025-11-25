@@ -1,17 +1,18 @@
-import LZString from 'lz-string';
-import { Question } from '../models/entities';
-import { Theme } from '../enums';
+import LZString from "lz-string";
 
-const THEME_KEY = 'oqoa-theme';
-const GOOGLE_CLIENT_ID_KEY = 'oqoa-google-client-id';
-const GOOGLE_FOLDER_ID_KEY = 'oqoa-google-folder-id';
-const LAST_IMPORTED_DATA_KEY = 'oqoa-last-imported-data'
-const LAST_USED_QUESTIONS_KEY = 'oqoa-last-used-questions';;
+import { Theme } from "../enums";
+import { Question } from "../models/entities";
+
+const THEME_KEY = "oqoa-theme";
+const GOOGLE_CLIENT_ID_KEY = "oqoa-google-client-id";
+const GOOGLE_FOLDER_ID_KEY = "oqoa-google-folder-id";
+const LAST_IMPORTED_DATA_KEY = "oqoa-last-imported-data";
+const LAST_USED_QUESTIONS_KEY = "oqoa-last-used-questions";
 
 export function getTheme(): Theme | null {
   const storedTheme = localStorage.getItem(THEME_KEY);
   if (storedTheme) {
-    return storedTheme === 'dark' ? Theme.DARK : Theme.LIGHT;
+    return storedTheme === "dark" ? Theme.DARK : Theme.LIGHT;
   } else {
     return null;
   }

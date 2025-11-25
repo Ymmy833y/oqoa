@@ -22,7 +22,7 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   text?: string,
 ): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
-  if (typeof arg2 === 'string' || arg2 === undefined) {
+  if (typeof arg2 === "string" || arg2 === undefined) {
     const className = arg2;
 
     if (className) node.className = className;
@@ -52,7 +52,7 @@ export function el<K extends keyof HTMLElementTagNameMap>(
 
 export function scrollToTop(isSmooth = true): void {
   if (isSmooth) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   } else {
     window.scrollTo(0, 0);
   }

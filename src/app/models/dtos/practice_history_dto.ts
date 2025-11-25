@@ -1,4 +1,4 @@
-import { PracticeHistory, QList } from '../entities';
+import { PracticeHistory, QList } from "../entities";
 
 export interface PracticeHistoryDto {
   practiceHistory: PracticeHistory;

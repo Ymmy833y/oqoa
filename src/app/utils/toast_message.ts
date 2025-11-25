@@ -1,4 +1,4 @@
-import { ToastMessage, ToastMessageKind } from '../enums';
+import { ToastMessage, ToastMessageKind } from "../enums";
 
 export function generateSuccessToastMessage(message: string): ToastMessage {
   return {
@@ -8,10 +8,12 @@ export function generateSuccessToastMessage(message: string): ToastMessage {
   };
 }
 
-export function generateErrorToastMessage(message: Error | string): ToastMessage {
+export function generateErrorToastMessage(
+  message: Error | string,
+): ToastMessage {
   return {
     uuid: crypto.randomUUID(),
     kind: ToastMessageKind.ERROR,
-    message: typeof message === 'string' ? message : message.message,
+    message: typeof message === "string" ? message : message.message,
   };
 }

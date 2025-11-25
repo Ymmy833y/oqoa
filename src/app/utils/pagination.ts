@@ -1,4 +1,4 @@
-import { el } from './view_utils';
+import { el } from "./view_utils";
 
 export const PAGE_ITEM_SIZE = 25;
 
@@ -74,28 +74,28 @@ export function renderPagination(
   handler: (page: number) => void,
 ) {
   // 一旦クリア
-  parentElem.innerHTML = '';
+  parentElem.innerHTML = "";
 
   // ページボタン用コンテナ
-  const paginationContainer = el('div', 'pagination');
+  const paginationContainer = el("div", "pagination");
 
   for (const page of pages) {
     const attrs: Record<string, string>[] = [
-      { type: 'button' },
-      { 'data-page': String(page) },
+      { type: "button" },
+      { "data-page": String(page) },
     ];
 
     if (page === currentPage) {
-      attrs.push({ 'aria-current': 'page' });
+      attrs.push({ "aria-current": "page" });
     }
 
-    const btn = el('button', {
-      class: 'page-btn',
+    const btn = el("button", {
+      class: "page-btn",
       text: String(page + 1), // 0始まり → 表示は 1,2,3...
       attr: attrs,
     });
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener("click", () => {
       if (page === currentPage) return;
       handler(page);
     });
@@ -104,8 +104,8 @@ export function renderPagination(
   }
 
   // 合計アイテム数表示
-  const totalLabel = el('div', {
-    class: 'pagination-total',
+  const totalLabel = el("div", {
+    class: "pagination-total",
     text: `${itemSize.toLocaleString()} / ${totalSize.toLocaleString()} 件`,
   });
 

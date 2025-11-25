@@ -1,8 +1,7 @@
-
 export enum ToastMessageKind {
-  SUCCESS = 'success',
-  ERROR = 'error'
-};
+  SUCCESS = "success",
+  ERROR = "error",
+}
 
 export interface ToastMessage {
   uuid: string;

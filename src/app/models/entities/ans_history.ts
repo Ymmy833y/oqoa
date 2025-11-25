@@ -13,7 +13,7 @@ export class AnsHistory {
     questionId: number,
     isCorrect: boolean,
     selectChoice: number[],
-    answerDate: string
+    answerDate: string,
   ) {
     if (id) this.id = id;
     this.practiceHistoryId = practiceHistoryId;
@@ -30,7 +30,7 @@ export class AnsHistory {
       row.question_id,
       row.is_correct,
       row.select_choice,
-      row.answer_date
+      row.answer_date,
     );
   }
 
@@ -39,7 +39,7 @@ export class AnsHistory {
     questionId: number,
     isCorrect: boolean,
     selectChoice: number[],
-    answerDate: string
+    answerDate: string,
   ) {
     return new AnsHistory(
       undefined,
@@ -47,7 +47,7 @@ export class AnsHistory {
       questionId,
       isCorrect,
       selectChoice,
-      answerDate
+      answerDate,
     );
   }
 

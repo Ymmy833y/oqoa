@@ -1,21 +1,21 @@
-import { AnsHistory, PracticeHistory, QList } from '../entities';
+import { AnsHistory, PracticeHistory, QList } from "../entities";
 
 export const CSV_HEADER = [
-  'practiceHistoryId',
-  'questionId',
-  'isCorrect',
-  'selectChoice',
-  'answerDate',
-  'qListId',
-  'isReview',
-  'isAnswered',
-  'isRandomQ',
-  'isRandomC',
-  'createAt',
-  'questionUuid',
-  'name',
-  'questions',
-  'isUndeliteable'
+  "practiceHistoryId",
+  "questionId",
+  "isCorrect",
+  "selectChoice",
+  "answerDate",
+  "qListId",
+  "isReview",
+  "isAnswered",
+  "isRandomQ",
+  "isRandomC",
+  "createAt",
+  "questionUuid",
+  "name",
+  "questions",
+  "isUndeliteable",
 ];
 
 export class CsvRow {
@@ -50,7 +50,7 @@ export class CsvRow {
     questionUuid: string,
     name: string,
     questions: number[],
-    isUndeliteable: boolean
+    isUndeliteable: boolean,
   ) {
     this.practiceHistoryId = practiceHistoryId;
     this.questionId = questionId;
@@ -69,7 +69,11 @@ export class CsvRow {
     this.isUndeliteable = isUndeliteable;
   }
 
-  static fromTable(qList: QList, practiceHistory: PracticeHistory, ansHistory: AnsHistory) {
+  static fromTable(
+    qList: QList,
+    practiceHistory: PracticeHistory,
+    ansHistory: AnsHistory,
+  ) {
     return new CsvRow(
       ansHistory.getPracticeHistoryId(),
       ansHistory.getQuestionId(),
@@ -85,7 +89,7 @@ export class CsvRow {
       qList.getUuid(),
       qList.getName(),
       qList.getQuestions(),
-      qList.getIsDefault()
+      qList.getIsDefault(),
     );
   }
 
@@ -95,7 +99,7 @@ export class CsvRow {
       0,
       false,
       [],
-      '',
+      "",
       practiceHistory.getQListId(),
       practiceHistory.getIsReview(),
       practiceHistory.getIsAnswered(),
@@ -105,10 +109,9 @@ export class CsvRow {
       qList.getUuid(),
       qList.getName(),
       qList.getQuestions(),
-      qList.getIsDefault()
+      qList.getIsDefault(),
     );
   }
-
 
   // practiceHistoryId の getter / setter
   public getPracticeHistoryId(): number {

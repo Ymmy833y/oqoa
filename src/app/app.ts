@@ -1,5 +1,5 @@
-import { Controller } from './controllers/controller';
-import { View } from './views';
+import { Controller } from "./controllers/controller";
+import { View } from "./views";
 
 async function start(): Promise<void> {
   const view = new View(document);
@@ -8,15 +8,20 @@ async function start(): Promise<void> {
 }
 
 (function init() {
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
     void start().catch((err) => {
-      console.error('Panel bootstrap failed:', err);
+      console.error("Panel bootstrap failed:", err);
     });
   } else {
-    document.addEventListener('DOMContentLoaded', () =>
-      void start().catch((err) => {
-        console.error('Panel bootstrap failed:', err);
-      })
+    document.addEventListener(
+      "DOMContentLoaded",
+      () =>
+        void start().catch((err) => {
+          console.error("Panel bootstrap failed:", err);
+        }),
     );
   }
 })();

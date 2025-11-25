@@ -1,6 +1,6 @@
 export interface QListSearchForm {
-  standardOnly: boolean,
+  standardOnly: boolean;
   currentPage: number;
-  totalSize: number,
+  totalSize: number;
   pages: number[];
 }

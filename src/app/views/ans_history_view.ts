@@ -1,5 +1,5 @@
-import { AnsHistoryDto } from '../models/dtos';
-import { el, formatToYMDHMS } from '../utils';
+import { AnsHistoryDto } from "../models/dtos";
+import { el, formatToYMDHMS, stripHtmlAndEntities } from "../utils";
 
 interface AnsHistoryListRowHandlers {
   onClickPractice: () => void;
@@ -7,38 +7,32 @@ interface AnsHistoryListRowHandlers {
 }
 export function generateAnsHistoryListRow(
   dto: AnsHistoryDto,
-  handlers: AnsHistoryListRowHandlers
+  handlers: AnsHistoryListRowHandlers,
 ) {
   const { ansHistory, qList, question } = dto;
 
-  const wrapper = el('div', 'ans-history-row') as HTMLDivElement;
+  const wrapper = el("div", "ans-history-row") as HTMLDivElement;
 
-  const header = el('div', 'ans-history-header');
+  const header = el("div", "ans-history-header");
 
-  const idSpan = el(
-    'span',
-    'question-list-row-id',
-    `#${question.getId()}`,
-  );
+  const idSpan = el("span", "question-list-row-id", `#${question.getId()}`);
 
   const textSpan = el(
-    'span',
-    'question-list-row-text',
-    question.getProblem(),
+    "span",
+    "question-list-row-text",
+    stripHtmlAndEntities(question.getProblem()),
   );
-  textSpan.addEventListener('click', () => {
+  textSpan.addEventListener("click", () => {
     handlers.onClickQuestion();
   });
 
   const isCorrect = ansHistory.getIsCorrect();
-  const statusSpan = el('span', {
-    class: `question-list-row-status ${isCorrect ? 'text-correct' : 'text-incorrect'}`,
+  const statusSpan = el("span", {
+    class: `question-list-row-status ${isCorrect ? "text-correct" : "text-incorrect"}`,
   });
-  const icon = el('i', {
-    class: isCorrect ? 'bi bi-circle' : 'bi bi-x-lg',
-    attr: [
-      { 'aria-hidden': 'true' },
-    ],
+  const icon = el("i", {
+    class: isCorrect ? "bi bi-circle" : "bi bi-x-lg",
+    attr: [{ "aria-hidden": "true" }],
   });
   statusSpan.appendChild(icon);
 
@@ -47,17 +41,17 @@ export function generateAnsHistoryListRow(
   header.appendChild(statusSpan);
 
   const qListNameP = el(
-    'p',
-    'ans-history-q-list-name',
+    "p",
+    "ans-history-q-list-name",
     `問題集名: ${qList.getName()}`,
   );
-  qListNameP.addEventListener('click', () => {
+  qListNameP.addEventListener("click", () => {
     handlers.onClickPractice();
   });
 
   const dateDiv = el(
-    'div',
-    'ans-history-date',
+    "div",
+    "ans-history-date",
     formatToYMDHMS(ansHistory.getAnswerDate()),
   );
 

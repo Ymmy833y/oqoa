@@ -8,6 +8,6 @@ export interface QuestionSearchForm {
   unansweredTo: Date | null;
 
   currentPage: number;
-  totalSize: number,
+  totalSize: number;
   pages: number[];
 }

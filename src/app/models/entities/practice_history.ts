@@ -15,7 +15,7 @@ export class PracticeHistory {
     isAnswered: boolean,
     isRandomQ: boolean,
     isRandomC: boolean,
-    createAt: string
+    createAt: string,
   ) {
     if (id) this.id = id;
     this.qListId = qListId;
@@ -34,7 +34,7 @@ export class PracticeHistory {
       row.is_answered,
       row.is_random_q,
       row.is_random_c,
-      row.create_at
+      row.create_at,
     );
   }
 
@@ -42,7 +42,7 @@ export class PracticeHistory {
     qListId: number,
     isReview: boolean,
     isRandomQ: boolean,
-    isRandomC: boolean
+    isRandomC: boolean,
   ) {
     return new PracticeHistory(
       undefined,
@@ -51,7 +51,7 @@ export class PracticeHistory {
       false,
       isRandomQ,
       isRandomC,
-      new Date().toISOString()
+      new Date().toISOString(),
     );
   }
 
@@ -61,7 +61,7 @@ export class PracticeHistory {
     isAnswered: boolean,
     isRandomQ: boolean,
     isRandomC: boolean,
-    createAt: string
+    createAt: string,
   ) {
     return new PracticeHistory(
       undefined,
@@ -70,7 +70,7 @@ export class PracticeHistory {
       isAnswered,
       isRandomQ,
       isRandomC,
-      createAt
+      createAt,
     );
   }
 

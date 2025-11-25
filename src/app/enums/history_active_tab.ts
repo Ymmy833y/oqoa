@@ -1,4 +1,4 @@
 export enum HistoryActiveTab {
-  PRACTICE = 'PRACTICE',
-  QUESTION = 'QUESTION',
+  PRACTICE = "PRACTICE",
+  QUESTION = "QUESTION",
 }
