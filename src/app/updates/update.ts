@@ -182,6 +182,7 @@ export function update(
             answerDateTo: action.answerDateTo,
             unansweredFrom: action.unansweredFrom,
             unansweredTo: action.unansweredTo,
+            checkedFavorites: action.checkedFavorites,
           },
         },
         effects: [{ kind: Effect.SEARCH_QUESTION }],

@@ -63,6 +63,7 @@ export class View {
     questionSearchAnswerDateTo: HTMLInputElement;
     questionSearchUnansweredFrom: HTMLInputElement;
     questionSearchUnansweredTo: HTMLInputElement;
+    questionSearchFavorites: NodeListOf<HTMLInputElement>;
 
     questionSearchSubmit: HTMLButtonElement;
   };
@@ -106,6 +107,9 @@ export class View {
       questionSearchAnswerDateTo: this.$("#questionSearchAnswerDateTo"),
       questionSearchUnansweredFrom: this.$("#questionSearchUnansweredFrom"),
       questionSearchUnansweredTo: this.$("#questionSearchUnansweredTo"),
+      questionSearchFavorites: this.$all<HTMLInputElement>(
+        'input[name="questionSearchFavorite"]',
+      ),
 
       questionSearchSubmit: this.$("#questionSearchSubmit"),
     };
@@ -178,6 +182,10 @@ export class View {
       const unansweredTo = this.els.questionSearchUnansweredTo.value
         ? new Date(this.els.questionSearchUnansweredTo.value)
         : null;
+      const checkedFavorites = [...this.els.questionSearchFavorites]
+        .filter((input) => input.checked)
+        .map((input) => Number(input.value));
+
       this.emit(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, {
         keyword,
         isCaseSensitive,
@@ -186,6 +194,7 @@ export class View {
         answerDateTo,
         unansweredFrom,
         unansweredTo,
+        checkedFavorites,
       });
     });
   }

@@ -52,6 +52,7 @@ export interface UIEventPayloadMap {
     answerDateTo: Date | null;
     unansweredFrom: Date | null;
     unansweredTo: Date | null;
+    checkedFavorites: number[];
   };
   [UIEvent.CHANGE_QUESTIONS_PAGE]: { page: number };
   [UIEvent.CHANGE_QLIST_PAGE]: { page: number };

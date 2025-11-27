@@ -82,6 +82,7 @@ export class Controller {
         answerDateTo,
         unansweredFrom,
         unansweredTo,
+        checkedFavorites,
       }) =>
         this.dispatch({
           type: Action.SEARCH_QUESTION,
@@ -92,6 +93,7 @@ export class Controller {
           answerDateTo,
           unansweredFrom,
           unansweredTo,
+          checkedFavorites,
         }),
     );
     this.view.on(UIEvent.CHANGE_QLIST_PAGE, ({ page }) =>

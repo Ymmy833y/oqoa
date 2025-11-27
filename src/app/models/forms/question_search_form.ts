@@ -6,6 +6,7 @@ export interface QuestionSearchForm {
   answerDateTo: Date | null;
   unansweredFrom: Date | null;
   unansweredTo: Date | null;
+  checkedFavorites: number[];
 
   currentPage: number;
   totalSize: number;

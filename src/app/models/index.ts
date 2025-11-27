@@ -69,6 +69,7 @@ export const initialModel: Model = {
     answerDateTo: null,
     unansweredFrom: null,
     unansweredTo: null,
+    checkedFavorites: [],
     currentPage: 0,
     totalSize: 0,
     pages: [],

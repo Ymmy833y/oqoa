@@ -1,5 +1,5 @@
 import { QuestionDetailDto } from "../models/dtos/question_detail_dto";
-import { AnsHistory, Question } from "../models/entities";
+import { AnsHistory, Favorite, Question } from "../models/entities";
 import { QuestionSearchForm } from "../models/forms";
 import { ansHistoryRepository } from "../repositories/ans_history_repository";
 import { favoriteRepository } from "../repositories/favorite_repositoriy";
@@ -47,6 +47,7 @@ async function doSelectQuestionsForSearchForm(
     answerDateTo,
     unansweredFrom,
     unansweredTo,
+    checkedFavorites,
   } = form;
 
   const questions =
@@ -59,7 +60,8 @@ async function doSelectQuestionsForSearchForm(
     answerDateFrom === null &&
     answerDateTo === null &&
     unansweredFrom === null &&
-    answerDateTo === null
+    answerDateTo === null &&
+    checkedFavorites.length === 0
   ) {
     return questions;
   }
@@ -71,23 +73,27 @@ async function doSelectQuestionsForSearchForm(
   let questionAnsHistories: {
     question: Question;
     ansHistories: AnsHistory[];
+    favorites: Favorite[];
   }[] = await Promise.all(
     questions.map(async (question) => {
       const ansHistories = await ansHistoryRepository.selectByQuestionId(
         question.getId(),
       );
-      return { question, ansHistories };
+      const favorites = await favoriteRepository.selectByQuestionId(
+        question.getId(),
+      );
+      return { question, ansHistories, favorites };
     }),
   );
 
   // 解答期間で絞り込む
   if (hasAnswerPeriod) {
     questionAnsHistories = questionAnsHistories
-      .map(({ question, ansHistories }) => {
+      .map(({ question, ansHistories, favorites }) => {
         const filteredHistories = ansHistories.filter((h) =>
           isWithinRange(h.getAnswerDate(), answerDateFrom, answerDateTo),
         );
-        return { question, ansHistories: filteredHistories };
+        return { question, ansHistories: filteredHistories, favorites };
       })
       .filter(({ ansHistories }) => ansHistories.length > 0);
   }
@@ -107,6 +113,15 @@ async function doSelectQuestionsForSearchForm(
     questionAnsHistories = questionAnsHistories.filter(({ ansHistories }) => {
       const rate = calcCorrectRate(ansHistories);
       return rate <= correctRate;
+    });
+  }
+
+  // お気に入りで絞り込む
+  if (checkedFavorites.length !== 0) {
+    questionAnsHistories = questionAnsHistories.filter(({ favorites }) => {
+      return checkedFavorites.some((tagId) =>
+        favorites.map((f) => f.getTagId()).includes(tagId),
+      );
     });
   }
 

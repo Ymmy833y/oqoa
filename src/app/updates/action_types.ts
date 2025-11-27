@@ -85,6 +85,7 @@ export type ActionType =
       answerDateTo: Date | null;
       unansweredFrom: Date | null;
       unansweredTo: Date | null;
+      checkedFavorites: number[];
     }
   | { type: Action.CHANGE_QUESTIONS_PAGE; page: number }
   | { type: Action.PREPARE_PRACTICE_START; qListId: number }
