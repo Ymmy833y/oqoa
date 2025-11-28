@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="./static/img/icon.png">
+  <link rel="stylesheet" href="./styles/tailwind.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <title>OQOA</title>
+</head>
+
+<body class="app-body">
+  <header class="app-header">
+    <div class="app-header-inner container">
+      <h1 class="app-title">
+        <span class="app-title-full">One Question One Answer</span>
+        <span class="app-title-short">OQOA</span>
+      </h1>
+      <div class="app-header-actions">
+        <button type="button" id="settingBtn" class="icon-button">
+          <i class="bi bi-gear" aria-hidden="true"></i>
+        </button>
+        <button id="menuBtn" type="button" class="icon-button">
+          <i class="bi bi-person-fill" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section id="practiceContainer" class="practice-section"></section>
+
+    <section class="q-list-section">
+      <div class="q-list-header">
+        <div class="q-list-header-main">
+          <h2 class="q-list-title">問題集一覧</h2>
+          <p class="q-list-desc">登録済みの問題集から、解きたいセットを選択できます。</p>
+        </div>
+        <label class="practice-setting-checkbox">
+          <input id="qListsStandardCheckBox" type="checkbox" class="practice-setting-checkbox-input" />
+          <span>標準のみ</span>
+        </label>
+      </div>
+      <div id="qListPagination"></div>
+      <div id="qListsContainer" class="q-list-grid"></div>
+    </section>
+
+    <section class="question-list-section">
+      <div class="question-list-header">
+        <h2 class="question-list-title">設問一覧</h2>
+        <button type="button" id="createCustomQListBtn" class="question-list-create-btn">
+          カスタム問題集作成
+        </button>
+      </div>
+      <!-- 検索バー -->
+      <div class="question-list-toolbar">
+        <div class="question-list-search-group">
+          <input type="text" id="questionSearchKeyword" class="question-list-search-input" placeholder="キーワードで検索" />
+          <button type="button" id="questionSearchIsCaseSensitive" class="question-list-search-case-btn"
+            aria-pressed="false">
+            <i class="bi bi-type question-list-search-case-icon"></i>
+          </button>
+        </div>
+
+        <!-- 詳細検索トグル -->
+        <div class="question-list-advanced-toggle">
+          <button type="button" id="questionAdvancedSearchToggle" class="question-list-advanced-link"
+            aria-expanded="false" aria-controls="questionAdvancedSearch">
+            詳細検索
+          </button>
+        </div>
+
+        <!-- 詳細検索エリア（初期は非表示） -->
+        <div id="questionAdvancedSearch" class="question-list-advanced hidden">
+          <div class="question-list-advanced-field">
+            <label for="questionSearchCorrectRate" class="question-list-advanced-label">
+              正答率（未解答を除く）
+            </label>
+            <select id="questionSearchCorrectRate" class="question-list-advanced-select">
+              <option value="0">指定なし</option>
+              <option value="25">25%以下</option>
+              <option value="40">40%以下</option>
+              <option value="50">50%以下</option>
+              <option value="75">75%以下</option>
+            </select>
+          </div>
+
+          <div class="question-list-advanced-field">
+            <span class="question-list-advanced-label">解答期間</span>
+            <div class="question-list-advanced-date-range">
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchAnswerDateFrom" class="question-list-advanced-date-label">
+                  From
+                </label>
+                <input type="date" id="questionSearchAnswerDateFrom" class="question-list-advanced-date-input" />
+              </div>
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchAnswerDateTo" class="question-list-advanced-date-label">
+                  To
+                </label>
+                <input type="date" id="questionSearchAnswerDateTo" class="question-list-advanced-date-input" />
+              </div>
+            </div>
+          </div>
+
+          <div class="question-list-advanced-field">
+            <span class="question-list-advanced-label">未解答期間</span>
+            <div class="question-list-advanced-date-range">
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchUnansweredFrom" class="question-list-advanced-date-label">
+                  From
+                </label>
+                <input type="date" id="questionSearchUnansweredFrom" class="question-list-advanced-date-input" />
+              </div>
+              <div class="question-list-advanced-date-item">
+                <label for="questionSearchUnansweredTo" class="question-list-advanced-date-label">
+                  To
+                </label>
+                <input type="date" id="questionSearchUnansweredTo" class="question-list-advanced-date-input" />
+              </div>
+            </div>
+          </div>
+
+          <!-- お気に入り絞り込み -->
+          <div class="question-list-advanced-field">
+            <span class="question-list-advanced-label">お気に入り</span>
+            <div class="question-list-advanced-favorite-group" role="group" aria-label="お気に入りフィルター">
+              <!-- 三角 -->
+              <label class="question-list-advanced-favorite">
+                <input type="checkbox" name="questionSearchFavorite" value="1"
+                  class="question-list-advanced-favorite-input" />
+                <span class="question-list-advanced-favorite-icon">
+                  <i class="bi bi-triangle-fill"></i>
+                </span>
+              </label>
+
+              <!-- 星 -->
+              <label class="question-list-advanced-favorite">
+                <input type="checkbox" name="questionSearchFavorite" value="2"
+                  class="question-list-advanced-favorite-input" />
+                <span class="question-list-advanced-favorite-icon">
+                  <i class="bi bi-star-fill"></i>
+                </span>
+              </label>
+
+              <!-- ハート -->
+              <label class="question-list-advanced-favorite">
+                <input type="checkbox" name="questionSearchFavorite" value="3"
+                  class="question-list-advanced-favorite-input" />
+                <span class="question-list-advanced-favorite-icon">
+                  <i class="bi bi-heart-fill"></i>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="question-list-search-submit">
+          <button type="button" id="questionSearchSubmit" class="question-list-search-btn">
+            検索
+          </button>
+        </div>
+      </div>
+
+      <div id="questionsPagination"></div>
+
+      <div id="questionsContainer" class="question-list"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-footer-inner">
+      <span class="app-footer-text">©2023-2025 Ymmy</span>
+      <span class="app-footer-divider">/</span>
+      <a href="https://github.com/Ymmy833y/oqoa" class="app-footer-link" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-github app-footer-link-icon" aria-hidden="true"></i>
+        <span class="app-footer-link-text">GitHub</span>
+      </a>
+    </div>
+  </footer>
+
+  <div id="sideMenu" class="side-menu translate-x-full">
+    <div class="side-menu-header">
+      <h3 class="side-menu-title">Menu</h3>
+      <div class="side-menu-actions">
+        <button type="button" id="sideMenuCloseBtn" class="side-menu-close-btn">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="side-menu-body">
+      <div class="side-menu-section-header">
+        <h5 class="side-menu-section-title">演習履歴</h5>
+      </div>
+      <div class="side-menu-tabs">
+        <button id="historyForPracticeBtn" class="side-menu-tab side-menu-tab--active">
+          問題集
+        </button>
+        <button id="historyForQuestionBtn" class="side-menu-tab side-menu-tab--inactive">
+          設問
+        </button>
+      </div>
+      <div id="practiceHistoryList" class="side-menu-history-list"></div>
+    </div>
+  </div>
+
+  <div id="defaultModal" class="app-modal-overlay hidden"></div>
+  <div id="toastParent" class="toast-stack"></div>
+
+  <script type="module" src="../app/app.ts"></script>
+</body>
+
+</html>
