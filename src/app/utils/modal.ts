@@ -106,6 +106,7 @@ export class Modal {
    */
   public show(): void {
     this.modalElem.classList.remove("hidden");
+    document.body.classList.add("modal-open");
     // 少し待ってからフェードイン
     setTimeout(() => {
       this.modalElem.classList.remove("opacity-0");
@@ -122,6 +123,7 @@ export class Modal {
     this.modalElem.classList.add("opacity-0");
     setTimeout(() => {
       this.modalElem.classList.add("hidden");
+      document.body.classList.remove("modal-open");
     }, 300); // duration-300 に合わせた待ち時間
     this.isShown = false;
   }
