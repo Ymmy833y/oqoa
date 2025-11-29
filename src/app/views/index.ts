@@ -548,11 +548,13 @@ export class View {
   private showSideMenuContent() {
     this.els.sideMenu.classList.remove("translate-x-full");
     this.els.sideMenu.classList.add("translate-x-0");
+    document.body.classList.add("modal-open");
   }
 
   private hideSideMenuContent() {
     this.els.sideMenu.classList.add("translate-x-full");
     this.els.sideMenu.classList.remove("translate-x-0");
+    document.body.classList.remove("modal-open");
   }
 
   private toggleHistoryTab(
