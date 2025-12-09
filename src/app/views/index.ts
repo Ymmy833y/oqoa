@@ -341,10 +341,18 @@ export class View {
       model.editQList
     ) {
       const qList = model.editQList;
-      const content = generateQListEditContent(qList, (name, isDefault) => {
-        this.emit(UIEvent.CLICK_EDIT_APPLY, { qList, name, isDefault });
-        this.defaultModal.hide();
-      });
+      const content = generateQListEditContent(
+        qList,
+        (name, isDefault, isDelete) => {
+          this.emit(UIEvent.CLICK_EDIT_APPLY, {
+            qList,
+            name,
+            isDefault,
+            isDelete,
+          });
+          this.defaultModal.hide();
+        },
+      );
       this.defaultModal.setModal(
         content,
         `問題集「${qList.getName()}」 編集`,

@@ -227,6 +227,7 @@ export function update(
             qList: action.qList,
             name: action.name,
             isDefault: action.isDefault,
+            isDelete: action.isDelete,
           },
         ],
       };

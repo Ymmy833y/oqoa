@@ -108,8 +108,16 @@ export class Controller {
     this.view.on(UIEvent.CLICK_QLIST_EDIT, ({ qList }) =>
       this.dispatch({ type: Action.SHOW_QLIST_EDIT, qList }),
     );
-    this.view.on(UIEvent.CLICK_EDIT_APPLY, ({ qList, name, isDefault }) =>
-      this.dispatch({ type: Action.UPDATE_QLIST, qList, name, isDefault }),
+    this.view.on(
+      UIEvent.CLICK_EDIT_APPLY,
+      ({ qList, name, isDefault, isDelete }) =>
+        this.dispatch({
+          type: Action.UPDATE_QLIST,
+          qList,
+          name,
+          isDefault,
+          isDelete,
+        }),
     );
     this.view.on(
       UIEvent.CLICK_RESTART_PRACTICE_SET,
@@ -373,10 +381,11 @@ export class Controller {
         }
 
         case Effect.UPDATE_QLIST: {
-          const qList = fx.qList;
-          qList.setName(fx.name);
-          qList.setIsDefault(fx.isDefault);
-          await qListRepository.update(qList.generateRow());
+          if (fx.isDelete) {
+            await qListService.removeQList(fx.qList);
+          } else {
+            await qListService.updateQList(fx.qList, fx.name, fx.isDefault);
+          }
           const qListData = await qListService.selectQListsForSearchForm(
             this.model.qListSearchForm,
           );
