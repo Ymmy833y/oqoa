@@ -69,6 +69,7 @@ export interface UIEventPayloadMap {
     qList: QList;
     name: string;
     isDefault: boolean;
+    isDelete: boolean;
   };
   [UIEvent.CLICK_QUESTION_LIST_ROW]: {
     questionId: number;

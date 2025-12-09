@@ -44,6 +44,7 @@ export type EffectType =
       qList: QList;
       name: string;
       isDefault: boolean;
+      isDelete: boolean;
     }
   | {
       kind: Effect.PREPARE_PRACTICE;
