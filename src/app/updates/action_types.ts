@@ -100,6 +100,7 @@ export type ActionType =
       qList: QList;
       name: string;
       isDefault: boolean;
+      isDelete: boolean;
     }
   | {
       type: Action.PREPARE_PRACTICE;

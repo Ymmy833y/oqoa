@@ -1,4 +1,6 @@
+import { ModalSize } from "../enums";
 import { QList } from "../models/entities";
+import { Modal } from "../utils";
 import { el } from "../utils/view_utils";
 
 interface QListRowHandlers {
@@ -79,7 +81,7 @@ export function generateQListRow(
 
 export function generateQListEditContent(
   qList: QList,
-  handler: (name: string, isDefault: boolean) => void,
+  handler: (name: string, isDefault: boolean, isDelete: boolean) => void,
 ): HTMLElement {
   const title = qList.getName();
   const isDefault = qList.getIsDefault();
@@ -138,10 +140,32 @@ export function generateQListEditContent(
 
   editButton.addEventListener("click", () => {
     const nextIsDefault = defaultInput.checked;
-    handler(nameInput.value, nextIsDefault);
+    handler(nameInput.value, nextIsDefault, false);
+  });
+
+  // 内包モーダル
+  const innerModalElem = el("div", "app-modal-overlay hidden");
+  body.appendChild(innerModalElem);
+  const innerModal = new Modal(innerModalElem);
+
+  const removeButton = el("button", {
+    id: "qListEditButton",
+    class: "app-modal-button qlist-remove-button",
+    text: "削除",
+    attr: [{ type: "button" }],
+  });
+
+  removeButton.addEventListener("click", () => {
+    const nextIsDefault = defaultInput.checked;
+    const modal = createQListRemoveConfirmModal(
+      () => handler(nameInput.value, nextIsDefault, true),
+      () => innerModal.hide(),
+    );
+    innerModal.setModal(modal, "問題集を削除", ModalSize.LG);
   });
 
   actions.appendChild(editButton);
+  actions.appendChild(removeButton);
 
   section.appendChild(nameField);
   section.appendChild(typeField);
@@ -149,4 +173,49 @@ export function generateQListEditContent(
 
   body.appendChild(section);
   return body;
+}
+
+function createQListRemoveConfirmModal(
+  onConfirm: () => void,
+  onCancel: () => void,
+): HTMLElement {
+  // 本文
+  const modal = el("div", "app-modal-body");
+  const section = el("div", "app-modal-section");
+  const text = el(
+    "p",
+    "app-modal-section-description",
+    "この問題集を削除すると、関連する演習履歴もすべて削除されます。" +
+      "削除した内容は元に戻せません。本当に削除してもよろしいですか？",
+  );
+  section.appendChild(text);
+  modal.appendChild(section);
+
+  // ボタン行
+  const actions = el("div", "app-modal-actions");
+
+  const deleteButton = el("button", {
+    class: "app-modal-button app-modal-button-danger",
+    text: "削除",
+    attr: [{ type: "button" }],
+  });
+  deleteButton.addEventListener("click", () => {
+    onConfirm();
+  });
+
+  const cancelButton = el("button", {
+    class: "app-modal-button",
+    text: "キャンセル",
+    attr: [{ type: "button" }],
+  });
+  cancelButton.addEventListener("click", () => {
+    onCancel();
+  });
+
+  actions.appendChild(deleteButton);
+  actions.appendChild(cancelButton);
+
+  modal.appendChild(actions);
+
+  return modal;
 }
