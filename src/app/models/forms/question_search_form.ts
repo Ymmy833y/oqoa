@@ -1,4 +1,5 @@
 export interface QuestionSearchForm {
+  isQListName: boolean;
   keyword: string;
   isCaseSensitive: boolean;
   correctRate: number;

@@ -45,6 +45,7 @@ export interface UIEventPayloadMap {
   [UIEvent.CLICK_GOOGLE_DRIVE_IMPORT_BTN]: undefined;
   [UIEvent.CLICK_REMOVE_QUESTION_BTN]: undefined;
   [UIEvent.CLICK_QUESTION_SEARCH_SUBMIT]: {
+    isQListName: boolean;
     keyword: string;
     isCaseSensitive: boolean;
     correctRate: number;

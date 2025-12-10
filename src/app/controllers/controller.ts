@@ -75,6 +75,7 @@ export class Controller {
     this.view.on(
       UIEvent.CLICK_QUESTION_SEARCH_SUBMIT,
       ({
+        isQListName,
         keyword,
         isCaseSensitive,
         correctRate,
@@ -86,6 +87,7 @@ export class Controller {
       }) =>
         this.dispatch({
           type: Action.SEARCH_QUESTION,
+          isQListName,
           keyword,
           isCaseSensitive,
           correctRate,
