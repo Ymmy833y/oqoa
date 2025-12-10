@@ -53,6 +53,7 @@ export class View {
 
     createCustomQListBtn: HTMLButtonElement;
 
+    questionSearchIsQListName: HTMLButtonElement;
     questionSearchKeyword: HTMLInputElement;
     questionSearchIsCaseSensitive: HTMLButtonElement;
 
@@ -96,6 +97,7 @@ export class View {
 
       createCustomQListBtn: this.$("#createCustomQListBtn"),
 
+      questionSearchIsQListName: this.$("#questionSearchIsQListName"),
       questionSearchKeyword: this.$("#questionSearchKeyword"),
       questionSearchIsCaseSensitive: this.$("#questionSearchIsCaseSensitive"),
 
@@ -152,6 +154,15 @@ export class View {
     this.els.createCustomQListBtn.addEventListener("click", () => {
       this.emit(UIEvent.CLICK_CUSTOM_PRACTICE_START, undefined);
     });
+    this.els.questionSearchIsQListName.addEventListener("click", () => {
+      const isCaseSensitive =
+        this.els.questionSearchIsQListName.getAttribute("aria-pressed") ===
+        "true";
+      this.els.questionSearchIsQListName.setAttribute(
+        "aria-pressed",
+        String(!isCaseSensitive),
+      );
+    });
     this.els.questionSearchIsCaseSensitive.addEventListener("click", () => {
       const isCaseSensitive =
         this.els.questionSearchIsCaseSensitive.getAttribute("aria-pressed") ===
@@ -165,6 +176,9 @@ export class View {
       this.els.questionAdvancedSearch.classList.toggle("hidden");
     });
     this.els.questionSearchSubmit.addEventListener("click", () => {
+      const isQListName =
+        this.els.questionSearchIsQListName.getAttribute("aria-pressed") ===
+        "true";
       const keyword = this.els.questionSearchKeyword.value;
       const isCaseSensitive =
         this.els.questionSearchIsCaseSensitive.getAttribute("aria-pressed") ===
@@ -187,6 +201,7 @@ export class View {
         .map((input) => Number(input.value));
 
       this.emit(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, {
+        isQListName,
         keyword,
         isCaseSensitive,
         correctRate,

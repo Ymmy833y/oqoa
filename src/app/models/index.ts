@@ -62,6 +62,7 @@ export const initialModel: Model = {
   },
   questions: [],
   questionSearchForm: {
+    isQListName: false,
     keyword: "",
     isCaseSensitive: false,
     correctRate: 0,

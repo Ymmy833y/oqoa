@@ -175,6 +175,7 @@ export function update(
           ...model,
           questionSearchForm: {
             ...model.questionSearchForm,
+            isQListName: action.isQListName,
             keyword: action.keyword,
             isCaseSensitive: action.isCaseSensitive,
             correctRate: action.correctRate,

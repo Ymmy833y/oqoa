@@ -3,6 +3,7 @@ import { AnsHistory, Favorite, Question } from "../models/entities";
 import { QuestionSearchForm } from "../models/forms";
 import { ansHistoryRepository } from "../repositories/ans_history_repository";
 import { favoriteRepository } from "../repositories/favorite_repositoriy";
+import { qListRepository } from "../repositories/qlist_repositoriy";
 import { questionRepository } from "../repositories/question_repositoriy";
 import { getPaginationPages, isWithinRange, PAGE_ITEM_SIZE } from "../utils";
 
@@ -15,7 +16,9 @@ export async function selectQuestionsForSearchForm(
   totalSize: number;
   pages: number[];
 }> {
-  const questions = await doSelectQuestionsForSearchForm(form);
+  const questions = form.isQListName
+    ? await doSelectQuestionsForQList(form.keyword, form.isCaseSensitive)
+    : await doSelectQuestionsForSearchForm(form);
 
   const totalPages =
     Math.floor(questions.length / pageItemSize) +
@@ -34,6 +37,19 @@ export async function selectQuestionsForSearchForm(
     totalSize: questions.length,
     pages,
   };
+}
+
+async function doSelectQuestionsForQList(
+  keyword: string,
+  isCaseSensitive: boolean,
+): Promise<Question[]> {
+  const qLists = await qListRepository.selectByWord(keyword, isCaseSensitive);
+  return qLists.flatMap((qList) =>
+    qList
+      .getQuestions()
+      .map((questionId) => questionRepository.selectById(questionId))
+      .filter((q): q is Question => q != null),
+  );
 }
 
 async function doSelectQuestionsForSearchForm(
