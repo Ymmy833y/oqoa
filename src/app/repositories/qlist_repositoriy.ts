@@ -94,6 +94,20 @@ class QListRepository extends BaseRepository<QList> {
     }
     return filteredQLists[0];
   }
+
+  async selectByWord(name: string, isCaseSensitive: boolean): Promise<QList[]> {
+    const qLists = await this.selectAll();
+    return qLists.filter((qList) => {
+      if (isCaseSensitive) {
+        return qList.getName().includes(name);
+      } else {
+        return qList
+          .getName()
+          .toLocaleLowerCase()
+          .includes(name.toLocaleLowerCase());
+      }
+    });
+  }
 }
 
 export const qListRepository = new QListRepository();

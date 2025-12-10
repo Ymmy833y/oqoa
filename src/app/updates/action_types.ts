@@ -78,6 +78,7 @@ export type ActionType =
     }
   | {
       type: Action.SEARCH_QUESTION;
+      isQListName: boolean;
       keyword: string;
       isCaseSensitive: boolean;
       correctRate: number;
