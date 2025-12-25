@@ -16,9 +16,7 @@ export async function selectQuestionsForSearchForm(
   totalSize: number;
   pages: number[];
 }> {
-  const questions = form.isQListName
-    ? await doSelectQuestionsForQList(form.keyword, form.isCaseSensitive)
-    : await doSelectQuestionsForSearchForm(form);
+  const questions = await doSelectQuestionsForSearchForm(form);
 
   const totalPages =
     Math.floor(questions.length / pageItemSize) +
@@ -52,6 +50,15 @@ async function doSelectQuestionsForQList(
   );
 }
 
+function doSelectQuestionsForQuestions(
+  keyword: string,
+  isCaseSensitive: boolean,
+): Question[] {
+  return keyword === ""
+    ? questionRepository.selectAll()
+    : questionRepository.selectByWord(keyword, isCaseSensitive);
+}
+
 async function doSelectQuestionsForSearchForm(
   form: QuestionSearchForm,
 ): Promise<Question[]> {
@@ -66,10 +73,9 @@ async function doSelectQuestionsForSearchForm(
     checkedFavorites,
   } = form;
 
-  const questions =
-    form.keyword === ""
-      ? questionRepository.selectAll()
-      : questionRepository.selectByWord(form.keyword, form.isCaseSensitive);
+  const questions = form.isQListName
+    ? await doSelectQuestionsForQList(form.keyword, form.isCaseSensitive)
+    : doSelectQuestionsForQuestions(form.keyword, form.isCaseSensitive);
 
   if (
     correctRate === 0 &&
