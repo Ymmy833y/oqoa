@@ -98,6 +98,10 @@ class QListRepository extends BaseRepository<QList> {
   async selectByWord(name: string, isCaseSensitive: boolean): Promise<QList[]> {
     const qLists = await this.selectAll();
     return qLists.filter((qList) => {
+      if (!qList.getIsDefault()) {
+        return false;
+      }
+
       if (isCaseSensitive) {
         return qList.getName().includes(name);
       } else {
