@@ -42,12 +42,13 @@ async function doSelectQuestionsForQList(
   isCaseSensitive: boolean,
 ): Promise<Question[]> {
   const qLists = await qListRepository.selectByWord(keyword, isCaseSensitive);
-  return qLists.flatMap((qList) =>
-    qList
-      .getQuestions()
-      .map((questionId) => questionRepository.selectById(questionId))
-      .filter((q): q is Question => q != null),
-  );
+  const uniqueIds = [
+    ...new Set(qLists.flatMap((qList) => qList.getQuestions())),
+  ];
+
+  return uniqueIds
+    .map((id) => questionRepository.selectById(id))
+    .filter((q): q is Question => q != null);
 }
 
 function doSelectQuestionsForQuestions(
