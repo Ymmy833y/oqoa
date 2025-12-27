@@ -1,6 +1,6 @@
 {
   "name": "oqoa",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "scripts": {
     "prestart": "rimraf dist .parcel-cache",
     "start": "parcel src/resources/index.html",
