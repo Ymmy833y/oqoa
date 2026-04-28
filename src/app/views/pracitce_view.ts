@@ -311,6 +311,11 @@ export function generatePracticeContent(
   const nextBtn = el("button", "practice-nav-button", "次の問題");
   nav.append(prevBtn, progress, nextBtn);
 
+  const shouldShuffleChoices =
+    practiceDetailDto.practiceHistory.getIsRandomC() &&
+    !practiceDetailDto.practiceHistory.getIsAnswered() &&
+    questionDetailDto.ansHistory === null;
+
   const questionContent = generateQuestionContent(
     questionDetailDto,
     (tagId, checked) =>
@@ -319,7 +324,7 @@ export function generatePracticeContent(
         tagId,
         checked,
       ),
-    practiceDetailDto.practiceHistory.getIsRandomC(),
+    shouldShuffleChoices,
     practiceDetailDto.practiceHistory.getIsAnswered(),
     {
       onAnswered: (isCorrect, selectChoice) =>
