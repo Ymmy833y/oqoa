@@ -16,8 +16,8 @@ interface QuestionContentOptionHandlers {
 export function generateQuestionContent(
   dto: QuestionDetailDto,
   onFavoriteToggled: (tagId: number, checked: boolean) => void,
-  isRandomC = false,
-  isAnswered = true,
+  shouldShuffleChoices = false,
+  isPracticeCompleted = true,
   optionHandlers?: QuestionContentOptionHandlers,
   modal?: Modal,
 ): HTMLElement {
@@ -107,7 +107,7 @@ export function generateQuestionContent(
     });
     choiceLabelElems.push(choiceLabel);
   });
-  if (isRandomC || isAnswered) {
+  if (shouldShuffleChoices) {
     shuffle(choiceLabelElems);
   }
   choiceLabelElems.forEach((label) => choicesWrapper.appendChild(label));
@@ -124,7 +124,7 @@ export function generateQuestionContent(
   answerButton.addEventListener("click", () => {
     showAnswerBlock();
   });
-  if (dto.ansHistory && !isAnswered) {
+  if (dto.ansHistory && !isPracticeCompleted) {
     const answerCancelButton = el("button", {
       class: "question-answer-cancel-button",
       text: "回答を取り消す",
