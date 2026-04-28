@@ -3,6 +3,7 @@ import {
   CustomPracticeStartDto,
   PracticeDetailDto,
   PracticeHistoryDto,
+  QuestionDetailDto,
 } from "../models/dtos";
 import { QList } from "../models/entities";
 import { el, formatToYMDHMS, Modal } from "../utils";
@@ -377,12 +378,115 @@ export function generatePracticeContent(
 interface PracticeResultContentHandlers {
   onClickRetryBtn: () => void;
   onClickReviewBtn: (questionIds: number[]) => void;
-  onClickQuestionResult: (questionId: number) => void;
+  onClickQuestionResult: (questionIndex: number) => void;
 }
+
+interface PracticeResultPreviewContentHandlers {
+  onFavoriteToggled: (
+    questionId: number,
+    tagId: number,
+    checked: boolean,
+  ) => void;
+}
+
+/**
+ * 演習結果の設問 Preview コンテンツを生成する
+ * @param questionDetailDtos Preview 対象の設問詳細一覧
+ * @param initialQuestionIndex 初期表示する設問の index
+ * @param handlers イベントハンドラ
+ * @returns Preview コンテンツ要素
+ */
+export function generatePracticeResultPreviewContent(
+  questionDetailDtos: QuestionDetailDto[],
+  initialQuestionIndex: number,
+  handlers: PracticeResultPreviewContentHandlers,
+): HTMLElement {
+  let currentQuestionIndex = initialQuestionIndex;
+
+  const content = el("div", "practice-body");
+  const nav = el("div", "practice-nav-row");
+  const prevBtn = el("button", {
+    class: "practice-nav-button",
+    attr: [{ type: "button" }, { "aria-label": "前の問題" }],
+  });
+  const prevIcon = el("i", {
+    class: "bi bi-chevron-left",
+    attr: [{ "aria-hidden": "true" }],
+  });
+  const prevText = el("span", "sr-only", "前の問題");
+  const progress = el("div", "practice-progress");
+  const nextBtn = el("button", {
+    class: "practice-nav-button",
+    attr: [{ type: "button" }, { "aria-label": "次の問題" }],
+  });
+  const nextIcon = el("i", {
+    class: "bi bi-chevron-right",
+    attr: [{ "aria-hidden": "true" }],
+  });
+  const nextText = el("span", "sr-only", "次の問題");
+  const questionWrapper = el("div");
+  const innerModalElem = el("div", "app-modal-overlay hidden");
+  const innerModal = new Modal(innerModalElem);
+
+  prevBtn.appendChild(prevIcon);
+  prevBtn.appendChild(prevText);
+  nextBtn.appendChild(nextIcon);
+  nextBtn.appendChild(nextText);
+  nav.append(prevBtn, progress, nextBtn);
+  content.append(nav, questionWrapper, innerModalElem);
+
+  const showLimitMessage = (message: string): void => {
+    const modal = el("div", "answer-modal");
+    const modalText = el("p", "answer-modal-text", message);
+    modal.appendChild(modalText);
+    innerModal.setModal(modal, undefined, ModalSize.LG);
+  };
+
+  const renderQuestion = (): void => {
+    const questionDetailDto = questionDetailDtos[currentQuestionIndex];
+    const questionId = questionDetailDto.question.getId();
+
+    progress.textContent = `${currentQuestionIndex + 1} 問目 / ${questionDetailDtos.length} 問中`;
+    questionWrapper.innerHTML = "";
+    questionWrapper.appendChild(
+      generateQuestionContent(questionDetailDto, (tagId, checked) => {
+        handlers.onFavoriteToggled(questionId, tagId, checked);
+      }),
+    );
+  };
+
+  prevBtn.addEventListener("click", () => {
+    if (currentQuestionIndex <= 0) {
+      showLimitMessage("前の問題はありません");
+      return;
+    }
+    currentQuestionIndex -= 1;
+    renderQuestion();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (questionDetailDtos.length <= currentQuestionIndex + 1) {
+      showLimitMessage("次の問題はありません");
+      return;
+    }
+    currentQuestionIndex += 1;
+    renderQuestion();
+  });
+
+  renderQuestion();
+  return content;
+}
+
+/**
+ * 演習結果コンテンツを生成する
+ * @param practiceDetailDto 演習詳細 DTO
+ * @param handlers イベントハンドラ
+ * @returns 演習結果コンテンツ要素
+ */
 export function generatePracticeResultContent(
   practiceDetailDto: PracticeDetailDto,
   handlers: PracticeResultContentHandlers,
-) {
+): HTMLElement {
   const correctQuestions = practiceDetailDto.questionDetailDtos.filter(
     (dto) => {
       if (dto.ansHistory && dto.ansHistory.getIsCorrect()) return true;
@@ -487,14 +591,14 @@ export function generatePracticeResultContent(
   actions.appendChild(reviewBtn);
 
   const listSection = el("section", "practice-result-list");
-  for (const dto of practiceDetailDto.questionDetailDtos) {
+  practiceDetailDto.questionDetailDtos.forEach((dto, index) => {
     const row = generateQuestionListRow(
       dto.question,
-      () => handlers.onClickQuestionResult(dto.question.getId()),
+      () => handlers.onClickQuestionResult(index),
       dto.ansHistory ?? undefined,
     );
     listSection.appendChild(row);
-  }
+  });
 
   body.appendChild(header);
   body.appendChild(main);

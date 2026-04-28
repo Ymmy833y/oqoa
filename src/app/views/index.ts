@@ -17,6 +17,7 @@ import {
   generatePracticeContent,
   generatePracticeHistoryListRow,
   generatePracticeResultContent,
+  generatePracticeResultPreviewContent,
   generatePracticeStartContent,
 } from "./pracitce_view";
 import { generateQListEditContent, generateQListRow } from "./qlist_view";
@@ -410,11 +411,21 @@ export class View {
               questionIds,
             });
           },
-          onClickQuestionResult: (questionId) => {
-            this.emit(UIEvent.CLICK_QUESTION_LIST_ROW, {
-              questionId,
-              practiceHistoryId: dto.practiceHistory.getId(),
-            });
+          onClickQuestionResult: (questionIndex) => {
+            const content = generatePracticeResultPreviewContent(
+              dto.questionDetailDtos,
+              questionIndex,
+              {
+                onFavoriteToggled: (questionId, tagId, checked) => {
+                  this.emit(UIEvent.CLICK_QUESTION_FAVORITE, {
+                    questionId,
+                    tagId,
+                    checked,
+                  });
+                },
+              },
+            );
+            this.defaultModal.setModal(content, "", ModalSize.XXL);
           },
         })
       : generatePracticeContent(
