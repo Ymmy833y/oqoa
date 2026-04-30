@@ -227,6 +227,15 @@
     font-size: 0.95em;
   }
 
+  /* highlight.js 適用後も既存のコードブロック枠を維持する */
+  [data-auto-tailwind] pre code.hljs {
+    font-family: inherit;
+    background: transparent;
+    padding: 0;
+    font-size: 0.95em;
+    overflow: visible;
+  }
+
   /* テーブル */
   [data-auto-tailwind] :where(table):not([class]) {
     width: 100%;
