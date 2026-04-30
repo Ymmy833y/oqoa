@@ -68,6 +68,43 @@
           </button>
         </div>
 
+        <!-- 検索モード -->
+        <div class="question-list-search-mode-wrapper">
+          <div class="question-list-search-mode-group">
+            <span class="question-list-search-mode-label">検索モード</span>
+            <button type="button" id="questionSearchModePhrase"
+              class="question-list-search-mode-btn" aria-pressed="true">そのまま</button>
+            <button type="button" id="questionSearchModeAnd"
+              class="question-list-search-mode-btn" aria-pressed="false">すべて含む</button>
+            <button type="button" id="questionSearchModeOr"
+              class="question-list-search-mode-btn" aria-pressed="false">いずれか含む</button>
+            <button type="button" id="questionSearchModeInfoBtn"
+              class="question-list-search-mode-info-btn" aria-label="検索モードの説明">
+              <i class="bi bi-info-circle"></i>
+            </button>
+          </div>
+          <div id="questionSearchModePopover" class="question-list-search-mode-popover hidden" role="tooltip">
+            <div class="question-list-search-mode-popover-row">
+              <span class="question-list-search-mode-popover-term">そのまま</span>
+              <span>入力した文字列を1つのキーワードとして部分一致検索します。</span>
+            </div>
+            <div class="question-list-search-mode-popover-row">
+              <span class="question-list-search-mode-popover-term">すべて含む</span>
+              <span>スペース区切りの全ワードをすべて含む設問を絞り込みます。</span>
+            </div>
+            <div class="question-list-search-mode-popover-row">
+              <span class="question-list-search-mode-popover-term">いずれか含む</span>
+              <span>スペース区切りのいずれかのワードを含む設問を絞り込みます。</span>
+            </div>
+            <p class="question-list-search-mode-popover-example">
+              例）「ネットワーク TCP」と入力：<br>
+              そのまま→「ネットワーク TCP」を含む設問 ／
+              すべて含む→両方を含む設問 ／
+              いずれか含む→どちらかを含む設問
+            </p>
+          </div>
+        </div>
+
         <!-- 詳細検索トグル -->
         <div class="question-list-advanced-toggle">
           <button type="button" id="questionAdvancedSearchToggle" class="question-list-advanced-link"

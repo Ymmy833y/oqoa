@@ -77,6 +77,7 @@ export class Controller {
       ({
         isQListName,
         keyword,
+        searchMode,
         isCaseSensitive,
         correctRate,
         answerDateFrom,
@@ -89,6 +90,7 @@ export class Controller {
           type: Action.SEARCH_QUESTION,
           isQListName,
           keyword,
+          searchMode,
           isCaseSensitive,
           correctRate,
           answerDateFrom,

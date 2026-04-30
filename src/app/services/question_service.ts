@@ -1,6 +1,6 @@
 import { QuestionDetailDto } from "../models/dtos/question_detail_dto";
 import { AnsHistory, Favorite, Question } from "../models/entities";
-import { QuestionSearchForm } from "../models/forms";
+import { QuestionSearchForm, SearchMode } from "../models/forms";
 import { ansHistoryRepository } from "../repositories/ans_history_repository";
 import { favoriteRepository } from "../repositories/favorite_repositoriy";
 import { qListRepository } from "../repositories/qlist_repositoriy";
@@ -37,11 +37,23 @@ export async function selectQuestionsForSearchForm(
   };
 }
 
+function splitKeywords(keyword: string): string[] {
+  return keyword
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w !== "");
+}
+
 async function doSelectQuestionsForQList(
   keyword: string,
   isCaseSensitive: boolean,
+  searchMode: SearchMode,
 ): Promise<Question[]> {
-  const qLists = await qListRepository.selectByWord(keyword, isCaseSensitive);
+  const words = splitKeywords(keyword);
+  const qLists =
+    searchMode !== "phrase" && words.length > 1
+      ? await qListRepository.selectByWords(words, searchMode, isCaseSensitive)
+      : await qListRepository.selectByWord(keyword, isCaseSensitive);
   const uniqueIds = [
     ...new Set(qLists.flatMap((qList) => qList.getQuestions())),
   ];
@@ -54,10 +66,14 @@ async function doSelectQuestionsForQList(
 function doSelectQuestionsForQuestions(
   keyword: string,
   isCaseSensitive: boolean,
+  searchMode: SearchMode,
 ): Question[] {
-  return keyword === ""
-    ? questionRepository.selectAll()
-    : questionRepository.selectByWord(keyword, isCaseSensitive);
+  if (keyword === "") return questionRepository.selectAll();
+  const words = splitKeywords(keyword);
+  if (searchMode !== "phrase" && words.length > 1) {
+    return questionRepository.selectByWords(words, searchMode, isCaseSensitive);
+  }
+  return questionRepository.selectByWord(keyword, isCaseSensitive);
 }
 
 async function doSelectQuestionsForSearchForm(
@@ -75,8 +91,16 @@ async function doSelectQuestionsForSearchForm(
   } = form;
 
   const questions = form.isQListName
-    ? await doSelectQuestionsForQList(form.keyword, form.isCaseSensitive)
-    : doSelectQuestionsForQuestions(form.keyword, form.isCaseSensitive);
+    ? await doSelectQuestionsForQList(
+        form.keyword,
+        form.isCaseSensitive,
+        form.searchMode,
+      )
+    : doSelectQuestionsForQuestions(
+        form.keyword,
+        form.isCaseSensitive,
+        form.searchMode,
+      );
 
   if (
     correctRate === 0 &&
