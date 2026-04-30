@@ -8,6 +8,7 @@ import {
 } from "../models/dtos";
 import {} from "../models/dtos/question_detail_dto";
 import { QList, Question } from "../models/entities";
+import { SearchMode } from "../models/forms/question_search_form";
 
 export enum Action {
   INIT = "INIT",
@@ -80,6 +81,7 @@ export type ActionType =
       type: Action.SEARCH_QUESTION;
       isQListName: boolean;
       keyword: string;
+      searchMode: SearchMode;
       isCaseSensitive: boolean;
       correctRate: number;
       answerDateFrom: Date | null;
