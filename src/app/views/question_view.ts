@@ -9,10 +9,39 @@ import { AnsHistory, Question } from "../models/entities";
 import { formatToYDHM, Modal, shuffle, stripHtmlAndEntities } from "../utils";
 import { el } from "../utils/view_utils";
 
+interface HighlightJs {
+  highlightElement: (element: HTMLElement) => void;
+}
+
+declare global {
+  interface Window {
+    hljs?: HighlightJs;
+  }
+}
+
 interface QuestionContentOptionHandlers {
   onAnswered: (isCorrect: boolean, selectChoice: number[]) => void;
   onAnswerCanceled: () => void;
 }
+
+/**
+ * コードブロックに highlight.js のハイライトを適用する
+ * @param root ハイライト対象を含むルート要素
+ */
+function highlightCodeBlocks(root: HTMLElement): void {
+  const hljs = window.hljs;
+  if (!hljs) {
+    return;
+  }
+
+  root.querySelectorAll<HTMLElement>("pre code").forEach((code) => {
+    if (code.dataset.highlighted === "yes" || code.classList.contains("hljs")) {
+      return;
+    }
+    hljs.highlightElement(code);
+  });
+}
+
 export function generateQuestionContent(
   dto: QuestionDetailDto,
   onFavoriteToggled: (tagId: number, checked: boolean) => void,
@@ -328,6 +357,7 @@ export function generateQuestionContent(
     showAnswerBlock();
     toggleQuestionIdBlur();
   }
+  highlightCodeBlocks(card);
 
   function toggleQuestionIdBlur(isAdd?: boolean) {
     if (isAdd === undefined) {

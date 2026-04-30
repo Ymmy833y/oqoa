@@ -1,6 +1,7 @@
 import { HistoryActiveTab, Theme } from "../enums";
 import { CustomPracticeStartDto } from "../models/dtos";
 import { QList } from "../models/entities";
+import { SearchMode } from "../models/forms/question_search_form";
 
 export enum UIEvent {
   CLICK_SETTING_BTN = "CLICK_SETTING_BTN",
@@ -47,6 +48,7 @@ export interface UIEventPayloadMap {
   [UIEvent.CLICK_QUESTION_SEARCH_SUBMIT]: {
     isQListName: boolean;
     keyword: string;
+    searchMode: SearchMode;
     isCaseSensitive: boolean;
     correctRate: number;
     answerDateFrom: Date | null;

@@ -1,7 +1,6 @@
 ---
 
 この Wiki は **Ymmy833y/oqoa リポジトリの `wiki/` 配下から自動同期**されています。  
-修正提案・追記は **リポジトリ側に PR** をお願いします。
 
 - [Home](Home)
 - [アプリ（GitHub Pages）](https://ymmy833y.github.io/oqoa/) :contentReference[oaicite:1]{index=1}
