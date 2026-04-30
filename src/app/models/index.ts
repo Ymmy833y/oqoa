@@ -64,6 +64,7 @@ export const initialModel: Model = {
   questionSearchForm: {
     isQListName: false,
     keyword: "",
+    searchMode: "phrase" as const,
     isCaseSensitive: false,
     correctRate: 0,
     answerDateFrom: null,

@@ -56,6 +56,11 @@ export class View {
 
     questionSearchIsQListName: HTMLButtonElement;
     questionSearchKeyword: HTMLInputElement;
+    questionSearchModePhrase: HTMLButtonElement;
+    questionSearchModeAnd: HTMLButtonElement;
+    questionSearchModeOr: HTMLButtonElement;
+    questionSearchModeInfoBtn: HTMLButtonElement;
+    questionSearchModePopover: HTMLDivElement;
     questionSearchIsCaseSensitive: HTMLButtonElement;
 
     questionAdvancedSearchToggle: HTMLButtonElement;
@@ -100,6 +105,11 @@ export class View {
 
       questionSearchIsQListName: this.$("#questionSearchIsQListName"),
       questionSearchKeyword: this.$("#questionSearchKeyword"),
+      questionSearchModePhrase: this.$("#questionSearchModePhrase"),
+      questionSearchModeAnd: this.$("#questionSearchModeAnd"),
+      questionSearchModeOr: this.$("#questionSearchModeOr"),
+      questionSearchModeInfoBtn: this.$("#questionSearchModeInfoBtn"),
+      questionSearchModePopover: this.$("#questionSearchModePopover"),
       questionSearchIsCaseSensitive: this.$("#questionSearchIsCaseSensitive"),
 
       questionAdvancedSearchToggle: this.$("#questionAdvancedSearchToggle"),
@@ -173,6 +183,24 @@ export class View {
         String(!isCaseSensitive),
       );
     });
+    const searchModeBtns = [
+      this.els.questionSearchModePhrase,
+      this.els.questionSearchModeAnd,
+      this.els.questionSearchModeOr,
+    ];
+    searchModeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        searchModeBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+      });
+    });
+    this.els.questionSearchModeInfoBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.els.questionSearchModePopover.classList.toggle("hidden");
+    });
+    this.doc.addEventListener("click", () => {
+      this.els.questionSearchModePopover.classList.add("hidden");
+    });
     this.els.questionAdvancedSearchToggle.addEventListener("click", () => {
       this.els.questionAdvancedSearch.classList.toggle("hidden");
     });
@@ -181,6 +209,13 @@ export class View {
         this.els.questionSearchIsQListName.getAttribute("aria-pressed") ===
         "true";
       const keyword = this.els.questionSearchKeyword.value;
+      const searchMode =
+        this.els.questionSearchModeAnd.getAttribute("aria-pressed") === "true"
+          ? ("and" as const)
+          : this.els.questionSearchModeOr.getAttribute("aria-pressed") ===
+              "true"
+            ? ("or" as const)
+            : ("phrase" as const);
       const isCaseSensitive =
         this.els.questionSearchIsCaseSensitive.getAttribute("aria-pressed") ===
         "true";
@@ -204,6 +239,7 @@ export class View {
       this.emit(UIEvent.CLICK_QUESTION_SEARCH_SUBMIT, {
         isQListName,
         keyword,
+        searchMode,
         isCaseSensitive,
         correctRate,
         answerDateFrom,

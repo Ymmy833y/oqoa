@@ -55,6 +55,28 @@ class QuestionRepository {
       );
     });
   }
+
+  public selectByWords(
+    words: string[],
+    mode: "and" | "or",
+    caseSensitive = false,
+  ): Question[] {
+    const matchesWord = (q: Question, word: string): boolean => {
+      const w = caseSensitive ? word : word.toLowerCase();
+      const n = (s: string) => (caseSensitive ? s : s.toLowerCase());
+      return (
+        n(q.getId().toString()).includes(w) ||
+        n(q.getProblem()).includes(w) ||
+        n(q.getChoice().join()).includes(w) ||
+        n(q.getExplanation()).includes(w)
+      );
+    };
+    return this.questions.filter((q) =>
+      mode === "and"
+        ? words.every((w) => matchesWord(q, w))
+        : words.some((w) => matchesWord(q, w)),
+    );
+  }
 }
 
 export const questionRepository = new QuestionRepository();

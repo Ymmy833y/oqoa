@@ -112,6 +112,27 @@ class QListRepository extends BaseRepository<QList> {
       }
     });
   }
+
+  async selectByWords(
+    words: string[],
+    mode: "and" | "or",
+    isCaseSensitive: boolean,
+  ): Promise<QList[]> {
+    const qLists = await this.selectAll();
+    return qLists.filter((qList) => {
+      if (!qList.getIsDefault()) return false;
+      const matchesWord = (word: string) => {
+        const w = isCaseSensitive ? word : word.toLocaleLowerCase();
+        const name = isCaseSensitive
+          ? qList.getName()
+          : qList.getName().toLocaleLowerCase();
+        return name.includes(w);
+      };
+      return mode === "and"
+        ? words.every(matchesWord)
+        : words.some(matchesWord);
+    });
+  }
 }
 
 export const qListRepository = new QListRepository();
