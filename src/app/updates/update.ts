@@ -459,6 +459,13 @@ export function update(
         ],
       };
     }
+
+    case Action.EXPORT_HISTORY_DATA:
+      return {
+        model,
+        effects: [{ kind: Effect.EXPORT_HISTORY }],
+      };
+
     default:
       return { model, effects: [] };
   }
