@@ -95,4 +95,5 @@ export type EffectType =
       clientId: string;
       userIdInput: string;
       accessToken: string;
+      silent: boolean;
     };

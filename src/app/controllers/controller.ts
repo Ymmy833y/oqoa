@@ -43,6 +43,10 @@ export class Controller {
   async start(): Promise<void> {
     this.registerViewHandlers();
     this.dispatch({ type: Action.INIT });
+    setInterval(
+      () => this.dispatch({ type: Action.AUTO_SYNC_TICK }),
+      3 * 60 * 1000,
+    );
   }
 
   private registerViewHandlers() {
@@ -232,6 +236,9 @@ export class Controller {
     );
     this.view.on(UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN, () =>
       this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC }),
+    );
+    this.view.on(UIEvent.CHANGE_AUTO_SYNC_ENABLED, ({ enabled }) =>
+      this.dispatch({ type: Action.CHANGE_AUTO_SYNC_ENABLED, enabled }),
     );
   }
 
@@ -479,6 +486,7 @@ export class Controller {
               this.model.practiceDetailDto,
             );
             this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+            this.dispatch({ type: Action.AUTO_SYNC_TICK });
           } catch (e) {
             const error = e as Error;
             this.dispatch({
@@ -642,7 +650,9 @@ export class Controller {
               fx.userIdInput,
               fx.accessToken,
             );
-          this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          if (!fx.silent || toastMessage.kind !== ToastMessageKind.SUCCESS) {
+            this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          }
           this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC_DONE });
 
           if (toastMessage.kind === ToastMessageKind.SUCCESS) {

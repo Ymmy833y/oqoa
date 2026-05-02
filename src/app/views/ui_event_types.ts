@@ -38,6 +38,7 @@ export enum UIEvent {
   CHANGE_GOOGLE_USER_ID = "CHANGE_GOOGLE_USER_ID",
   CLICK_GOOGLE_SYNC_PROBE_BTN = "CLICK_GOOGLE_SYNC_PROBE_BTN",
   CLICK_GOOGLE_HISTORY_SYNC_BTN = "CLICK_GOOGLE_HISTORY_SYNC_BTN",
+  CHANGE_AUTO_SYNC_ENABLED = "CHANGE_AUTO_SYNC_ENABLED",
 }
 
 export interface UIEventPayloadMap {
@@ -111,4 +112,5 @@ export interface UIEventPayloadMap {
   [UIEvent.CHANGE_GOOGLE_USER_ID]: { googleUserId: string };
   [UIEvent.CLICK_GOOGLE_SYNC_PROBE_BTN]: undefined;
   [UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN]: undefined;
+  [UIEvent.CHANGE_AUTO_SYNC_ENABLED]: { enabled: boolean };
 }

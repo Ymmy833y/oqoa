@@ -530,6 +530,7 @@ export function update(
             clientId,
             userIdInput,
             accessToken,
+            silent: false,
           },
         ],
       };
@@ -540,6 +541,40 @@ export function update(
         model: { ...model, googleSyncing: false },
         effects: [],
       };
+
+    case Action.CHANGE_AUTO_SYNC_ENABLED:
+      return {
+        model: { ...model, autoSyncEnabled: action.enabled },
+        effects: [],
+      };
+
+    case Action.AUTO_SYNC_TICK: {
+      const clientId = model.googleClientId;
+      const userIdInput = model.googleUserId;
+      const accessToken = model.googleSyncAccessToken;
+      if (
+        !model.autoSyncEnabled ||
+        !model.googleSyncReady ||
+        model.googleSyncing ||
+        !clientId ||
+        !userIdInput ||
+        !accessToken
+      ) {
+        return { model, effects: [] };
+      }
+      return {
+        model: { ...model, googleSyncing: true },
+        effects: [
+          {
+            kind: Effect.GOOGLE_HISTORY_SYNC,
+            clientId,
+            userIdInput,
+            accessToken,
+            silent: true,
+          },
+        ],
+      };
+    }
 
     default:
       return { model, effects: [] };
