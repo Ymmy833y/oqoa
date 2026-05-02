@@ -40,7 +40,7 @@ type AnsHistoryRow = {
   answer_date: string;
 };
 
-type ExportHistoryPayload = {
+export type ExportHistoryPayload = {
   schemaVersion: number;
   exportedAt: string;
   qLists: QListRow[];
@@ -85,7 +85,7 @@ export async function exportHistory(): Promise<ToastMessage> {
  * @param ansHistories AnsHistory エンティティの配列
  * @returns エクスポート用ペイロード
  */
-function buildExportPayload(
+export function buildExportPayload(
   qLists: QList[],
   practiceHistories: PracticeHistory[],
   ansHistories: AnsHistory[],

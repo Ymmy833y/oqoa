@@ -271,6 +271,8 @@ export class View {
   render(model: Model): void {
     this.applyToastMessages(model.toastMessages);
     this.applyDefaultModal(model);
+    this.applySyncOverlay(model.googleSyncing);
+    this.applySyncButtonState(model.googleSyncReady);
 
     if (model.practiceDetailDto !== null) {
       this.applyPracticeContent(model.practiceDetailDto);
@@ -343,6 +345,8 @@ export class View {
         model.theme,
         model.googleClientId ?? "",
         model.googleFolderId ?? "",
+        model.googleUserId,
+        model.googleSyncReady,
         {
           onThemeChange: (theme) => {
             this.emit(UIEvent.CHANGE_THEME, { theme });
@@ -364,6 +368,15 @@ export class View {
           },
           onHistoryImport: (file) => {
             this.emit(UIEvent.CLICK_HISTORY_IMPORT_BTN, { file });
+          },
+          onGoogleUserIdChange: (googleUserId) => {
+            this.emit(UIEvent.CHANGE_GOOGLE_USER_ID, { googleUserId });
+          },
+          onGoogleSyncProbe: () => {
+            this.emit(UIEvent.CLICK_GOOGLE_SYNC_PROBE_BTN, undefined);
+          },
+          onGoogleHistorySync: () => {
+            this.emit(UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN, undefined);
           },
         },
       );
@@ -641,6 +654,47 @@ export class View {
     activeTab.classList.add("side-menu-tab--active");
     inactiveTab.classList.remove("side-menu-tab--active");
     inactiveTab.classList.add("side-menu-tab--inactive");
+  }
+
+  private applySyncButtonState(googleSyncReady: boolean): void {
+    const syncBtn = this.doc.getElementById(
+      "syncHistoryBtn",
+    ) as HTMLButtonElement | null;
+    if (!syncBtn) return;
+    syncBtn.disabled = !googleSyncReady;
+    if (googleSyncReady) {
+      syncBtn.classList.remove("opacity-50", "cursor-not-allowed");
+    } else {
+      syncBtn.classList.add("opacity-50", "cursor-not-allowed");
+    }
+  }
+
+  private applySyncOverlay(googleSyncing: boolean): void {
+    const OVERLAY_ID = "syncLoadingOverlay";
+    let overlay = this.doc.getElementById(OVERLAY_ID);
+    if (googleSyncing) {
+      if (!overlay) {
+        overlay = this.doc.createElement("div");
+        overlay.id = OVERLAY_ID;
+        overlay.className =
+          "fixed inset-0 z-50 flex items-center justify-center bg-black/50";
+        const box = this.doc.createElement("div");
+        box.className =
+          "flex flex-col items-center gap-3 rounded-lg bg-white px-10 py-8 dark:bg-gray-800";
+        const spinner = this.doc.createElement("div");
+        spinner.className =
+          "h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500";
+        const text = this.doc.createElement("p");
+        text.className = "text-sm text-gray-700 dark:text-gray-200";
+        text.textContent = "同期中...";
+        box.appendChild(spinner);
+        box.appendChild(text);
+        overlay.appendChild(box);
+        this.doc.body.appendChild(overlay);
+      }
+    } else {
+      overlay?.remove();
+    }
   }
 
   private $<T extends Element>(selector: string): T {
