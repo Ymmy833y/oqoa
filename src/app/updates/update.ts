@@ -466,6 +466,12 @@ export function update(
         effects: [{ kind: Effect.EXPORT_HISTORY }],
       };
 
+    case Action.IMPORT_HISTORY_DATA:
+      return {
+        model,
+        effects: [{ kind: Effect.IMPORT_HISTORY, file: action.file }],
+      };
+
     default:
       return { model, effects: [] };
   }

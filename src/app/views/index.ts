@@ -326,6 +326,9 @@ export class View {
           onHistoryExport: () => {
             this.emit(UIEvent.CLICK_HISTORY_EXPORT_BTN, undefined);
           },
+          onHistoryImport: (file) => {
+            this.emit(UIEvent.CLICK_HISTORY_IMPORT_BTN, { file });
+          },
         },
       );
       this.defaultModal.setModal(content, "設定", ModalSize.XL);

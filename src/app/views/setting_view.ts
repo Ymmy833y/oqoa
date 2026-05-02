@@ -1,5 +1,5 @@
 import { Theme } from "../enums";
-import { el } from "../utils";
+import { el, pickJsonFile } from "../utils";
 
 interface SettingModalHandlers {
   onThemeChange: (theme: Theme) => void;
@@ -8,6 +8,7 @@ interface SettingModalHandlers {
   onGoogleDriveImport: () => void;
   onRemoveQuestions: () => void;
   onHistoryExport: () => void;
+  onHistoryImport: (file: File) => void;
 }
 
 export function generateSettingModalConetnt(
@@ -73,9 +74,26 @@ export function generateSettingModalConetnt(
   const historyDesc = el(
     "p",
     "app-modal-section-description",
-    "ローカルに保存された演習履歴データを JSON ファイルとして出力します。",
+    "ローカルに保存された演習履歴データの取り込み・出力を行います。",
   );
   const historyActions = el("div", "app-modal-actions");
+
+  // データインポートボタン
+  const importBtn = el("button", {
+    class: "app-modal-button",
+    id: "historyImportBtn",
+  }) as HTMLButtonElement;
+  importBtn.type = "button";
+  const importIcon = el("i", {
+    class: "bi bi-file-earmark-arrow-up app-modal-button-icon",
+    attr: [{ "aria-hidden": "true" }],
+  });
+  importBtn.appendChild(importIcon);
+  importBtn.append("インポート");
+  importBtn.addEventListener("click", async () => {
+    const file = await pickJsonFile();
+    if (file) handlers.onHistoryImport(file);
+  });
 
   // データエクスポートボタン
   const exportBtn = el("button", {
@@ -93,6 +111,7 @@ export function generateSettingModalConetnt(
     handlers.onHistoryExport();
   });
 
+  historyActions.appendChild(importBtn);
   historyActions.appendChild(exportBtn);
 
   historySection.appendChild(historyTitle);

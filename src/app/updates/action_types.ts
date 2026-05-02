@@ -48,6 +48,7 @@ export enum Action {
   PREPARE_CUSTOM_PRACTICE = "PREPARE_CUSTOM_PRACTICE",
   UPDATE_FAVORITE = "UPDATE_FAVORITE",
   EXPORT_HISTORY_DATA = "EXPORT_HISTORY_DATA",
+  IMPORT_HISTORY_DATA = "IMPORT_HISTORY_DATA",
 }
 
 export type ActionType =
@@ -157,4 +158,5 @@ export type ActionType =
       tagId: number;
       checked: boolean;
     }
-  | { type: Action.EXPORT_HISTORY_DATA };
+  | { type: Action.EXPORT_HISTORY_DATA }
+  | { type: Action.IMPORT_HISTORY_DATA; file: File };
