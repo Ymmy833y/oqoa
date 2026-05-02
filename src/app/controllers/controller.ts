@@ -7,6 +7,7 @@ import * as ansHistoryService from "../services/ans_history_service";
 import * as exportHistoryService from "../services/export_history_service";
 import * as favoriteService from "../services/favorite_service";
 import * as importGoogleDriveService from "../services/import_google_drive_service";
+import * as importHistoryService from "../services/import_history_service";
 import * as indexeddbService from "../services/indexeddb_service";
 import * as practiceSevice from "../services/practice_sevice";
 import * as qListService from "../services/qlist_service";
@@ -217,6 +218,9 @@ export class Controller {
     );
     this.view.on(UIEvent.CLICK_HISTORY_EXPORT_BTN, () =>
       this.dispatch({ type: Action.EXPORT_HISTORY_DATA }),
+    );
+    this.view.on(UIEvent.CLICK_HISTORY_IMPORT_BTN, ({ file }) =>
+      this.dispatch({ type: Action.IMPORT_HISTORY_DATA, file }),
     );
   }
 
@@ -576,6 +580,27 @@ export class Controller {
         case Effect.EXPORT_HISTORY: {
           const toastMessage = await exportHistoryService.exportHistory();
           this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          break;
+        }
+
+        case Effect.IMPORT_HISTORY: {
+          const toastMessage = await importHistoryService.importHistory(
+            fx.file,
+          );
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+
+          if (toastMessage.kind === ToastMessageKind.SUCCESS) {
+            const qListData = await qListService.selectQListsForSearchForm(
+              this.model.qListSearchForm,
+            );
+            this.dispatch({
+              type: Action.UPDATE_QLIST_CONTAINER,
+              qLists: qListData.qLists,
+              currentPage: qListData.currentPage,
+              totalSize: qListData.totalSize,
+              pages: qListData.pages,
+            });
+          }
           break;
         }
       }

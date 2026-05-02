@@ -24,6 +24,7 @@ export enum Effect {
   PREPARE_CUSTOM_PRACTICE = "PREPARE_CUSTOM_PRACTICE",
   UPDATE_FAVORITE = "UPDATE_FAVORITE",
   EXPORT_HISTORY = "EXPORT_HISTORY",
+  IMPORT_HISTORY = "IMPORT_HISTORY",
 }
 
 export type EffectType =
@@ -82,4 +83,5 @@ export type EffectType =
       tagId: number;
       checked: boolean;
     }
-  | { kind: Effect.EXPORT_HISTORY };
+  | { kind: Effect.EXPORT_HISTORY }
+  | { kind: Effect.IMPORT_HISTORY; file: File };

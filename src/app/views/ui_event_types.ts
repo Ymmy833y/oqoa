@@ -34,6 +34,7 @@ export enum UIEvent {
   CLICK_CUSTOM_PRACTICE_START = "CLICK_CUSTOM_PRACTICE_START",
   CLICK_QUESTION_FAVORITE = "CLICK_QUESTION_FAVORITE",
   CLICK_HISTORY_EXPORT_BTN = "CLICK_HISTORY_EXPORT_BTN",
+  CLICK_HISTORY_IMPORT_BTN = "CLICK_HISTORY_IMPORT_BTN",
 }
 
 export interface UIEventPayloadMap {
@@ -103,4 +104,5 @@ export interface UIEventPayloadMap {
     checked: boolean;
   };
   [UIEvent.CLICK_HISTORY_EXPORT_BTN]: undefined;
+  [UIEvent.CLICK_HISTORY_IMPORT_BTN]: { file: File };
 }
