@@ -36,7 +36,7 @@ type AnsHistoryRow = {
   answer_date: string;
 };
 
-type ImportHistoryPayload = {
+export type ImportHistoryPayload = {
   qLists: QListRow[];
   practiceHistories: PracticeHistoryRow[];
   ansHistories: AnsHistoryRow[];
@@ -81,7 +81,7 @@ export async function importHistory(file: File): Promise<ToastMessage> {
 /**
  * パース済みオブジェクトが想定構造かを検証し、ImportHistoryPayload に絞り込む。
  */
-function validatePayload(parsed: unknown): ImportHistoryPayload | null {
+export function validatePayload(parsed: unknown): ImportHistoryPayload | null {
   if (!parsed || typeof parsed !== "object") return null;
   const p = parsed as Partial<ImportHistoryPayload>;
   if (
@@ -100,7 +100,7 @@ function validatePayload(parsed: unknown): ImportHistoryPayload | null {
  * - PracticeHistory: (qListId, createAt) で重複検知、qListId は uuid 経由で解決
  * - AnsHistory: (practiceHistoryId, questionId) で重複検知、practiceHistoryId は createAt 経由で解決
  */
-async function processImport(
+export async function processImport(
   payload: ImportHistoryPayload,
 ): Promise<ImportResult> {
   const localQuestionIdSet = new Set(

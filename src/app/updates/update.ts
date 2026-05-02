@@ -1,7 +1,12 @@
 import { Effect, EffectType } from "../controllers/effect_types";
 import { HistoryActiveTab, ModalKind, Theme } from "../enums";
 import { Model } from "../models";
-import { getGoogleClientId, getGoogleFolderId, getTheme } from "../storages";
+import {
+  getGoogleClientId,
+  getGoogleFolderId,
+  getGoogleUserId,
+  getTheme,
+} from "../storages";
 
 import { Action, ActionType } from "./action_types";
 
@@ -19,9 +24,16 @@ export function update(
           : Theme.LIGHT;
       const googleClientId = getGoogleClientId();
       const googleFolderId = getGoogleFolderId();
+      const googleUserId = getGoogleUserId() ?? "";
 
       return {
-        model: { ...model, theme, googleClientId, googleFolderId },
+        model: {
+          ...model,
+          theme,
+          googleClientId,
+          googleFolderId,
+          googleUserId,
+        },
         effects: [
           { kind: Effect.INIT_REPOSITORY },
           { kind: Effect.UPDATE_THEME, theme },
@@ -471,6 +483,62 @@ export function update(
       return {
         model,
         effects: [{ kind: Effect.IMPORT_HISTORY, file: action.file }],
+      };
+
+    case Action.CHANGE_GOOGLE_USER_ID:
+      return {
+        model: { ...model, googleUserId: action.googleUserId },
+        effects: [
+          {
+            kind: Effect.UPDATE_GOOGLE_USER_ID,
+            googleUserId: action.googleUserId,
+          },
+        ],
+      };
+
+    case Action.GOOGLE_SYNC_PROBE: {
+      const clientId = model.googleClientId;
+      const userIdInput = model.googleUserId;
+      if (!clientId || !userIdInput) return { model, effects: [] };
+      return {
+        model,
+        effects: [{ kind: Effect.GOOGLE_SYNC_PROBE, clientId, userIdInput }],
+      };
+    }
+
+    case Action.GOOGLE_SYNC_PROBE_RESULT:
+      return {
+        model: {
+          ...model,
+          googleSyncReady: action.ok,
+          googleSyncAccessToken: action.accessToken ?? null,
+        },
+        effects: [],
+      };
+
+    case Action.GOOGLE_HISTORY_SYNC: {
+      const clientId = model.googleClientId;
+      const userIdInput = model.googleUserId;
+      const accessToken = model.googleSyncAccessToken;
+      if (!clientId || !userIdInput || !accessToken)
+        return { model, effects: [] };
+      return {
+        model: { ...model, googleSyncing: true },
+        effects: [
+          {
+            kind: Effect.GOOGLE_HISTORY_SYNC,
+            clientId,
+            userIdInput,
+            accessToken,
+          },
+        ],
+      };
+    }
+
+    case Action.GOOGLE_HISTORY_SYNC_DONE:
+      return {
+        model: { ...model, googleSyncing: false },
+        effects: [],
       };
 
     default:

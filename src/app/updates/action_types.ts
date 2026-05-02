@@ -50,6 +50,11 @@ export enum Action {
   UPDATE_FAVORITE = "UPDATE_FAVORITE",
   EXPORT_HISTORY_DATA = "EXPORT_HISTORY_DATA",
   IMPORT_HISTORY_DATA = "IMPORT_HISTORY_DATA",
+  CHANGE_GOOGLE_USER_ID = "CHANGE_GOOGLE_USER_ID",
+  GOOGLE_SYNC_PROBE = "GOOGLE_SYNC_PROBE",
+  GOOGLE_SYNC_PROBE_RESULT = "GOOGLE_SYNC_PROBE_RESULT",
+  GOOGLE_HISTORY_SYNC = "GOOGLE_HISTORY_SYNC",
+  GOOGLE_HISTORY_SYNC_DONE = "GOOGLE_HISTORY_SYNC_DONE",
 }
 
 export type ActionType =
@@ -161,4 +166,9 @@ export type ActionType =
       checked: boolean;
     }
   | { type: Action.EXPORT_HISTORY_DATA }
-  | { type: Action.IMPORT_HISTORY_DATA; file: File };
+  | { type: Action.IMPORT_HISTORY_DATA; file: File }
+  | { type: Action.CHANGE_GOOGLE_USER_ID; googleUserId: string }
+  | { type: Action.GOOGLE_SYNC_PROBE }
+  | { type: Action.GOOGLE_SYNC_PROBE_RESULT; ok: boolean; accessToken?: string }
+  | { type: Action.GOOGLE_HISTORY_SYNC }
+  | { type: Action.GOOGLE_HISTORY_SYNC_DONE };

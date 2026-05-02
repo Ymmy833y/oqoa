@@ -6,6 +6,7 @@ import { Question } from "../models/entities";
 const THEME_KEY = "oqoa-theme";
 const GOOGLE_CLIENT_ID_KEY = "oqoa-google-client-id";
 const GOOGLE_FOLDER_ID_KEY = "oqoa-google-folder-id";
+const GOOGLE_USER_ID_KEY = "oqoa-google-user-id";
 const LAST_IMPORTED_DATA_KEY = "oqoa-last-imported-data";
 const LAST_USED_QUESTIONS_KEY = "oqoa-last-used-questions";
 
@@ -36,6 +37,14 @@ export function getGoogleFolderId(): string | null {
 
 export function setGoogleFolderId(googleFolderId: string) {
   localStorage.setItem(GOOGLE_FOLDER_ID_KEY, googleFolderId);
+}
+
+export function getGoogleUserId(): string | null {
+  return localStorage.getItem(GOOGLE_USER_ID_KEY);
+}
+
+export function setGoogleUserId(googleUserId: string) {
+  localStorage.setItem(GOOGLE_USER_ID_KEY, googleUserId);
 }
 
 export function getLastImportedData(): Date | null {

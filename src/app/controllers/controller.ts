@@ -12,11 +12,13 @@ import * as indexeddbService from "../services/indexeddb_service";
 import * as practiceSevice from "../services/practice_sevice";
 import * as qListService from "../services/qlist_service";
 import * as questionService from "../services/question_service";
+import * as syncHistoryService from "../services/sync_history_service";
 import {
   getLastImportedData,
   getLastUsedQuestions,
   setGoogleClientId,
   setGoogleFolderId,
+  setGoogleUserId,
   setLastUsedQuestions,
   setTheme,
 } from "../storages";
@@ -221,6 +223,15 @@ export class Controller {
     );
     this.view.on(UIEvent.CLICK_HISTORY_IMPORT_BTN, ({ file }) =>
       this.dispatch({ type: Action.IMPORT_HISTORY_DATA, file }),
+    );
+    this.view.on(UIEvent.CHANGE_GOOGLE_USER_ID, ({ googleUserId }) =>
+      this.dispatch({ type: Action.CHANGE_GOOGLE_USER_ID, googleUserId }),
+    );
+    this.view.on(UIEvent.CLICK_GOOGLE_SYNC_PROBE_BTN, () =>
+      this.dispatch({ type: Action.GOOGLE_SYNC_PROBE }),
+    );
+    this.view.on(UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN, () =>
+      this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC }),
     );
   }
 
@@ -600,6 +611,52 @@ export class Controller {
               totalSize: qListData.totalSize,
               pages: qListData.pages,
             });
+          }
+          break;
+        }
+
+        case Effect.UPDATE_GOOGLE_USER_ID: {
+          setGoogleUserId(fx.googleUserId);
+          break;
+        }
+
+        case Effect.GOOGLE_SYNC_PROBE: {
+          const { toast, accessToken } =
+            await syncHistoryService.probeGoogleDriveSync(
+              fx.clientId,
+              fx.userIdInput,
+            );
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage: toast });
+          this.dispatch({
+            type: Action.GOOGLE_SYNC_PROBE_RESULT,
+            ok: toast.kind === ToastMessageKind.SUCCESS,
+            accessToken,
+          });
+          break;
+        }
+
+        case Effect.GOOGLE_HISTORY_SYNC: {
+          const toastMessage =
+            await syncHistoryService.syncHistoryWithGoogleDrive(
+              fx.clientId,
+              fx.userIdInput,
+              fx.accessToken,
+            );
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC_DONE });
+
+          if (toastMessage.kind === ToastMessageKind.SUCCESS) {
+            const qListData = await qListService.selectQListsForSearchForm(
+              this.model.qListSearchForm,
+            );
+            this.dispatch({
+              type: Action.UPDATE_QLIST_CONTAINER,
+              qLists: qListData.qLists,
+              currentPage: qListData.currentPage,
+              totalSize: qListData.totalSize,
+              pages: qListData.pages,
+            });
+            this.dispatch({ type: Action.SEARCH_HISTORY });
           }
           break;
         }

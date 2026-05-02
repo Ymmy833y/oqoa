@@ -9,12 +9,17 @@ interface SettingModalHandlers {
   onRemoveQuestions: () => void;
   onHistoryExport: () => void;
   onHistoryImport: (file: File) => void;
+  onGoogleUserIdChange: (googleUserId: string) => void;
+  onGoogleSyncProbe: () => void;
+  onGoogleHistorySync: () => void;
 }
 
 export function generateSettingModalConetnt(
   theme: Theme,
   clientId: string,
   folderId: string,
+  googleUserId: string,
+  googleSyncReady: boolean,
   handlers: SettingModalHandlers,
 ) {
   const body = el("div", "app-modal-body");
@@ -201,9 +206,92 @@ export function generateSettingModalConetnt(
   driveSection.appendChild(driveFieldGroup);
   driveSection.appendChild(driveActions);
 
+  // Google Drive 履歴同期セクション
+  const syncSection = el("section", "app-modal-section");
+  const syncTitle = el(
+    "h3",
+    "app-modal-section-title",
+    "Google Drive 履歴同期",
+  );
+  const syncDesc = el(
+    "p",
+    "app-modal-section-description",
+    "端末間で演習履歴を同期します。Google Drive 上の指定フォルダにユーザー単位で履歴ファイルを保存します。",
+  );
+
+  const syncFieldGroup = el("div", "app-modal-field-group");
+  const userIdField = el("div", "app-modal-field");
+  const userIdLabel = el("label", {
+    class: "app-modal-field-label",
+    text: "ユーザーID",
+    attr: [{ for: "syncUserIdInput" }],
+  });
+  const userIdInput = el("input", {
+    class: "app-modal-input",
+    id: "syncUserIdInput",
+    attr: [
+      { type: "text" },
+      { name: "syncUserId" },
+      { value: googleUserId },
+      { placeholder: "<フォルダID>-<ユーザー名>" },
+      { autocomplete: "off" },
+    ],
+  }) as HTMLInputElement;
+  userIdInput.addEventListener("input", () => {
+    handlers.onGoogleUserIdChange(userIdInput.value);
+  });
+  userIdField.appendChild(userIdLabel);
+  userIdField.appendChild(userIdInput);
+  syncFieldGroup.appendChild(userIdField);
+
+  const syncActions = el("div", "app-modal-actions");
+
+  const probeBtn = el("button", {
+    class: "app-modal-button",
+    id: "syncProbeBtn",
+  }) as HTMLButtonElement;
+  probeBtn.type = "button";
+  const probeIcon = el("i", {
+    class: "bi bi-check-circle app-modal-button-icon",
+    attr: [{ "aria-hidden": "true" }],
+  });
+  probeBtn.appendChild(probeIcon);
+  probeBtn.append("疎通確認");
+  probeBtn.addEventListener("click", () => {
+    handlers.onGoogleSyncProbe();
+  });
+
+  const syncBtn = el("button", {
+    class: "app-modal-button",
+    id: "syncHistoryBtn",
+  }) as HTMLButtonElement;
+  syncBtn.type = "button";
+  if (!googleSyncReady) {
+    syncBtn.disabled = true;
+    syncBtn.classList.add("opacity-50", "cursor-not-allowed");
+  }
+  const syncIcon = el("i", {
+    class: "bi bi-arrow-repeat app-modal-button-icon",
+    attr: [{ "aria-hidden": "true" }],
+  });
+  syncBtn.appendChild(syncIcon);
+  syncBtn.append("同期");
+  syncBtn.addEventListener("click", () => {
+    handlers.onGoogleHistorySync();
+  });
+
+  syncActions.appendChild(probeBtn);
+  syncActions.appendChild(syncBtn);
+
+  syncSection.appendChild(syncTitle);
+  syncSection.appendChild(syncDesc);
+  syncSection.appendChild(syncFieldGroup);
+  syncSection.appendChild(syncActions);
+
   // body に各セクションを追加
   body.appendChild(themeSection);
   body.appendChild(historySection);
+  body.appendChild(syncSection);
   body.appendChild(driveSection);
 
   // 設問セクション
