@@ -48,6 +48,7 @@ export enum Action {
   TOGGLE_QLISTS_STANDARD_CHECK = "TOGGLE_QLISTS_STANDARD_CHECK",
   PREPARE_CUSTOM_PRACTICE = "PREPARE_CUSTOM_PRACTICE",
   UPDATE_FAVORITE = "UPDATE_FAVORITE",
+  EXPORT_HISTORY_DATA = "EXPORT_HISTORY_DATA",
 }
 
 export type ActionType =
@@ -157,4 +158,5 @@ export type ActionType =
       questionId: number;
       tagId: number;
       checked: boolean;
-    };
+    }
+  | { type: Action.EXPORT_HISTORY_DATA };

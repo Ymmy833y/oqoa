@@ -7,6 +7,7 @@ interface SettingModalHandlers {
   onGoogleFolderIdChange: (googleFolderId: string) => void;
   onGoogleDriveImport: () => void;
   onRemoveQuestions: () => void;
+  onHistoryExport: () => void;
 }
 
 export function generateSettingModalConetnt(
@@ -66,61 +67,37 @@ export function generateSettingModalConetnt(
     return label;
   }
 
-  // // 解答履歴セクション
-  // const historySection = el('section', 'app-modal-section');
-  // const historyTitle = el('h3','app-modal-section-title', '解答履歴');
-  // const historyDesc = el(
-  //   'p','app-modal-section-description',
-  //   'ローカルに保存された解答履歴データの操作を行います。'
-  // );
-  // const historyActions = el('div', 'app-modal-actions');
+  // 演習履歴セクション
+  const historySection = el("section", "app-modal-section");
+  const historyTitle = el("h3", "app-modal-section-title", "演習履歴");
+  const historyDesc = el(
+    "p",
+    "app-modal-section-description",
+    "ローカルに保存された演習履歴データを JSON ファイルとして出力します。",
+  );
+  const historyActions = el("div", "app-modal-actions");
 
-  // // データインポートボタン
-  // const importBtn = el('button', {
-  //   class: 'app-modal-button',
-  //   id: 'historyImportBtn',
-  // }) as HTMLButtonElement;
-  // importBtn.type = 'button';
-  // const importIcon = el('i', {
-  //   class: 'bi bi-file-earmark-arrow-up app-modal-button-icon',
-  //   attr: [{ 'aria-hidden': 'true' }],
-  // });
-  // importBtn.appendChild(importIcon);
-  // importBtn.append('インポート');
+  // データエクスポートボタン
+  const exportBtn = el("button", {
+    class: "app-modal-button",
+    id: "historyExportBtn",
+  }) as HTMLButtonElement;
+  exportBtn.type = "button";
+  const exportIcon = el("i", {
+    class: "bi bi-file-earmark-arrow-down app-modal-button-icon",
+    attr: [{ "aria-hidden": "true" }],
+  });
+  exportBtn.appendChild(exportIcon);
+  exportBtn.append("エクスポート");
+  exportBtn.addEventListener("click", () => {
+    handlers.onHistoryExport();
+  });
 
-  // // データエクスポートボタン
-  // const exportBtn = el('button', {
-  //   class: 'app-modal-button',
-  //   id: 'historyExportBtn',
-  // }) as HTMLButtonElement;
-  // exportBtn.type = 'button';
-  // const exportIcon = el('i', {
-  //   class: 'bi bi-file-earmark-arrow-down app-modal-button-icon',
-  //   attr: [{ 'aria-hidden': 'true' }],
-  // });
-  // exportBtn.appendChild(exportIcon);
-  // exportBtn.append('エクスポート');
+  historyActions.appendChild(exportBtn);
 
-  // // データ削除ボタン
-  // const deleteBtn = el('button', {
-  //   class: 'app-modal-button app-modal-button-danger',
-  //   id: 'historyDeleteBtn',
-  // }) as HTMLButtonElement;
-  // deleteBtn.type = 'button';
-  // const deleteIcon = el('i', {
-  //   class: 'bi bi-trash app-modal-button-icon',
-  //   attr: [{ 'aria-hidden': 'true' }],
-  // });
-  // deleteBtn.appendChild(deleteIcon);
-  // deleteBtn.append('削除');
-
-  // historyActions.appendChild(importBtn);
-  // historyActions.appendChild(exportBtn);
-  // historyActions.appendChild(deleteBtn);
-
-  // historySection.appendChild(historyTitle);
-  // historySection.appendChild(historyDesc);
-  // historySection.appendChild(historyActions);
+  historySection.appendChild(historyTitle);
+  historySection.appendChild(historyDesc);
+  historySection.appendChild(historyActions);
 
   // Google Drive 連携セクション
   const driveSection = el("section", "app-modal-section");
@@ -207,7 +184,7 @@ export function generateSettingModalConetnt(
 
   // body に各セクションを追加
   body.appendChild(themeSection);
-  // body.appendChild(historySection);
+  body.appendChild(historySection);
   body.appendChild(driveSection);
 
   // 設問セクション
@@ -216,7 +193,7 @@ export function generateSettingModalConetnt(
   const questionDesc = el("p", "app-modal-section-description");
   questionDesc.innerHTML =
     "ローカルにキャッシュされた設問データの削除を行います。<br>次回のアクセス時には設問データの再インポートが必要となります。";
-  const historyActions = el("div", "app-modal-actions");
+  const questionActions = el("div", "app-modal-actions");
 
   // データ削除ボタン
   const deleteBtn = el("button", {
@@ -233,11 +210,11 @@ export function generateSettingModalConetnt(
   deleteBtn.addEventListener("click", () => {
     handlers.onRemoveQuestions();
   });
-  historyActions.appendChild(deleteBtn);
+  questionActions.appendChild(deleteBtn);
 
   questionSection.appendChild(questionTitle);
   questionSection.appendChild(questionDesc);
-  questionSection.appendChild(historyActions);
+  questionSection.appendChild(questionActions);
 
   body.appendChild(questionSection);
 

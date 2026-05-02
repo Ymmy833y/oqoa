@@ -33,6 +33,7 @@ export enum UIEvent {
   TOGGLE_QLISTS_STANDARD_CHECK = "TOGGLE_QLISTS_STANDARD_CHECK",
   CLICK_CUSTOM_PRACTICE_START = "CLICK_CUSTOM_PRACTICE_START",
   CLICK_QUESTION_FAVORITE = "CLICK_QUESTION_FAVORITE",
+  CLICK_HISTORY_EXPORT_BTN = "CLICK_HISTORY_EXPORT_BTN",
 }
 
 export interface UIEventPayloadMap {
@@ -101,4 +102,5 @@ export interface UIEventPayloadMap {
     tagId: number;
     checked: boolean;
   };
+  [UIEvent.CLICK_HISTORY_EXPORT_BTN]: undefined;
 }

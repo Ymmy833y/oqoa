@@ -4,6 +4,7 @@ import { QList } from "../models/entities";
 import { qListRepository } from "../repositories/qlist_repositoriy";
 import { questionRepository } from "../repositories/question_repositoriy";
 import * as ansHistoryService from "../services/ans_history_service";
+import * as exportHistoryService from "../services/export_history_service";
 import * as favoriteService from "../services/favorite_service";
 import * as importGoogleDriveService from "../services/import_google_drive_service";
 import * as indexeddbService from "../services/indexeddb_service";
@@ -213,6 +214,9 @@ export class Controller {
           tagId,
           checked,
         }),
+    );
+    this.view.on(UIEvent.CLICK_HISTORY_EXPORT_BTN, () =>
+      this.dispatch({ type: Action.EXPORT_HISTORY_DATA }),
     );
   }
 
@@ -566,6 +570,13 @@ export class Controller {
           if (practiceDetailDto) {
             this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
           }
+          break;
+        }
+
+        case Effect.EXPORT_HISTORY: {
+          const toastMessage = await exportHistoryService.exportHistory();
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          break;
         }
       }
     }

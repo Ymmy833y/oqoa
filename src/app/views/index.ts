@@ -359,6 +359,9 @@ export class View {
           onRemoveQuestions: () => {
             this.emit(UIEvent.CLICK_REMOVE_QUESTION_BTN, undefined);
           },
+          onHistoryExport: () => {
+            this.emit(UIEvent.CLICK_HISTORY_EXPORT_BTN, undefined);
+          },
         },
       );
       this.defaultModal.setModal(content, "設定", ModalSize.XL);

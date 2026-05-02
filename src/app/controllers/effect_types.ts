@@ -23,6 +23,7 @@ export enum Effect {
   SEARCH_ANS_HISTORY = "SEARCH_ANS_HISTORY",
   PREPARE_CUSTOM_PRACTICE = "PREPARE_CUSTOM_PRACTICE",
   UPDATE_FAVORITE = "UPDATE_FAVORITE",
+  EXPORT_HISTORY = "EXPORT_HISTORY",
 }
 
 export type EffectType =
@@ -80,4 +81,5 @@ export type EffectType =
       questionId: number;
       tagId: number;
       checked: boolean;
-    };
+    }
+  | { kind: Effect.EXPORT_HISTORY };
