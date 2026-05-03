@@ -2,8 +2,9 @@ import {
   createFile,
   fetchFileJson,
   findFileByName,
+  getValidAccessToken,
+  invalidateGoogleAccessToken,
   listFilesInFolder,
-  requestAccessTokenWithClientId,
   updateFileContent,
 } from "../api/google_auth";
 import { ToastMessage } from "../enums";
@@ -43,7 +44,9 @@ export async function probeGoogleDriveSync(
   }
 
   try {
-    const accessToken = await requestAccessTokenWithClientId(clientId);
+    const accessToken = await getValidAccessToken(clientId, {
+      interactive: true,
+    });
     await listFilesInFolder(accessToken, parsed.folderId);
     return {
       toast: generateSuccessToastMessage(
@@ -65,11 +68,13 @@ export async function probeGoogleDriveSync(
  * 1. Drive から履歴ファイルをDL
  * 2. ローカルにマージ
  * 3. ローカル全件をDriveへUP
+ *
+ * interactive=false (自動同期) の場合は、サイレント再発行が失敗してもサインイン UI を出さずに失敗を返す。
  */
 export async function syncHistoryWithGoogleDrive(
   clientId: string,
   userIdInput: string,
-  accessToken: string,
+  options: { interactive: boolean },
 ): Promise<ToastMessage> {
   const parsed = parseGoogleUserId(userIdInput);
   if (!parsed) {
@@ -80,15 +85,21 @@ export async function syncHistoryWithGoogleDrive(
   const fileName = buildHistoryFileName(userName);
 
   try {
+    let accessToken = await getValidAccessToken(clientId, {
+      interactive: options.interactive,
+    });
+
     // 1. Drive から既存ファイルを検索
     let fileId: string | null = null;
     try {
       const found = await findFileByName(accessToken, folderId, fileName);
       fileId = found?.id ?? null;
     } catch {
-      // listFiles 失敗 = トークン期限切れの可能性 → 再取得して再試行
-      const newToken = await requestAccessTokenWithClientId(clientId);
-      accessToken = newToken;
+      // findFileByName 失敗 = トークン失効の可能性 → 永続トークン破棄して再取得し 1 回だけリトライ
+      invalidateGoogleAccessToken();
+      accessToken = await getValidAccessToken(clientId, {
+        interactive: options.interactive,
+      });
       const found = await findFileByName(accessToken, folderId, fileName);
       fileId = found?.id ?? null;
     }

@@ -16,6 +16,7 @@ import * as syncHistoryService from "../services/sync_history_service";
 import {
   getLastImportedData,
   getLastUsedQuestions,
+  setAutoSyncEnabled,
   setGoogleClientId,
   setGoogleFolderId,
   setGoogleUserId,
@@ -628,6 +629,11 @@ export class Controller {
           break;
         }
 
+        case Effect.UPDATE_AUTO_SYNC_ENABLED: {
+          setAutoSyncEnabled(fx.enabled);
+          break;
+        }
+
         case Effect.GOOGLE_SYNC_PROBE: {
           const { toast, accessToken } =
             await syncHistoryService.probeGoogleDriveSync(
@@ -648,7 +654,7 @@ export class Controller {
             await syncHistoryService.syncHistoryWithGoogleDrive(
               fx.clientId,
               fx.userIdInput,
-              fx.accessToken,
+              { interactive: !fx.silent },
             );
           if (!fx.silent || toastMessage.kind !== ToastMessageKind.SUCCESS) {
             this.dispatch({ type: Action.TOAST_ADD, toastMessage });

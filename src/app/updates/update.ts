@@ -2,10 +2,13 @@ import { Effect, EffectType } from "../controllers/effect_types";
 import { HistoryActiveTab, ModalKind, Theme } from "../enums";
 import { Model } from "../models";
 import {
+  getAutoSyncEnabled,
+  getGoogleAccessTokenRecord,
   getGoogleClientId,
   getGoogleFolderId,
   getGoogleUserId,
   getTheme,
+  isGoogleAccessTokenValid,
 } from "../storages";
 
 import { Action, ActionType } from "./action_types";
@@ -26,6 +29,16 @@ export function update(
       const googleFolderId = getGoogleFolderId();
       const googleUserId = getGoogleUserId() ?? "";
 
+      // 永続化済みトークンが「過去に存在した」事実をもって、同期 UI を再活性化する。
+      // 期限切れであってもサイレント再発行で復活できるため、レコードがあれば ready 扱いとする。
+      const tokenRecord = getGoogleAccessTokenRecord();
+      const googleSyncReady =
+        !!tokenRecord && !!googleClientId && !!googleUserId;
+      const googleSyncAccessToken = isGoogleAccessTokenValid(tokenRecord)
+        ? tokenRecord.token
+        : null;
+      const autoSyncEnabled = getAutoSyncEnabled();
+
       return {
         model: {
           ...model,
@@ -33,6 +46,9 @@ export function update(
           googleClientId,
           googleFolderId,
           googleUserId,
+          googleSyncReady,
+          googleSyncAccessToken,
+          autoSyncEnabled,
         },
         effects: [
           { kind: Effect.INIT_REPOSITORY },
@@ -519,9 +535,7 @@ export function update(
     case Action.GOOGLE_HISTORY_SYNC: {
       const clientId = model.googleClientId;
       const userIdInput = model.googleUserId;
-      const accessToken = model.googleSyncAccessToken;
-      if (!clientId || !userIdInput || !accessToken)
-        return { model, effects: [] };
+      if (!clientId || !userIdInput) return { model, effects: [] };
       return {
         model: { ...model, googleSyncing: true },
         effects: [
@@ -529,7 +543,6 @@ export function update(
             kind: Effect.GOOGLE_HISTORY_SYNC,
             clientId,
             userIdInput,
-            accessToken,
             silent: false,
           },
         ],
@@ -545,20 +558,20 @@ export function update(
     case Action.CHANGE_AUTO_SYNC_ENABLED:
       return {
         model: { ...model, autoSyncEnabled: action.enabled },
-        effects: [],
+        effects: [
+          { kind: Effect.UPDATE_AUTO_SYNC_ENABLED, enabled: action.enabled },
+        ],
       };
 
     case Action.AUTO_SYNC_TICK: {
       const clientId = model.googleClientId;
       const userIdInput = model.googleUserId;
-      const accessToken = model.googleSyncAccessToken;
       if (
         !model.autoSyncEnabled ||
         !model.googleSyncReady ||
         model.googleSyncing ||
         !clientId ||
-        !userIdInput ||
-        !accessToken
+        !userIdInput
       ) {
         return { model, effects: [] };
       }
@@ -569,7 +582,6 @@ export function update(
             kind: Effect.GOOGLE_HISTORY_SYNC,
             clientId,
             userIdInput,
-            accessToken,
             silent: true,
           },
         ],
