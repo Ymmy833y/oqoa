@@ -1,5 +1,5 @@
 import { Theme } from "../enums";
-import { el, pickJsonFile } from "../utils";
+import { el } from "../utils";
 
 interface SettingModalHandlers {
   onThemeChange: (theme: Theme) => void;
@@ -7,21 +7,12 @@ interface SettingModalHandlers {
   onGoogleFolderIdChange: (googleFolderId: string) => void;
   onGoogleDriveImport: () => void;
   onRemoveQuestions: () => void;
-  onHistoryExport: () => void;
-  onHistoryImport: (file: File) => void;
-  onGoogleUserIdChange: (googleUserId: string) => void;
-  onGoogleSyncProbe: () => void;
-  onGoogleHistorySync: () => void;
-  onAutoSyncToggle: (enabled: boolean) => void;
 }
 
 export function generateSettingModalConetnt(
   theme: Theme,
   clientId: string,
   folderId: string,
-  googleUserId: string,
-  googleSyncReady: boolean,
-  autoSyncEnabled: boolean,
   handlers: SettingModalHandlers,
 ) {
   const body = el("div", "app-modal-body");
@@ -75,55 +66,61 @@ export function generateSettingModalConetnt(
     return label;
   }
 
-  // 演習履歴セクション
-  const historySection = el("section", "app-modal-section");
-  const historyTitle = el("h3", "app-modal-section-title", "演習履歴");
-  const historyDesc = el(
-    "p",
-    "app-modal-section-description",
-    "ローカルに保存された演習履歴データの取り込み・出力を行います。",
-  );
-  const historyActions = el("div", "app-modal-actions");
+  // // 解答履歴セクション
+  // const historySection = el('section', 'app-modal-section');
+  // const historyTitle = el('h3','app-modal-section-title', '解答履歴');
+  // const historyDesc = el(
+  //   'p','app-modal-section-description',
+  //   'ローカルに保存された解答履歴データの操作を行います。'
+  // );
+  // const historyActions = el('div', 'app-modal-actions');
 
-  // データインポートボタン
-  const importBtn = el("button", {
-    class: "app-modal-button",
-    id: "historyImportBtn",
-  }) as HTMLButtonElement;
-  importBtn.type = "button";
-  const importIcon = el("i", {
-    class: "bi bi-file-earmark-arrow-up app-modal-button-icon",
-    attr: [{ "aria-hidden": "true" }],
-  });
-  importBtn.appendChild(importIcon);
-  importBtn.append("インポート");
-  importBtn.addEventListener("click", async () => {
-    const file = await pickJsonFile();
-    if (file) handlers.onHistoryImport(file);
-  });
+  // // データインポートボタン
+  // const importBtn = el('button', {
+  //   class: 'app-modal-button',
+  //   id: 'historyImportBtn',
+  // }) as HTMLButtonElement;
+  // importBtn.type = 'button';
+  // const importIcon = el('i', {
+  //   class: 'bi bi-file-earmark-arrow-up app-modal-button-icon',
+  //   attr: [{ 'aria-hidden': 'true' }],
+  // });
+  // importBtn.appendChild(importIcon);
+  // importBtn.append('インポート');
 
-  // データエクスポートボタン
-  const exportBtn = el("button", {
-    class: "app-modal-button",
-    id: "historyExportBtn",
-  }) as HTMLButtonElement;
-  exportBtn.type = "button";
-  const exportIcon = el("i", {
-    class: "bi bi-file-earmark-arrow-down app-modal-button-icon",
-    attr: [{ "aria-hidden": "true" }],
-  });
-  exportBtn.appendChild(exportIcon);
-  exportBtn.append("エクスポート");
-  exportBtn.addEventListener("click", () => {
-    handlers.onHistoryExport();
-  });
+  // // データエクスポートボタン
+  // const exportBtn = el('button', {
+  //   class: 'app-modal-button',
+  //   id: 'historyExportBtn',
+  // }) as HTMLButtonElement;
+  // exportBtn.type = 'button';
+  // const exportIcon = el('i', {
+  //   class: 'bi bi-file-earmark-arrow-down app-modal-button-icon',
+  //   attr: [{ 'aria-hidden': 'true' }],
+  // });
+  // exportBtn.appendChild(exportIcon);
+  // exportBtn.append('エクスポート');
 
-  historyActions.appendChild(importBtn);
-  historyActions.appendChild(exportBtn);
+  // // データ削除ボタン
+  // const deleteBtn = el('button', {
+  //   class: 'app-modal-button app-modal-button-danger',
+  //   id: 'historyDeleteBtn',
+  // }) as HTMLButtonElement;
+  // deleteBtn.type = 'button';
+  // const deleteIcon = el('i', {
+  //   class: 'bi bi-trash app-modal-button-icon',
+  //   attr: [{ 'aria-hidden': 'true' }],
+  // });
+  // deleteBtn.appendChild(deleteIcon);
+  // deleteBtn.append('削除');
 
-  historySection.appendChild(historyTitle);
-  historySection.appendChild(historyDesc);
-  historySection.appendChild(historyActions);
+  // historyActions.appendChild(importBtn);
+  // historyActions.appendChild(exportBtn);
+  // historyActions.appendChild(deleteBtn);
+
+  // historySection.appendChild(historyTitle);
+  // historySection.appendChild(historyDesc);
+  // historySection.appendChild(historyActions);
 
   // Google Drive 連携セクション
   const driveSection = el("section", "app-modal-section");
@@ -208,112 +205,9 @@ export function generateSettingModalConetnt(
   driveSection.appendChild(driveFieldGroup);
   driveSection.appendChild(driveActions);
 
-  // Google Drive 履歴同期セクション
-  const syncSection = el("section", "app-modal-section");
-  const syncTitle = el(
-    "h3",
-    "app-modal-section-title",
-    "Google Drive 履歴同期",
-  );
-  const syncDesc = el(
-    "p",
-    "app-modal-section-description",
-    "端末間で演習履歴を同期します。Google Drive 上の指定フォルダにユーザー単位で履歴ファイルを保存します。",
-  );
-
-  const syncFieldGroup = el("div", "app-modal-field-group");
-  const userIdField = el("div", "app-modal-field");
-  const userIdLabel = el("label", {
-    class: "app-modal-field-label",
-    text: "ユーザーID",
-    attr: [{ for: "syncUserIdInput" }],
-  });
-  const userIdInput = el("input", {
-    class: "app-modal-input",
-    id: "syncUserIdInput",
-    attr: [
-      { type: "text" },
-      { name: "syncUserId" },
-      { value: googleUserId },
-      { placeholder: "<フォルダID>-<ユーザー名>" },
-      { autocomplete: "off" },
-    ],
-  }) as HTMLInputElement;
-  userIdInput.addEventListener("input", () => {
-    handlers.onGoogleUserIdChange(userIdInput.value);
-  });
-  userIdField.appendChild(userIdLabel);
-  userIdField.appendChild(userIdInput);
-  syncFieldGroup.appendChild(userIdField);
-
-  const syncActions = el("div", "app-modal-actions");
-
-  const probeBtn = el("button", {
-    class: "app-modal-button",
-    id: "syncProbeBtn",
-  }) as HTMLButtonElement;
-  probeBtn.type = "button";
-  const probeIcon = el("i", {
-    class: "bi bi-check-circle app-modal-button-icon",
-    attr: [{ "aria-hidden": "true" }],
-  });
-  probeBtn.appendChild(probeIcon);
-  probeBtn.append("疎通確認");
-  probeBtn.addEventListener("click", () => {
-    handlers.onGoogleSyncProbe();
-  });
-
-  const syncBtn = el("button", {
-    class: "app-modal-button",
-    id: "syncHistoryBtn",
-  }) as HTMLButtonElement;
-  syncBtn.type = "button";
-  if (!googleSyncReady) {
-    syncBtn.disabled = true;
-    syncBtn.classList.add("opacity-50", "cursor-not-allowed");
-  }
-  const syncIcon = el("i", {
-    class: "bi bi-arrow-repeat app-modal-button-icon",
-    attr: [{ "aria-hidden": "true" }],
-  });
-  syncBtn.appendChild(syncIcon);
-  syncBtn.append("同期");
-  syncBtn.addEventListener("click", () => {
-    handlers.onGoogleHistorySync();
-  });
-
-  const autoSyncBtn = el("button", {
-    class: "app-modal-button",
-    id: "autoSyncToggleBtn",
-  }) as HTMLButtonElement;
-  autoSyncBtn.type = "button";
-  autoSyncBtn.dataset.enabled = String(autoSyncEnabled);
-  autoSyncBtn.textContent = autoSyncEnabled ? "ON｜自動同期" : "OFF｜自動同期";
-  autoSyncBtn.classList.add(
-    autoSyncEnabled ? "app-modal-button-success" : "app-modal-button-muted",
-  );
-  if (!googleSyncReady) {
-    autoSyncBtn.disabled = true;
-    autoSyncBtn.classList.add("app-modal-button-disabled");
-  }
-  autoSyncBtn.addEventListener("click", () => {
-    const current = autoSyncBtn.dataset.enabled === "true";
-    handlers.onAutoSyncToggle(!current);
-  });
-
-  syncActions.appendChild(probeBtn);
-  syncActions.appendChild(autoSyncBtn);
-  syncActions.appendChild(syncBtn);
-
-  syncSection.appendChild(syncTitle);
-  syncSection.appendChild(syncDesc);
-  syncSection.appendChild(syncFieldGroup);
-  syncSection.appendChild(syncActions);
-
   // body に各セクションを追加
   body.appendChild(themeSection);
-  body.appendChild(historySection);
-  body.appendChild(syncSection);
+  // body.appendChild(historySection);
   body.appendChild(driveSection);
 
   // 設問セクション
@@ -322,7 +216,7 @@ export function generateSettingModalConetnt(
   const questionDesc = el("p", "app-modal-section-description");
   questionDesc.innerHTML =
     "ローカルにキャッシュされた設問データの削除を行います。<br>次回のアクセス時には設問データの再インポートが必要となります。";
-  const questionActions = el("div", "app-modal-actions");
+  const historyActions = el("div", "app-modal-actions");
 
   // データ削除ボタン
   const deleteBtn = el("button", {
@@ -339,11 +233,11 @@ export function generateSettingModalConetnt(
   deleteBtn.addEventListener("click", () => {
     handlers.onRemoveQuestions();
   });
-  questionActions.appendChild(deleteBtn);
+  historyActions.appendChild(deleteBtn);
 
   questionSection.appendChild(questionTitle);
   questionSection.appendChild(questionDesc);
-  questionSection.appendChild(questionActions);
+  questionSection.appendChild(historyActions);
 
   body.appendChild(questionSection);
 
