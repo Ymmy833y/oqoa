@@ -1,7 +1,15 @@
 import { Effect, EffectType } from "../controllers/effect_types";
 import { HistoryActiveTab, ModalKind, Theme } from "../enums";
 import { Model } from "../models";
-import { getGoogleClientId, getGoogleFolderId, getTheme } from "../storages";
+import {
+  getAutoSyncEnabled,
+  getGoogleAccessTokenRecord,
+  getGoogleClientId,
+  getGoogleFolderId,
+  getGoogleUserId,
+  getTheme,
+  isGoogleAccessTokenValid,
+} from "../storages";
 
 import { Action, ActionType } from "./action_types";
 
@@ -19,9 +27,29 @@ export function update(
           : Theme.LIGHT;
       const googleClientId = getGoogleClientId();
       const googleFolderId = getGoogleFolderId();
+      const googleUserId = getGoogleUserId() ?? "";
+
+      // 永続化済みトークンが「過去に存在した」事実をもって、同期 UI を再活性化する。
+      // 期限切れであってもサイレント再発行で復活できるため、レコードがあれば ready 扱いとする。
+      const tokenRecord = getGoogleAccessTokenRecord();
+      const googleSyncReady =
+        !!tokenRecord && !!googleClientId && !!googleUserId;
+      const googleSyncAccessToken = isGoogleAccessTokenValid(tokenRecord)
+        ? tokenRecord.token
+        : null;
+      const autoSyncEnabled = getAutoSyncEnabled();
 
       return {
-        model: { ...model, theme, googleClientId, googleFolderId },
+        model: {
+          ...model,
+          theme,
+          googleClientId,
+          googleFolderId,
+          googleUserId,
+          googleSyncReady,
+          googleSyncAccessToken,
+          autoSyncEnabled,
+        },
         effects: [
           { kind: Effect.INIT_REPOSITORY },
           { kind: Effect.UPDATE_THEME, theme },
@@ -460,6 +488,106 @@ export function update(
         ],
       };
     }
+
+    case Action.EXPORT_HISTORY_DATA:
+      return {
+        model,
+        effects: [{ kind: Effect.EXPORT_HISTORY }],
+      };
+
+    case Action.IMPORT_HISTORY_DATA:
+      return {
+        model,
+        effects: [{ kind: Effect.IMPORT_HISTORY, file: action.file }],
+      };
+
+    case Action.CHANGE_GOOGLE_USER_ID:
+      return {
+        model: { ...model, googleUserId: action.googleUserId },
+        effects: [
+          {
+            kind: Effect.UPDATE_GOOGLE_USER_ID,
+            googleUserId: action.googleUserId,
+          },
+        ],
+      };
+
+    case Action.GOOGLE_SYNC_PROBE: {
+      const clientId = model.googleClientId;
+      const userIdInput = model.googleUserId;
+      if (!clientId || !userIdInput) return { model, effects: [] };
+      return {
+        model,
+        effects: [{ kind: Effect.GOOGLE_SYNC_PROBE, clientId, userIdInput }],
+      };
+    }
+
+    case Action.GOOGLE_SYNC_PROBE_RESULT:
+      return {
+        model: {
+          ...model,
+          googleSyncReady: action.ok,
+          googleSyncAccessToken: action.accessToken ?? null,
+        },
+        effects: [],
+      };
+
+    case Action.GOOGLE_HISTORY_SYNC: {
+      const clientId = model.googleClientId;
+      const userIdInput = model.googleUserId;
+      if (!clientId || !userIdInput) return { model, effects: [] };
+      return {
+        model: { ...model, googleSyncing: true },
+        effects: [
+          {
+            kind: Effect.GOOGLE_HISTORY_SYNC,
+            clientId,
+            userIdInput,
+            silent: false,
+          },
+        ],
+      };
+    }
+
+    case Action.GOOGLE_HISTORY_SYNC_DONE:
+      return {
+        model: { ...model, googleSyncing: false },
+        effects: [],
+      };
+
+    case Action.CHANGE_AUTO_SYNC_ENABLED:
+      return {
+        model: { ...model, autoSyncEnabled: action.enabled },
+        effects: [
+          { kind: Effect.UPDATE_AUTO_SYNC_ENABLED, enabled: action.enabled },
+        ],
+      };
+
+    case Action.AUTO_SYNC_TICK: {
+      const clientId = model.googleClientId;
+      const userIdInput = model.googleUserId;
+      if (
+        !model.autoSyncEnabled ||
+        !model.googleSyncReady ||
+        model.googleSyncing ||
+        !clientId ||
+        !userIdInput
+      ) {
+        return { model, effects: [] };
+      }
+      return {
+        model: { ...model, googleSyncing: true },
+        effects: [
+          {
+            kind: Effect.GOOGLE_HISTORY_SYNC,
+            clientId,
+            userIdInput,
+            silent: true,
+          },
+        ],
+      };
+    }
+
     default:
       return { model, effects: [] };
   }
