@@ -55,6 +55,8 @@ export enum Action {
   GOOGLE_SYNC_PROBE_RESULT = "GOOGLE_SYNC_PROBE_RESULT",
   GOOGLE_HISTORY_SYNC = "GOOGLE_HISTORY_SYNC",
   GOOGLE_HISTORY_SYNC_DONE = "GOOGLE_HISTORY_SYNC_DONE",
+  CHANGE_AUTO_SYNC_ENABLED = "CHANGE_AUTO_SYNC_ENABLED",
+  AUTO_SYNC_TICK = "AUTO_SYNC_TICK",
 }
 
 export type ActionType =
@@ -171,4 +173,6 @@ export type ActionType =
   | { type: Action.GOOGLE_SYNC_PROBE }
   | { type: Action.GOOGLE_SYNC_PROBE_RESULT; ok: boolean; accessToken?: string }
   | { type: Action.GOOGLE_HISTORY_SYNC }
-  | { type: Action.GOOGLE_HISTORY_SYNC_DONE };
+  | { type: Action.GOOGLE_HISTORY_SYNC_DONE }
+  | { type: Action.CHANGE_AUTO_SYNC_ENABLED; enabled: boolean }
+  | { type: Action.AUTO_SYNC_TICK };

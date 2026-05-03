@@ -28,6 +28,7 @@ export enum Effect {
   UPDATE_GOOGLE_USER_ID = "UPDATE_GOOGLE_USER_ID",
   GOOGLE_SYNC_PROBE = "GOOGLE_SYNC_PROBE",
   GOOGLE_HISTORY_SYNC = "GOOGLE_HISTORY_SYNC",
+  UPDATE_AUTO_SYNC_ENABLED = "UPDATE_AUTO_SYNC_ENABLED",
 }
 
 export type EffectType =
@@ -94,5 +95,6 @@ export type EffectType =
       kind: Effect.GOOGLE_HISTORY_SYNC;
       clientId: string;
       userIdInput: string;
-      accessToken: string;
-    };
+      silent: boolean;
+    }
+  | { kind: Effect.UPDATE_AUTO_SYNC_ENABLED; enabled: boolean };

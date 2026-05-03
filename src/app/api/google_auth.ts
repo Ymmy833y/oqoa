@@ -1,3 +1,10 @@
+import {
+  clearGoogleAccessToken,
+  getGoogleAccessTokenRecord,
+  isGoogleAccessTokenValid,
+  setGoogleAccessToken,
+} from "../storages";
+
 // ---- Drive ユーティリティ ----
 interface FileMeta {
   id: string;
@@ -247,28 +254,81 @@ export async function updateFileContent(
   }
 }
 
+const DRIVE_SCOPE =
+  "https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file";
+
 /**
- * client_id を使ってアクセストークンを取得
+ * 永続化されたトークンが有効ならそれを返し、期限切れ/未取得なら GIS のサイレント再発行を試みる。
+ * interactive=true の場合のみ、サイレントが失敗した時に通常のサインイン UI へフォールバックする。
+ * interactive=false（自動同期等）では UI を出さず例外を投げて呼び出し側に判断を委ねる。
  */
-export function requestAccessTokenWithClientId(
+export async function getValidAccessToken(
   clientId: string,
+  opts: { loginHint?: string; interactive: boolean },
+): Promise<string> {
+  const cached = getGoogleAccessTokenRecord();
+  if (isGoogleAccessTokenValid(cached)) return cached.token;
+
+  try {
+    return await requestToken(clientId, {
+      prompt: "",
+      loginHint: opts.loginHint,
+    });
+  } catch (silentError) {
+    if (!opts.interactive) {
+      // 自動同期などサイレント前提のフローでは UI を絶対に出さない
+      clearGoogleAccessToken();
+      throw silentError;
+    }
+    return await requestToken(clientId, { loginHint: opts.loginHint });
+  }
+}
+
+/**
+ * 永続化されているトークンを破棄する。401/403 を観測した側から呼ぶ。
+ */
+export function invalidateGoogleAccessToken(): void {
+  clearGoogleAccessToken();
+}
+
+function requestToken(
+  clientId: string,
+  opts: {
+    prompt?: "" | "consent" | "select_account" | "none";
+    loginHint?: string;
+  },
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
-      // google.accounts はグローバル想定
       const tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: clientId,
-        scope:
-          "https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file",
+        scope: DRIVE_SCOPE,
+        prompt: opts.prompt,
+        login_hint: opts.loginHint,
         callback: (response: google.accounts.oauth2.TokenResponse) => {
-          if (!response || !response.access_token) {
-            reject(new Error("アクセストークンの取得に失敗しました。"));
+          if (response.error || !response.access_token) {
+            reject(
+              new Error(
+                response.error_description ||
+                  response.error ||
+                  "アクセストークンの取得に失敗しました。",
+              ),
+            );
             return;
+          }
+          // expires_in は Google 側が決める値。欠落 / 不正時はキャッシュせず即時利用のみ。
+          const expiresIn = Number(response.expires_in);
+          if (Number.isFinite(expiresIn) && expiresIn > 0) {
+            setGoogleAccessToken(response.access_token, expiresIn);
           }
           resolve(response.access_token);
         },
+        error_callback: (err) => {
+          // popup_closed_by_user / interaction_required などはここに来る
+          reject(new Error(err.message || err.type || "auth_error"));
+        },
       });
-      tokenClient.requestAccessToken();
+      tokenClient.requestAccessToken({ prompt: opts.prompt });
     } catch (err) {
       reject(err);
     }

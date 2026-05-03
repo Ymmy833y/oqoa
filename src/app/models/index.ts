@@ -25,6 +25,7 @@ export interface Model {
   googleSyncReady: boolean;
   googleSyncAccessToken: string | null;
   googleSyncing: boolean;
+  autoSyncEnabled: boolean;
 
   defailtModalKind: ModalKindType | null;
   preparePracticeStart: QList | CustomPracticeStartDto | null;
@@ -55,6 +56,7 @@ export const initialModel: Model = {
   googleSyncReady: false,
   googleSyncAccessToken: null,
   googleSyncing: false,
+  autoSyncEnabled: false,
 
   defailtModalKind: null,
   preparePracticeStart: null,
