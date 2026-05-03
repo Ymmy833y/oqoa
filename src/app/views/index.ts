@@ -271,8 +271,9 @@ export class View {
   render(model: Model): void {
     this.applyToastMessages(model.toastMessages);
     this.applyDefaultModal(model);
-    this.applySyncOverlay(model.googleSyncing);
+    this.applySyncIndicator(model.googleSyncing);
     this.applySyncButtonState(model.googleSyncReady);
+    this.applyAutoSyncBtnState(model.googleSyncReady, model.autoSyncEnabled);
 
     if (model.practiceDetailDto !== null) {
       this.applyPracticeContent(model.practiceDetailDto);
@@ -347,6 +348,7 @@ export class View {
         model.googleFolderId ?? "",
         model.googleUserId,
         model.googleSyncReady,
+        model.autoSyncEnabled,
         {
           onThemeChange: (theme) => {
             this.emit(UIEvent.CHANGE_THEME, { theme });
@@ -377,6 +379,9 @@ export class View {
           },
           onGoogleHistorySync: () => {
             this.emit(UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN, undefined);
+          },
+          onAutoSyncToggle: (enabled) => {
+            this.emit(UIEvent.CHANGE_AUTO_SYNC_ENABLED, { enabled });
           },
         },
       );
@@ -669,31 +674,51 @@ export class View {
     }
   }
 
-  private applySyncOverlay(googleSyncing: boolean): void {
-    const OVERLAY_ID = "syncLoadingOverlay";
-    let overlay = this.doc.getElementById(OVERLAY_ID);
+  private applySyncIndicator(googleSyncing: boolean): void {
+    const INDICATOR_ID = "syncIndicator";
+    let indicator = this.doc.getElementById(INDICATOR_ID);
     if (googleSyncing) {
-      if (!overlay) {
-        overlay = this.doc.createElement("div");
-        overlay.id = OVERLAY_ID;
-        overlay.className =
-          "fixed inset-0 z-50 flex items-center justify-center bg-black/50";
-        const box = this.doc.createElement("div");
-        box.className =
-          "flex flex-col items-center gap-3 rounded-lg bg-white px-10 py-8 dark:bg-gray-800";
+      if (!indicator) {
+        indicator = this.doc.createElement("div");
+        indicator.id = INDICATOR_ID;
+        indicator.className = "toast toast--info";
         const spinner = this.doc.createElement("div");
-        spinner.className =
-          "h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500";
+        spinner.className = "sync-indicator-spinner";
         const text = this.doc.createElement("p");
-        text.className = "text-sm text-gray-700 dark:text-gray-200";
+        text.className = "toast-desc";
         text.textContent = "同期中...";
-        box.appendChild(spinner);
-        box.appendChild(text);
-        overlay.appendChild(box);
-        this.doc.body.appendChild(overlay);
+        indicator.appendChild(spinner);
+        indicator.appendChild(text);
+        this.els.toastParent.appendChild(indicator);
       }
     } else {
-      overlay?.remove();
+      indicator?.remove();
+    }
+  }
+
+  private applyAutoSyncBtnState(
+    googleSyncReady: boolean,
+    autoSyncEnabled: boolean,
+  ): void {
+    const btn = this.doc.getElementById(
+      "autoSyncToggleBtn",
+    ) as HTMLButtonElement | null;
+    if (!btn) return;
+
+    btn.disabled = !googleSyncReady;
+    btn.dataset.enabled = String(autoSyncEnabled);
+    btn.textContent = autoSyncEnabled ? "ON｜自動同期" : "OFF｜自動同期";
+
+    btn.classList.remove(
+      "app-modal-button-success",
+      "app-modal-button-muted",
+      "app-modal-button-disabled",
+    );
+    btn.classList.add(
+      autoSyncEnabled ? "app-modal-button-success" : "app-modal-button-muted",
+    );
+    if (!googleSyncReady) {
+      btn.classList.add("app-modal-button-disabled");
     }
   }
 

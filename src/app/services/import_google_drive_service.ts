@@ -1,6 +1,6 @@
 import {
   fetchAllJsonFromFolderStrict,
-  requestAccessTokenWithClientId,
+  getValidAccessToken,
 } from "../api/google_auth";
 import { ToastMessage, ToastMessageKind } from "../enums";
 import { QList, Question } from "../models/entities";
@@ -13,8 +13,10 @@ export async function importProbelmForGoogleDrive(
   folderId: string,
 ): Promise<ToastMessage> {
   try {
-    // Google Identity Services のトークン取得
-    const accessToken = await requestAccessTokenWithClientId(clientId);
+    // 永続化済みトークン優先 → サイレント再発行 → サインイン UI の順で取得
+    const accessToken = await getValidAccessToken(clientId, {
+      interactive: true,
+    });
 
     // Drive から JSON 群を取得（ショートカット解決・Docs除外・JSONのみ）
     const files = await fetchAllJsonFromFolderStrict(accessToken, folderId);

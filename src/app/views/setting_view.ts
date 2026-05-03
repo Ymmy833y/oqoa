@@ -12,6 +12,7 @@ interface SettingModalHandlers {
   onGoogleUserIdChange: (googleUserId: string) => void;
   onGoogleSyncProbe: () => void;
   onGoogleHistorySync: () => void;
+  onAutoSyncToggle: (enabled: boolean) => void;
 }
 
 export function generateSettingModalConetnt(
@@ -20,6 +21,7 @@ export function generateSettingModalConetnt(
   folderId: string,
   googleUserId: string,
   googleSyncReady: boolean,
+  autoSyncEnabled: boolean,
   handlers: SettingModalHandlers,
 ) {
   const body = el("div", "app-modal-body");
@@ -280,7 +282,27 @@ export function generateSettingModalConetnt(
     handlers.onGoogleHistorySync();
   });
 
+  const autoSyncBtn = el("button", {
+    class: "app-modal-button",
+    id: "autoSyncToggleBtn",
+  }) as HTMLButtonElement;
+  autoSyncBtn.type = "button";
+  autoSyncBtn.dataset.enabled = String(autoSyncEnabled);
+  autoSyncBtn.textContent = autoSyncEnabled ? "ON｜自動同期" : "OFF｜自動同期";
+  autoSyncBtn.classList.add(
+    autoSyncEnabled ? "app-modal-button-success" : "app-modal-button-muted",
+  );
+  if (!googleSyncReady) {
+    autoSyncBtn.disabled = true;
+    autoSyncBtn.classList.add("app-modal-button-disabled");
+  }
+  autoSyncBtn.addEventListener("click", () => {
+    const current = autoSyncBtn.dataset.enabled === "true";
+    handlers.onAutoSyncToggle(!current);
+  });
+
   syncActions.appendChild(probeBtn);
+  syncActions.appendChild(autoSyncBtn);
   syncActions.appendChild(syncBtn);
 
   syncSection.appendChild(syncTitle);

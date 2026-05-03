@@ -16,6 +16,7 @@ import * as syncHistoryService from "../services/sync_history_service";
 import {
   getLastImportedData,
   getLastUsedQuestions,
+  setAutoSyncEnabled,
   setGoogleClientId,
   setGoogleFolderId,
   setGoogleUserId,
@@ -43,6 +44,10 @@ export class Controller {
   async start(): Promise<void> {
     this.registerViewHandlers();
     this.dispatch({ type: Action.INIT });
+    setInterval(
+      () => this.dispatch({ type: Action.AUTO_SYNC_TICK }),
+      3 * 60 * 1000,
+    );
   }
 
   private registerViewHandlers() {
@@ -232,6 +237,9 @@ export class Controller {
     );
     this.view.on(UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN, () =>
       this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC }),
+    );
+    this.view.on(UIEvent.CHANGE_AUTO_SYNC_ENABLED, ({ enabled }) =>
+      this.dispatch({ type: Action.CHANGE_AUTO_SYNC_ENABLED, enabled }),
     );
   }
 
@@ -479,6 +487,7 @@ export class Controller {
               this.model.practiceDetailDto,
             );
             this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+            this.dispatch({ type: Action.AUTO_SYNC_TICK });
           } catch (e) {
             const error = e as Error;
             this.dispatch({
@@ -620,6 +629,11 @@ export class Controller {
           break;
         }
 
+        case Effect.UPDATE_AUTO_SYNC_ENABLED: {
+          setAutoSyncEnabled(fx.enabled);
+          break;
+        }
+
         case Effect.GOOGLE_SYNC_PROBE: {
           const { toast, accessToken } =
             await syncHistoryService.probeGoogleDriveSync(
@@ -640,9 +654,11 @@ export class Controller {
             await syncHistoryService.syncHistoryWithGoogleDrive(
               fx.clientId,
               fx.userIdInput,
-              fx.accessToken,
+              { interactive: !fx.silent },
             );
-          this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          if (!fx.silent || toastMessage.kind !== ToastMessageKind.SUCCESS) {
+            this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          }
           this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC_DONE });
 
           if (toastMessage.kind === ToastMessageKind.SUCCESS) {
