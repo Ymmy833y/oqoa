@@ -271,9 +271,6 @@ export class View {
   render(model: Model): void {
     this.applyToastMessages(model.toastMessages);
     this.applyDefaultModal(model);
-    this.applySyncIndicator(model.googleSyncing);
-    this.applySyncButtonState(model.googleSyncReady);
-    this.applyAutoSyncBtnState(model.googleSyncReady, model.autoSyncEnabled);
 
     if (model.practiceDetailDto !== null) {
       this.applyPracticeContent(model.practiceDetailDto);
@@ -346,9 +343,6 @@ export class View {
         model.theme,
         model.googleClientId ?? "",
         model.googleFolderId ?? "",
-        model.googleUserId,
-        model.googleSyncReady,
-        model.autoSyncEnabled,
         {
           onThemeChange: (theme) => {
             this.emit(UIEvent.CHANGE_THEME, { theme });
@@ -364,24 +358,6 @@ export class View {
           },
           onRemoveQuestions: () => {
             this.emit(UIEvent.CLICK_REMOVE_QUESTION_BTN, undefined);
-          },
-          onHistoryExport: () => {
-            this.emit(UIEvent.CLICK_HISTORY_EXPORT_BTN, undefined);
-          },
-          onHistoryImport: (file) => {
-            this.emit(UIEvent.CLICK_HISTORY_IMPORT_BTN, { file });
-          },
-          onGoogleUserIdChange: (googleUserId) => {
-            this.emit(UIEvent.CHANGE_GOOGLE_USER_ID, { googleUserId });
-          },
-          onGoogleSyncProbe: () => {
-            this.emit(UIEvent.CLICK_GOOGLE_SYNC_PROBE_BTN, undefined);
-          },
-          onGoogleHistorySync: () => {
-            this.emit(UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN, undefined);
-          },
-          onAutoSyncToggle: (enabled) => {
-            this.emit(UIEvent.CHANGE_AUTO_SYNC_ENABLED, { enabled });
           },
         },
       );
@@ -659,67 +635,6 @@ export class View {
     activeTab.classList.add("side-menu-tab--active");
     inactiveTab.classList.remove("side-menu-tab--active");
     inactiveTab.classList.add("side-menu-tab--inactive");
-  }
-
-  private applySyncButtonState(googleSyncReady: boolean): void {
-    const syncBtn = this.doc.getElementById(
-      "syncHistoryBtn",
-    ) as HTMLButtonElement | null;
-    if (!syncBtn) return;
-    syncBtn.disabled = !googleSyncReady;
-    if (googleSyncReady) {
-      syncBtn.classList.remove("opacity-50", "cursor-not-allowed");
-    } else {
-      syncBtn.classList.add("opacity-50", "cursor-not-allowed");
-    }
-  }
-
-  private applySyncIndicator(googleSyncing: boolean): void {
-    const INDICATOR_ID = "syncIndicator";
-    let indicator = this.doc.getElementById(INDICATOR_ID);
-    if (googleSyncing) {
-      if (!indicator) {
-        indicator = this.doc.createElement("div");
-        indicator.id = INDICATOR_ID;
-        indicator.className = "toast toast--info";
-        const spinner = this.doc.createElement("div");
-        spinner.className = "sync-indicator-spinner";
-        const text = this.doc.createElement("p");
-        text.className = "toast-desc";
-        text.textContent = "同期中...";
-        indicator.appendChild(spinner);
-        indicator.appendChild(text);
-        this.els.toastParent.appendChild(indicator);
-      }
-    } else {
-      indicator?.remove();
-    }
-  }
-
-  private applyAutoSyncBtnState(
-    googleSyncReady: boolean,
-    autoSyncEnabled: boolean,
-  ): void {
-    const btn = this.doc.getElementById(
-      "autoSyncToggleBtn",
-    ) as HTMLButtonElement | null;
-    if (!btn) return;
-
-    btn.disabled = !googleSyncReady;
-    btn.dataset.enabled = String(autoSyncEnabled);
-    btn.textContent = autoSyncEnabled ? "ON｜自動同期" : "OFF｜自動同期";
-
-    btn.classList.remove(
-      "app-modal-button-success",
-      "app-modal-button-muted",
-      "app-modal-button-disabled",
-    );
-    btn.classList.add(
-      autoSyncEnabled ? "app-modal-button-success" : "app-modal-button-muted",
-    );
-    if (!googleSyncReady) {
-      btn.classList.add("app-modal-button-disabled");
-    }
   }
 
   private $<T extends Element>(selector: string): T {
