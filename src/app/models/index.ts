@@ -21,6 +21,11 @@ export interface Model {
 
   googleClientId: string | null;
   googleFolderId: string | null;
+  googleUserId: string;
+  googleSyncReady: boolean;
+  googleSyncAccessToken: string | null;
+  googleSyncing: boolean;
+  autoSyncEnabled: boolean;
 
   defailtModalKind: ModalKindType | null;
   preparePracticeStart: QList | CustomPracticeStartDto | null;
@@ -47,6 +52,11 @@ export const initialModel: Model = {
 
   googleClientId: null,
   googleFolderId: null,
+  googleUserId: "",
+  googleSyncReady: false,
+  googleSyncAccessToken: null,
+  googleSyncing: false,
+  autoSyncEnabled: false,
 
   defailtModalKind: null,
   preparePracticeStart: null,

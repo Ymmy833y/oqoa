@@ -4,17 +4,22 @@ import { QList } from "../models/entities";
 import { qListRepository } from "../repositories/qlist_repositoriy";
 import { questionRepository } from "../repositories/question_repositoriy";
 import * as ansHistoryService from "../services/ans_history_service";
+import * as exportHistoryService from "../services/export_history_service";
 import * as favoriteService from "../services/favorite_service";
 import * as importGoogleDriveService from "../services/import_google_drive_service";
+import * as importHistoryService from "../services/import_history_service";
 import * as indexeddbService from "../services/indexeddb_service";
 import * as practiceSevice from "../services/practice_sevice";
 import * as qListService from "../services/qlist_service";
 import * as questionService from "../services/question_service";
+import * as syncHistoryService from "../services/sync_history_service";
 import {
   getLastImportedData,
   getLastUsedQuestions,
+  setAutoSyncEnabled,
   setGoogleClientId,
   setGoogleFolderId,
+  setGoogleUserId,
   setLastUsedQuestions,
   setTheme,
 } from "../storages";
@@ -39,6 +44,10 @@ export class Controller {
   async start(): Promise<void> {
     this.registerViewHandlers();
     this.dispatch({ type: Action.INIT });
+    setInterval(
+      () => this.dispatch({ type: Action.AUTO_SYNC_TICK }),
+      3 * 60 * 1000,
+    );
   }
 
   private registerViewHandlers() {
@@ -213,6 +222,24 @@ export class Controller {
           tagId,
           checked,
         }),
+    );
+    this.view.on(UIEvent.CLICK_HISTORY_EXPORT_BTN, () =>
+      this.dispatch({ type: Action.EXPORT_HISTORY_DATA }),
+    );
+    this.view.on(UIEvent.CLICK_HISTORY_IMPORT_BTN, ({ file }) =>
+      this.dispatch({ type: Action.IMPORT_HISTORY_DATA, file }),
+    );
+    this.view.on(UIEvent.CHANGE_GOOGLE_USER_ID, ({ googleUserId }) =>
+      this.dispatch({ type: Action.CHANGE_GOOGLE_USER_ID, googleUserId }),
+    );
+    this.view.on(UIEvent.CLICK_GOOGLE_SYNC_PROBE_BTN, () =>
+      this.dispatch({ type: Action.GOOGLE_SYNC_PROBE }),
+    );
+    this.view.on(UIEvent.CLICK_GOOGLE_HISTORY_SYNC_BTN, () =>
+      this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC }),
+    );
+    this.view.on(UIEvent.CHANGE_AUTO_SYNC_ENABLED, ({ enabled }) =>
+      this.dispatch({ type: Action.CHANGE_AUTO_SYNC_ENABLED, enabled }),
     );
   }
 
@@ -460,6 +487,7 @@ export class Controller {
               this.model.practiceDetailDto,
             );
             this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
+            this.dispatch({ type: Action.AUTO_SYNC_TICK });
           } catch (e) {
             const error = e as Error;
             this.dispatch({
@@ -566,6 +594,87 @@ export class Controller {
           if (practiceDetailDto) {
             this.dispatch({ type: Action.SHOW_PRACTICE, practiceDetailDto });
           }
+          break;
+        }
+
+        case Effect.EXPORT_HISTORY: {
+          const toastMessage = await exportHistoryService.exportHistory();
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          break;
+        }
+
+        case Effect.IMPORT_HISTORY: {
+          const toastMessage = await importHistoryService.importHistory(
+            fx.file,
+          );
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+
+          if (toastMessage.kind === ToastMessageKind.SUCCESS) {
+            const qListData = await qListService.selectQListsForSearchForm(
+              this.model.qListSearchForm,
+            );
+            this.dispatch({
+              type: Action.UPDATE_QLIST_CONTAINER,
+              qLists: qListData.qLists,
+              currentPage: qListData.currentPage,
+              totalSize: qListData.totalSize,
+              pages: qListData.pages,
+            });
+          }
+          break;
+        }
+
+        case Effect.UPDATE_GOOGLE_USER_ID: {
+          setGoogleUserId(fx.googleUserId);
+          break;
+        }
+
+        case Effect.UPDATE_AUTO_SYNC_ENABLED: {
+          setAutoSyncEnabled(fx.enabled);
+          break;
+        }
+
+        case Effect.GOOGLE_SYNC_PROBE: {
+          const { toast, accessToken } =
+            await syncHistoryService.probeGoogleDriveSync(
+              fx.clientId,
+              fx.userIdInput,
+            );
+          this.dispatch({ type: Action.TOAST_ADD, toastMessage: toast });
+          this.dispatch({
+            type: Action.GOOGLE_SYNC_PROBE_RESULT,
+            ok: toast.kind === ToastMessageKind.SUCCESS,
+            accessToken,
+          });
+          break;
+        }
+
+        case Effect.GOOGLE_HISTORY_SYNC: {
+          const toastMessage =
+            await syncHistoryService.syncHistoryWithGoogleDrive(
+              fx.clientId,
+              fx.userIdInput,
+              { interactive: !fx.silent },
+            );
+          if (!fx.silent || toastMessage.kind !== ToastMessageKind.SUCCESS) {
+            this.dispatch({ type: Action.TOAST_ADD, toastMessage });
+          }
+          this.dispatch({ type: Action.GOOGLE_HISTORY_SYNC_DONE });
+
+          if (toastMessage.kind === ToastMessageKind.SUCCESS) {
+            const qListData = await qListService.selectQListsForSearchForm(
+              this.model.qListSearchForm,
+            );
+            this.dispatch({
+              type: Action.UPDATE_QLIST_CONTAINER,
+              qLists: qListData.qLists,
+              currentPage: qListData.currentPage,
+              totalSize: qListData.totalSize,
+              pages: qListData.pages,
+            });
+            this.dispatch({ type: Action.SEARCH_HISTORY });
+          }
+          break;
         }
       }
     }

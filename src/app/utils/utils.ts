@@ -72,7 +72,13 @@ export function isWithinRange(
 
 export const stripHtmlAndEntities = (text: string): string => {
   if (!text) return "";
-  const withoutTags = text.replace(/<[^>]*>/g, "");
+
+  let withoutTags = text;
+  let previous: string;
+  do {
+    previous = withoutTags;
+    withoutTags = withoutTags.replace(/<[^>]*>/g, "");
+  } while (withoutTags !== previous);
 
   const withoutEntities = withoutTags.replace(
     /&(?:[a-zA-Z][a-zA-Z0-9]+|#\d+|#x[0-9a-fA-F]+);/g,
