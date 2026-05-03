@@ -23,6 +23,12 @@ export enum Effect {
   SEARCH_ANS_HISTORY = "SEARCH_ANS_HISTORY",
   PREPARE_CUSTOM_PRACTICE = "PREPARE_CUSTOM_PRACTICE",
   UPDATE_FAVORITE = "UPDATE_FAVORITE",
+  EXPORT_HISTORY = "EXPORT_HISTORY",
+  IMPORT_HISTORY = "IMPORT_HISTORY",
+  UPDATE_GOOGLE_USER_ID = "UPDATE_GOOGLE_USER_ID",
+  GOOGLE_SYNC_PROBE = "GOOGLE_SYNC_PROBE",
+  GOOGLE_HISTORY_SYNC = "GOOGLE_HISTORY_SYNC",
+  UPDATE_AUTO_SYNC_ENABLED = "UPDATE_AUTO_SYNC_ENABLED",
 }
 
 export type EffectType =
@@ -80,4 +86,15 @@ export type EffectType =
       questionId: number;
       tagId: number;
       checked: boolean;
-    };
+    }
+  | { kind: Effect.EXPORT_HISTORY }
+  | { kind: Effect.IMPORT_HISTORY; file: File }
+  | { kind: Effect.UPDATE_GOOGLE_USER_ID; googleUserId: string }
+  | { kind: Effect.GOOGLE_SYNC_PROBE; clientId: string; userIdInput: string }
+  | {
+      kind: Effect.GOOGLE_HISTORY_SYNC;
+      clientId: string;
+      userIdInput: string;
+      silent: boolean;
+    }
+  | { kind: Effect.UPDATE_AUTO_SYNC_ENABLED; enabled: boolean };

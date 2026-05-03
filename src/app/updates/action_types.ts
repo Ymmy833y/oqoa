@@ -48,6 +48,15 @@ export enum Action {
   TOGGLE_QLISTS_STANDARD_CHECK = "TOGGLE_QLISTS_STANDARD_CHECK",
   PREPARE_CUSTOM_PRACTICE = "PREPARE_CUSTOM_PRACTICE",
   UPDATE_FAVORITE = "UPDATE_FAVORITE",
+  EXPORT_HISTORY_DATA = "EXPORT_HISTORY_DATA",
+  IMPORT_HISTORY_DATA = "IMPORT_HISTORY_DATA",
+  CHANGE_GOOGLE_USER_ID = "CHANGE_GOOGLE_USER_ID",
+  GOOGLE_SYNC_PROBE = "GOOGLE_SYNC_PROBE",
+  GOOGLE_SYNC_PROBE_RESULT = "GOOGLE_SYNC_PROBE_RESULT",
+  GOOGLE_HISTORY_SYNC = "GOOGLE_HISTORY_SYNC",
+  GOOGLE_HISTORY_SYNC_DONE = "GOOGLE_HISTORY_SYNC_DONE",
+  CHANGE_AUTO_SYNC_ENABLED = "CHANGE_AUTO_SYNC_ENABLED",
+  AUTO_SYNC_TICK = "AUTO_SYNC_TICK",
 }
 
 export type ActionType =
@@ -157,4 +166,13 @@ export type ActionType =
       questionId: number;
       tagId: number;
       checked: boolean;
-    };
+    }
+  | { type: Action.EXPORT_HISTORY_DATA }
+  | { type: Action.IMPORT_HISTORY_DATA; file: File }
+  | { type: Action.CHANGE_GOOGLE_USER_ID; googleUserId: string }
+  | { type: Action.GOOGLE_SYNC_PROBE }
+  | { type: Action.GOOGLE_SYNC_PROBE_RESULT; ok: boolean; accessToken?: string }
+  | { type: Action.GOOGLE_HISTORY_SYNC }
+  | { type: Action.GOOGLE_HISTORY_SYNC_DONE }
+  | { type: Action.CHANGE_AUTO_SYNC_ENABLED; enabled: boolean }
+  | { type: Action.AUTO_SYNC_TICK };
