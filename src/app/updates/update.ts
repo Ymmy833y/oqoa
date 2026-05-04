@@ -308,7 +308,10 @@ export function update(
 
     case Action.SHOW_PRACTICE:
       return {
-        model: { ...model, practiceDetailDto: action.practiceDetailDto },
+        model: {
+          ...model,
+          practiceDetailDto: { ...action.practiceDetailDto },
+        },
         effects: [],
       };
 
