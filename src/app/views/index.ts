@@ -30,6 +30,7 @@ import { UIEvent, UIEventPayloadMap } from "./ui_event_types";
 
 export class View {
   private listeners: Partial<Record<UIEvent, unknown[]>> = {};
+  private lastRenderedPracticeDetailDto: PracticeDetailDto | null = null;
 
   private els: {
     settingBtn: HTMLButtonElement;
@@ -275,8 +276,13 @@ export class View {
     this.applySyncButtonState(model.googleSyncReady);
     this.applyAutoSyncBtnState(model.googleSyncReady, model.autoSyncEnabled);
 
-    if (model.practiceDetailDto !== null) {
-      this.applyPracticeContent(model.practiceDetailDto);
+    if (model.practiceDetailDto !== this.lastRenderedPracticeDetailDto) {
+      if (model.practiceDetailDto !== null) {
+        this.applyPracticeContent(model.practiceDetailDto);
+      } else {
+        this.els.practiceContainer.innerHTML = "";
+      }
+      this.lastRenderedPracticeDetailDto = model.practiceDetailDto;
     }
     this.applyQListsContent(model.qListSearchForm, model.qLists);
     this.applyQuestionsContent(model.questions);
